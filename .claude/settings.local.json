@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /d/01_Programacion/felton-website-design/data)",
+      "Bash(mkdir -p /d/01_Programacion/felton-website-design/app/products)",
+      "Bash(ls /d/01_Programacion/felton-website-design/next.config*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

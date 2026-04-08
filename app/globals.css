@@ -1,0 +1,385 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Montserrat:wght@200;300;400;500;600;700&family=Cinzel:wght@600&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Felton Luxury Brand Design System */
+/* Colors: Deep Navy, Muted Gold, Charcoal, Off-White */
+
+:root {
+  /* Deep navy as primary background for luxury feel */
+  --background: oklch(0.15 0.02 260);
+  --foreground: oklch(0.95 0.01 90);
+
+  /* Card surfaces - slightly lighter navy */
+  --card: oklch(0.18 0.02 260);
+  --card-foreground: oklch(0.95 0.01 90);
+
+  /* Popover */
+  --popover: oklch(0.18 0.02 260);
+  --popover-foreground: oklch(0.95 0.01 90);
+
+  /* Primary - Muted Gold accent */
+  --primary: oklch(0.72 0.12 85);
+  --primary-foreground: oklch(0.15 0.02 260);
+
+  /* Secondary - Charcoal */
+  --secondary: oklch(0.25 0.015 260);
+  --secondary-foreground: oklch(0.85 0.01 90);
+
+  /* Muted - Darker navy */
+  --muted: oklch(0.2 0.02 260);
+  --muted-foreground: oklch(0.65 0.01 90);
+
+  /* Accent - Subtle gold */
+  --accent: oklch(0.72 0.12 85);
+  --accent-foreground: oklch(0.15 0.02 260);
+
+  /* Destructive */
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.95 0 0);
+
+  /* Borders - subtle navy lines */
+  --border: oklch(0.3 0.02 260);
+  --input: oklch(0.25 0.02 260);
+  --ring: oklch(0.72 0.12 85);
+
+  /* Charts */
+  --chart-1: oklch(0.72 0.12 85);
+  --chart-2: oklch(0.6 0.08 260);
+  --chart-3: oklch(0.5 0.06 260);
+  --chart-4: oklch(0.8 0.1 85);
+  --chart-5: oklch(0.4 0.04 260);
+
+  --radius: 0.25rem;
+
+  /* Sidebar */
+  --sidebar: oklch(0.12 0.02 260);
+  --sidebar-foreground: oklch(0.95 0.01 90);
+  --sidebar-primary: oklch(0.72 0.12 85);
+  --sidebar-primary-foreground: oklch(0.15 0.02 260);
+  --sidebar-accent: oklch(0.2 0.02 260);
+  --sidebar-accent-foreground: oklch(0.95 0.01 90);
+  --sidebar-border: oklch(0.25 0.02 260);
+  --sidebar-ring: oklch(0.72 0.12 85);
+
+  /* Custom Felton tokens */
+  --gold: oklch(0.72 0.12 85);
+  --gold-light: oklch(0.8 0.1 85);
+  --gold-dark: oklch(0.6 0.14 85);
+  --navy: oklch(0.15 0.02 260);
+  --navy-light: oklch(0.22 0.02 260);
+  --navy-dark: oklch(0.1 0.02 260);
+  --cream: oklch(0.95 0.01 90);
+  --cream-dark: oklch(0.88 0.01 90);
+  --charcoal: oklch(0.3 0.01 260);
+}
+
+/* Light mode for specific sections if needed */
+.light-section {
+  --background: oklch(0.97 0.005 90);
+  --foreground: oklch(0.15 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.02 260);
+  --muted: oklch(0.95 0.005 90);
+  --muted-foreground: oklch(0.4 0.02 260);
+  --border: oklch(0.88 0.005 90);
+}
+
+@theme inline {
+  --font-sans: "Montserrat", system-ui, sans-serif;
+  --font-serif: "Playfair Display", "Georgia", serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Custom Felton colors */
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-navy-dark: var(--navy-dark);
+  --color-cream: var(--cream);
+  --color-cream-dark: var(--cream-dark);
+  --color-charcoal: var(--charcoal);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Selection color */
+  ::selection {
+    background-color: oklch(0.72 0.12 85 / 0.3);
+    color: oklch(0.95 0.01 90);
+  }
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% {
+    box-shadow: 0 0 0 0 oklch(0.72 0.12 85 / 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 2px oklch(0.72 0.12 85 / 0.4), 
+                0 0 30px 4px oklch(0.72 0.12 85 / 0.2),
+                inset 0 0 10px 1px oklch(0.72 0.12 85 / 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.72 0.12 85 / 0);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Custom utility classes for Felton */
+@layer utilities {
+  .text-gold {
+    color: var(--gold);
+  }
+
+  .bg-navy {
+    background-color: var(--navy);
+  }
+
+  .border-gold {
+    border-color: var(--gold);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Golden hover effect for buttons */
+  .btn-golden-hover {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .btn-golden-hover:hover {
+    border-color: var(--gold);
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  /* Gradient transition helpers for seamless section blending */
+  .gradient-transition {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      oklch(0.15 0.02 260 / 0.3) 50%,
+      oklch(0.15 0.02 260) 100%
+    );
+  }
+
+  .gradient-transition-top {
+    background: linear-gradient(
+      to bottom,
+      oklch(0.15 0.02 260) 0%,
+      oklch(0.15 0.02 260 / 0.3) 50%,
+      transparent 100%
+    );
+  }
+
+  .gradient-blend-dark-to-light {
+    background: linear-gradient(
+      to bottom,
+      oklch(0.15 0.02 260) 0%,
+      oklch(0.18 0.02 260) 50%,
+      oklch(0.22 0.02 260) 100%
+    );
+  }
+
+  .gradient-blend-light-to-dark {
+    background: linear-gradient(
+      to bottom,
+      oklch(0.22 0.02 260) 0%,
+      oklch(0.18 0.02 260) 50%,
+      oklch(0.15 0.02 260) 100%
+    );
+  }
+
+  /* Smooth fade animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Glow effect for hover states */
+  @keyframes goldGlow {
+    0%, 100% {
+      box-shadow: 0 0 5px oklch(0.72 0.12 85 / 0.3),
+                  0 0 10px oklch(0.72 0.12 85 / 0.2);
+    }
+    50% {
+      box-shadow: 0 0 20px oklch(0.72 0.12 85 / 0.5),
+                  0 0 30px oklch(0.72 0.12 85 / 0.3),
+                  0 0 40px oklch(0.72 0.12 85 / 0.2);
+    }
+  }
+
+  /* Utility classes for animations */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out forwards;
+  }
+
+  /* Stagger delays for sequential animations */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+
+  /* Felton Logo Styles */
+  .felton-text {
+    font-family: 'Cinzel', serif;
+    background: linear-gradient(180deg, #f4e4c1 0%, #d4af37 50%, #aa8c2c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .felton-line {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        #d4af37 30%, 
+        #f4e4c1 50%, 
+        #d4af37 70%, 
+        transparent 100%);
+  }
+
+  /* Textured background with golden lights */
+  .textured-bg {
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.72 0.12 85 / 0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 20% 50%, oklch(0.72 0.12 85 / 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 30%, oklch(0.72 0.12 85 / 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 10% 80%, oklch(0.72 0.12 85 / 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 30% at 90% 70%, oklch(0.72 0.12 85 / 0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+}
+
