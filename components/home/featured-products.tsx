@@ -52,9 +52,10 @@ function useFeaturedProducts(): ProductItem[] {
 
 interface ProductCardProps {
   product: ProductItem;
+  isDragging: React.RefObject<boolean>;
 }
 
-function ProductCard({ product }: ProductCardProps) {
+function ProductCard({ product, isDragging }: ProductCardProps) {
   const [particles, setParticles] = useState<
     Array<{ id: number; style: React.CSSProperties }>
   >([]);
@@ -62,6 +63,9 @@ function ProductCard({ product }: ProductCardProps) {
   const particlesCreated = useRef(false);
   const { addToCart, openCart } = useCart();
   const inStock = (product.stock ?? 999) > 0;
+
+  const canHover = () =>
+    !isDragging.current && !window.matchMedia("(hover: none)").matches;
 
   const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -114,8 +118,8 @@ function ProductCard({ product }: ProductCardProps) {
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
       className="product-card-wrapper"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => { if (canHover()) setHovered(true); }}
+      onMouseLeave={() => { if (!window.matchMedia("(hover: none)").matches) setHovered(false); }}
     >
       <style jsx>{`
         .product-card-wrapper { position: relative; width: 100%; }
@@ -350,6 +354,8 @@ export function FeaturedProducts() {
   const x = useMotionValue(0);
   const idxRef = useRef(FEATURED_COUNT); // arranca en la copia del medio
   const busy = useRef(false);
+  const isDragging = useRef(false);
+  const queuedDir = useRef<1 | -1 | null>(null);
   const [slotW, setSlotW] = useState(0);
 
   // Triplicar productos (o placeholders vacíos) para el loop infinito
@@ -378,17 +384,24 @@ export function FeaturedProducts() {
   }, [slotW]); // solo slotW — FEATURED_COUNT es constante
 
   const go = async (dir: 1 | -1) => {
-    if (busy.current || slotW === 0) return;
+    if (slotW === 0) return;
+    if (busy.current) { queuedDir.current = dir; return; }
     busy.current = true;
+    queuedDir.current = null;
     const step = window.innerWidth < 768 ? 1 : 3;
     const next = idxRef.current + dir * step;
-    await animate(x, -next * slotW, { duration: 0.7, ease: [0.19, 1, 0.22, 1] });
+    await animate(x, -next * slotW, { duration: 0.45, ease: [0.19, 1, 0.22, 1] });
     let settled = next;
     if (next >= FEATURED_COUNT * 2) settled = next - FEATURED_COUNT;
     else if (next < FEATURED_COUNT) settled = next + FEATURED_COUNT;
     idxRef.current = settled;
     if (settled !== next) x.set(-settled * slotW);
     busy.current = false;
+    if (queuedDir.current !== null) {
+      const queued = queuedDir.current;
+      queuedDir.current = null;
+      go(queued);
+    }
   };
 
   // ── Swipe / drag táctil ────────────────────────────────────────
@@ -396,35 +409,35 @@ export function FeaturedProducts() {
   const dragLocked = useRef(false); // true = gesto horizontal confirmado
 
   const onPointerDown = (e: React.PointerEvent) => {
-    if (busy.current) return;
+    isDragging.current = true;
     dragStartX.current = e.clientX;
     dragLocked.current = false;
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (dragStartX.current === null || busy.current) return;
+    if (dragStartX.current === null) return;
     const deltaX = e.clientX - dragStartX.current;
     const deltaY = Math.abs((e as any).movementY ?? 0);
-    // Confirmar gesto horizontal solo si supera 6px y es más ancho que alto
     if (!dragLocked.current) {
       if (Math.abs(deltaX) < 6) return;
       dragLocked.current = Math.abs(deltaX) > deltaY;
       if (!dragLocked.current) { dragStartX.current = null; return; }
     }
     e.preventDefault();
-    x.set(-idxRef.current * slotW + deltaX);
+    if (!busy.current) x.set(-idxRef.current * slotW + deltaX);
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
-    if (dragStartX.current === null) return;
+    if (dragStartX.current === null) { isDragging.current = false; return; }
     const delta = e.clientX - dragStartX.current;
     dragStartX.current = null;
     dragLocked.current = false;
     const threshold = slotW * 0.25;
     if (delta < -threshold) go(1);
     else if (delta > threshold) go(-1);
-    else animate(x, -idxRef.current * slotW, { duration: 0.35, ease: "easeOut" });
+    else if (!busy.current) animate(x, -idxRef.current * slotW, { duration: 0.35, ease: "easeOut" });
+    setTimeout(() => { isDragging.current = false; }, 350);
   };
 
   const loaded = products.length > 0;
@@ -466,7 +479,7 @@ export function FeaturedProducts() {
                 key={`${i}-${product.id}`}
                 style={{ width: slotW || "33.33%", flexShrink: 0, padding: "0 12px" }}
               >
-                <ProductCard product={product} />
+                <ProductCard product={product} isDragging={isDragging} />
               </div>
             ))}
           </motion.div>

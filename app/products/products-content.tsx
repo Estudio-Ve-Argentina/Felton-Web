@@ -152,6 +152,7 @@ function ProductCard({ product, index }: { product: TiendaNubeProduct; index: nu
           </h3>
           {product.description?.es && (
             <p
+              suppressHydrationWarning
               className="hidden sm:block text-xs font-light text-muted-foreground leading-relaxed flex-1 line-clamp-2"
               dangerouslySetInnerHTML={{ __html: product.description.es }}
             />

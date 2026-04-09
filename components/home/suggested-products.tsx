@@ -19,7 +19,7 @@ function tnToProductItem(p: any): ProductItem {
     id: String(p.id),
     slug: p.handle?.es ?? String(p.id),
     name: p.name?.es ?? "",
-    category: p.categories?.[0]?.name?.es ?? "",
+    category: p.categories?.[0]?.name?.es || "Todos",
     price: variant ? formatPrice(variant.price) : "",
     image: getProductMainImage(p) ?? "",
     variantId: variant?.id,
@@ -63,16 +63,16 @@ function ProductCardMinimal({ product }: { product: ProductItem }) {
   const inStock = (product.stock ?? 999) > 0;
 
   return (
-    <div className="group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-300 overflow-hidden h-full bg-white/[0.03]">
+    <div className="group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-300 overflow-hidden bg-white/[0.03]" style={{ height: 290 }}>
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.08) 0%, transparent 65%)" }}
       />
 
       {/* Imagen — lleva al producto */}
-      <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative flex items-center justify-center h-32 sm:h-52 p-4 sm:p-7 overflow-hidden">
-          <span className="absolute font-serif text-[5rem] sm:text-[7rem] leading-none font-semibold select-none pointer-events-none text-white" style={{ opacity: 0.04 }}>
+      <Link href={`/products/${product.slug}`} className="block flex-1 min-h-0">
+        <div className="relative flex items-center justify-center h-[180px] p-4 overflow-hidden">
+          <span className="absolute font-serif text-[6rem] leading-none font-semibold select-none pointer-events-none text-white" style={{ opacity: 0.04 }}>
             F
           </span>
           {product.image ? (
@@ -81,28 +81,28 @@ function ProductCardMinimal({ product }: { product: ProductItem }) {
               alt={product.name}
               width={160}
               height={160}
-              className="relative z-10 object-contain transition-transform duration-500 group-hover:scale-105 max-h-24 sm:max-h-full"
+              className="relative z-10 object-contain transition-transform duration-500 group-hover:scale-105 max-h-[148px]"
             />
           ) : (
-            <div className="relative z-10 w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center text-primary/10 text-4xl sm:text-5xl font-serif">F</div>
+            <div className="relative z-10 w-24 h-24 flex items-center justify-center text-primary/10 text-5xl font-serif">F</div>
           )}
         </div>
       </Link>
 
       {/* Info + botón */}
-      <div className="px-3 sm:px-5 pt-2 sm:pt-3 pb-3 sm:pb-5 border-t border-primary/10">
+      <div className="flex-shrink-0 px-3 pt-2 pb-3 border-t border-primary/10">
         {product.category && (
-          <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] text-primary/60 mb-0.5 sm:mb-1">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-primary/60 mb-0.5">
             {product.category}
           </p>
         )}
         <Link href={`/products/${product.slug}`}>
-          <h3 className="font-serif text-sm sm:text-base font-light text-foreground mb-2 sm:mb-3 leading-snug line-clamp-1 hover:text-primary transition-colors duration-200">
+          <h3 className="font-serif text-sm font-light text-foreground mb-2 leading-snug line-clamp-1 hover:text-primary transition-colors duration-200">
             {product.name}
           </h3>
         </Link>
         <div className="flex items-center justify-between gap-1">
-          <span className="text-base sm:text-lg font-semibold text-primary tracking-tight">{product.price}</span>
+          <span className="text-base font-semibold text-primary tracking-tight">{product.price}</span>
           <button
             onClick={() => {
               if (!inStock || !product.variantId) return;
@@ -118,7 +118,7 @@ function ProductCardMinimal({ product }: { product: ProductItem }) {
               openCart();
             }}
             disabled={!inStock || !product.variantId}
-            className="inline-flex items-center gap-1 border border-primary/30 px-2 py-1 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-foreground/70 hover:border-primary hover:text-primary transition-colors duration-200 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1 border border-primary/30 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-foreground/70 hover:border-primary hover:text-primary transition-colors duration-200 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ShoppingCart className="h-3 w-3" />
             <span className="hidden sm:inline">Agregar</span>
