@@ -10,12 +10,13 @@ import {
 } from "react";
 
 export interface CartProduct {
-  id: string;
+  id: string;          // variant ID as string (unique key)
+  variantId: number;   // numeric variant ID for TN checkout API
   name: string;
-  price: string;
+  price: string;       // raw price string from TN e.g. "15000.00"
   image: string;
   category: string;
-  stock: number;
+  stock: number;       // 999 = unlimited (no stock management)
 }
 
 export interface CartItem extends CartProduct {
@@ -39,15 +40,14 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 const STORAGE_KEY = "felton-cart";
 
-function parsePrice(price: string): number {
-  return parseFloat(price.replace(/[$,]/g, "")) || 0;
+export function parsePrice(price: string): number {
+  return parseFloat(price.replace(/[^0-9.]/g, "")) || 0;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Load from localStorage on mount
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -55,7 +55,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
-  // Persist on change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);

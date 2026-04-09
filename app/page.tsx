@@ -5,7 +5,6 @@ import { Header, Footer } from "@/components/layout";
 import {
   HeroSection,
   PhilosophySection,
-  CollectionsPreview,
   FeaturedProducts,
   BrandCarousel,
   TestimonialsSection,
@@ -115,7 +114,6 @@ export default function HomePage() {
       <main className="min-h-screen">
         <HeroSection />
 
-        {/* Shared background: FeaturedProducts + PhilosophySection */}
         <div
           className="relative bg-background"
           style={{
@@ -125,33 +123,24 @@ export default function HomePage() {
             backgroundBlendMode: "multiply",
           }}
         >
-          {/* Top fade from hero */}
           <div className="absolute top-0 left-0 right-0 h-40 pointer-events-none z-10"
             style={{ background: "linear-gradient(to bottom, #0B1120 0%, transparent 100%)" }} />
-
-          {/* Grid overlay */}
           <div className="absolute inset-0 opacity-10 pointer-events-none">
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-                                 linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px)`,
+                backgroundImage: `linear-gradient(rgba(212,175,55,0.05) 1px, transparent 1px),
+                                 linear-gradient(90deg, rgba(212,175,55,0.05) 1px, transparent 1px)`,
                 backgroundSize: "50px 50px",
               }}
             />
           </div>
-
-          {/* Particles */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             {PARTICLES.map((particle, i) => (
               <motion.div
                 key={i}
                 className="absolute w-1 h-1 bg-primary/60 rounded-full"
-                style={{
-                  left: `${particle.left}%`,
-                  top: `${particle.top}%`,
-                  willChange: "transform, opacity",
-                }}
+                style={{ left: `${particle.left}%`, top: `${particle.top}%`, willChange: "transform, opacity" }}
                 animate={{
                   x: [0, particle.dx * 0.6, particle.dx, particle.dx],
                   y: [0, particle.dy * 0.6, particle.dy, particle.dy],

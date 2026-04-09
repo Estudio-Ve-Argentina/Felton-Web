@@ -28,8 +28,8 @@ export default function ContactPage() {
       icon: Mail,
       title: locale === "es" ? "Email" : "Email",
       description: locale === "es" ? "Para todas las consultas" : "For all inquiries",
-      value: "hello@felton.com",
-      href: "mailto:hello@felton.com",
+      value: "Felton26.01@gmail.com",
+      href: "mailto:Felton26.01@gmail.com",
     },
     {
       icon: Instagram,

@@ -13,16 +13,9 @@ export function Footer() {
 
   const footerLinks = {
     discover: [
-      { name: t("nav.collections"), href: "/collections" },
-      { name: t("footer.newArrivals"), href: "/collections#new" },
-      { name: t("footer.bestsellers"), href: "/collections#bestsellers" },
+      { name: t("footer.bestsellers"), href: "/products" },
       { name: t("nav.brands"), href: "/brands" },
-    ],
-    learn: [
       { name: t("nav.blog"), href: "/blog" },
-      { name: t("nav.guides"), href: "/guides" },
-      { name: t("nav.comparisons"), href: "/comparisons" },
-      { name: t("nav.dictionary"), href: "/dictionary" },
     ],
     support: [
       { name: t("nav.faqs"), href: "/faqs" },
@@ -46,7 +39,7 @@ export function Footer() {
         variants={staggerContainer}
         className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16"
       >
-        <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
           {/* Brand Column */}
           <motion.div variants={fadeInUp} className="col-span-2">
             <Link href="/" className="inline-block mb-2">
@@ -88,25 +81,6 @@ export function Footer() {
             </h3>
             <ul className="mt-4 space-y-3">
               {footerLinks.discover.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-sm font-light text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Learn */}
-          <motion.div variants={fadeInUp}>
-            <h3 className="text-xs font-medium uppercase tracking-widest text-primary/80">
-              {t("footer.learn")}
-            </h3>
-            <ul className="mt-4 space-y-3">
-              {footerLinks.learn.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
