@@ -26,6 +26,7 @@ export function Footer() {
       { name: t("nav.about"), href: "/about" },
       { name: t("footer.philosophy"), href: "/about#philosophy" },
       { name: t("nav.legal"), href: "/legal" },
+      { name: t("footer.privacy"), href: "/privacy" },
     ],
   };
 
@@ -162,13 +163,7 @@ export function Footer() {
             >
               {t("footer.privacy")}
             </Link>
-            <Link
-              href="/terms"
-              className="text-xs font-light text-muted-foreground/60 transition-colors hover:text-primary"
-            >
-              {t("footer.terms")}
-            </Link>
-            <Link
+<Link
               href="/legal"
               className="text-xs font-light text-muted-foreground/60 transition-colors hover:text-primary"
             >
