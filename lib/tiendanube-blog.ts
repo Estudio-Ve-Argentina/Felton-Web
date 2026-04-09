@@ -17,6 +17,7 @@ export interface TiendaNubeBlogPostScraped {
   image: string | null;
   url: string;          // full storefront URL
   status: "published";
+  categories: string[];
 }
 
 function extractMeta(html: string, field: string): string | null {
@@ -24,12 +25,29 @@ function extractMeta(html: string, field: string): string | null {
     new RegExp(`"${field}"\\s*:\\s*"([^"]+)"`, "i"),
     new RegExp(`itemprop="${field}"[^>]*content="([^"]+)"`, "i"),
     new RegExp(`itemprop="${field}"[^>]*>([^<]+)<`, "i"),
+    new RegExp(`name="${field}"[^>]*content="([^"]+)"`, "i"),
   ];
   for (const p of patterns) {
     const m = html.match(p);
     if (m?.[1]) return m[1].trim();
   }
   return null;
+}
+
+function extractCategories(html: string): string[] {
+  // Try meta keywords first
+  const keywords = extractMeta(html, "keywords");
+  if (keywords) {
+    return keywords.split(",").map(k => k.trim()).filter(Boolean);
+  }
+
+  // Try to find tags or categories in links /blog/tag/ or /blog/category/
+  const tagMatches = [...html.matchAll(/href="[^"]*blog\/(?:tag|category)\/([^"/?]+)"/gi)];
+  if (tagMatches.length > 0) {
+    return [...new Set(tagMatches.map(m => decodeURIComponent(m[1].replace(/-/g, " "))))];
+  }
+
+  return ["General"];
 }
 
 function extractContent(html: string): string {
@@ -106,6 +124,7 @@ export async function scrapeBlogPost(path: string): Promise<TiendaNubeBlogPostSc
       image,
       url,
       status: "published",
+      categories: extractCategories(html),
     };
   } catch (e) {
     console.error(`[scrapeBlogPost] Error scraping ${path}:`, e);

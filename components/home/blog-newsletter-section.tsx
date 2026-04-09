@@ -1,124 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Calendar, Clock, Mail, Check } from "lucide-react";
+import { ArrowRight, Calendar, Clock, Mail, Check, Loader2 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
+import { fadeInUp, staggerContainer, luxuryTransition } from "@/lib/animations";
+import type { TiendaNubeBlogPostScraped } from "@/lib/tiendanube-blog";
 
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  image: string;
-  category: string;
-  date: string;
-  readTime: string;
-  href: string;
-}
+function BlogCard({ post, index }: { post: TiendaNubeBlogPostScraped; index: number }) {
+  const { locale } = useTranslation();
 
-const blogPosts: BlogPost[] = [
-  {
-    id: "1",
-    title: "El Arte de la Elegancia Atemporal",
-    excerpt:
-      "Descubre cómo las piezas clásicas de lujo trascienden las tendencias pasajeras y se convierten en inversiones para toda la vida.",
-    image: "/images/blog-1.jpg",
-    category: "Estilo de Vida",
-    date: "15 Ene 2026",
-    readTime: "5 min",
-    href: "/blog/arte-elegancia-atemporal",
-  },
-  {
-    id: "2",
-    title: "Guía de Cuidado para Artículos de Lujo",
-    excerpt:
-      "Aprende las mejores prácticas para mantener tus piezas de diseñador en perfecto estado durante décadas.",
-    image: "/images/blog-2.jpg",
-    category: "Cuidado",
-    date: "10 Ene 2026",
-    readTime: "7 min",
-    href: "/blog/guia-cuidado-lujo",
-  },
-  {
-    id: "3",
-    title: "Tendencias de Lujo 2026",
-    excerpt:
-      "Un vistazo exclusivo a las tendencias que definirán el mundo del lujo este año, desde sostenibilidad hasta innovación.",
-    image: "/images/blog-3.jpg",
-    category: "Tendencias",
-    date: "5 Ene 2026",
-    readTime: "6 min",
-    href: "/blog/tendencias-lujo-2026",
-  },
-];
+  const getReadTime = (content: string) => {
+    const words = content.replace(/<[^>]*>/g, " ").split(/\s+/).filter(Boolean).length;
+    return `${Math.max(1, Math.ceil(words / 200))} min`;
+  };
 
-function BlogCard({ post, index }: { post: BlogPost; index: number }) {
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(locale === "es" ? "es-AR" : "en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
   return (
     <motion.article
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: index * 0.15 }}
-      className="group relative"
+      variants={fadeInUp}
+      transition={{ ...luxuryTransition, delay: index * 0.1 }}
+      className="group"
     >
-      <Link href={post.href} className="block">
-        <div className="relative overflow-hidden bg-background/40 border border-border/30 transition-all duration-700 hover:border-primary/40">
-          <div className="relative h-80 overflow-hidden">
-            <div className="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-700" />
-
-            <motion.div
-              whileHover={{ scale: 1.08 }}
-              transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
-              className="relative h-full w-full"
-            >
-              <Image
-                src={post.image}
-                alt={post.title}
-                fill
-                className="object-cover transition-all duration-700 group-hover:brightness-110"
-              />
-            </motion.div>
-
-            <div className="absolute top-6 left-6 z-20">
-              <span className="inline-block px-4 py-2 text-[10px] font-medium tracking-[0.3em] uppercase bg-primary/90 text-primary-foreground backdrop-blur-sm">
-                {post.category}
-              </span>
-            </div>
-
-            <motion.div
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.15 + 0.3 }}
-              className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-primary to-transparent origin-left"
+      <Link href={`/blog/${post.slug}`} className="block">
+        {/* Image Container */}
+        <div className="relative aspect-16/10 overflow-hidden border-2 border-border/30 transition-all duration-500 group-hover:border-primary/40 bg-secondary/10">
+          {post.image ? (
+            <Image
+              src={post.image}
+              alt={post.title}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-xs text-muted-foreground uppercase tracking-widest opacity-30">Felton</span>
+            </div>
+          )}
+          
+          {/* Subtle Overlay on Hover */}
+          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        </div>
+
+        {/* Content Below */}
+        <div className="mt-6">
+          <div className="flex items-center gap-5 text-[11px] uppercase tracking-widest text-muted-foreground mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3 w-3 text-primary/60" />
+              <span>{formatDate(post.published_at)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-3 w-3 text-primary/60" />
+              <span>{getReadTime(post.content)}</span>
+            </div>
           </div>
 
-          <div className="p-8 lg:p-10">
-            <div className="flex items-center gap-6 mb-5 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-3.5 w-3.5 text-primary/70" />
-                <span>{post.date}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-3.5 w-3.5 text-primary/70" />
-                <span>{post.readTime} lectura</span>
-              </div>
-            </div>
+          <h3 className="font-serif text-xl lg:text-2xl font-light text-foreground mb-4 leading-snug group-hover:text-primary transition-colors duration-500 line-clamp-2">
+            {post.title}
+          </h3>
 
-            <h3 className="font-serif text-2xl lg:text-3xl font-light text-foreground mb-4 leading-tight group-hover:text-primary transition-colors duration-500">
-              {post.title}
-            </h3>
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 mb-6 font-light">
+            {post.description}
+          </p>
 
-            <p className="text-sm lg:text-base text-muted-foreground leading-relaxed mb-6 line-clamp-3">
-              {post.excerpt}
-            </p>
-
-            <div className="flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-4 transition-all duration-500">
-              <span className="tracking-wide">Leer más</span>
-              <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
-            </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all duration-500">
+            <span className="tracking-tight">{locale === "es" ? "Leer más" : "Read more"}</span>
+            <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
           </div>
         </div>
       </Link>
@@ -127,6 +82,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
 }
 
 function NewsletterForm() {
+  const { locale } = useTranslation();
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -166,7 +122,7 @@ function NewsletterForm() {
         transition={{ duration: 0.8, delay: 0.3 }}
         className="font-serif text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-4"
       >
-        Únete a Nuestra Comunidad Exclusiva
+        {locale === "es" ? "Únete a Nuestra Comunidad Exclusiva" : "Join Our Exclusive Community"}
       </motion.h2>
 
       <motion.div
@@ -182,9 +138,11 @@ function NewsletterForm() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.6 }}
-        className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+        className="text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed font-light"
       >
-        Recibe acceso anticipado a productos exclusivos, ofertas especiales y contenido premium directamente en tu bandeja de entrada.
+        {locale === "es" 
+          ? "Recibe acceso anticipado a productos exclusivos, ofertas especiales y contenido premium directamente en tu bandeja de entrada."
+          : "Receive early access to exclusive products, special offers and premium content directly in your inbox."}
       </motion.p>
 
       <motion.form
@@ -229,19 +187,21 @@ function NewsletterForm() {
             ) : isSubmitted ? (
               <>
                 <Check className="w-5 h-5" />
-                <span>¡Listo!</span>
+                <span>{locale === "es" ? "¡Listo!" : "Done!"}</span>
               </>
             ) : (
               <>
-                <span>Suscribirse</span>
+                <span>{locale === "es" ? "Suscribirse" : "Subscribe"}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </motion.button>
         </div>
 
-        <p className="text-xs text-muted-foreground/60 mt-5">
-          Al suscribirte, aceptas recibir correos de marketing. Cancela en cualquier momento.
+        <p className="text-xs text-muted-foreground/60 mt-5 font-light">
+          {locale === "es" 
+            ? "Al suscribirte, aceptas recibir correos de marketing. Cancela en cualquier momento."
+            : "By subscribing, you agree to receive marketing emails. Cancel at any time."}
         </p>
       </motion.form>
 
@@ -250,19 +210,19 @@ function NewsletterForm() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 1 }}
-        className="flex items-center justify-center gap-8 mt-10 text-sm text-muted-foreground"
+        className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 mt-10 text-xs text-muted-foreground font-light"
       >
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-primary/70" />
-          <span>Sin spam</span>
+          <span>{locale === "es" ? "Sin spam" : "No spam"}</span>
         </div>
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-primary/70" />
-          <span>Cancela cuando quieras</span>
+          <span>{locale === "es" ? "Cancela cuando quieras" : "Cancel anytime"}</span>
         </div>
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-primary/70" />
-          <span>100% privado</span>
+          <span>{locale === "es" ? "100% privado" : "100% private"}</span>
         </div>
       </motion.div>
     </motion.div>
@@ -270,6 +230,27 @@ function NewsletterForm() {
 }
 
 export function BlogNewsletterSection() {
+  const { locale } = useTranslation();
+  const [posts, setPosts] = useState<TiendaNubeBlogPostScraped[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch("/api/tiendanube/blog");
+        if (!res.ok) throw new Error("Error");
+        const data = await res.json();
+        // Limit to 3 posts for the homepage
+        setPosts(Array.isArray(data) ? data.slice(0, 3) : []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
   return (
     <section
       className="relative w-full overflow-hidden"
@@ -292,7 +273,7 @@ export function BlogNewsletterSection() {
               transition={{ duration: 0.6 }}
               className="text-xs tracking-[0.4em] text-primary/60 uppercase mb-4"
             >
-              Inspiración & Conocimiento
+              {locale === "es" ? "Inspiración & Conocimiento" : "Inspiration & Knowledge"}
             </motion.p>
 
             <motion.h2
@@ -302,7 +283,7 @@ export function BlogNewsletterSection() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-6"
             >
-              Nuestro Blog
+              {locale === "es" ? "Nuestro Blog" : "Our Blog"}
             </motion.h2>
 
             <motion.div
@@ -318,17 +299,40 @@ export function BlogNewsletterSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-sm lg:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+              className="text-sm lg:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
             >
-              Explora historias, consejos y tendencias del mundo del lujo
+              {locale === "es" 
+                ? "Explora historias, consejos y tendencias del mundo del lujo"
+                : "Explore stories, tips and trends from the world of luxury"}
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 mb-20">
-            {blogPosts.map((post, index) => (
-              <BlogCard key={post.id} post={post} index={index} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4 mb-20">
+              <Loader2 className="h-8 w-8 animate-spin text-primary/40" />
+              <p className="text-xs tracking-widest text-muted-foreground uppercase">
+                {locale === "es" ? "Cargando artículos..." : "Loading articles..."}
+              </p>
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="text-center py-20 mb-20 border border-dashed border-border/30">
+              <p className="text-sm text-muted-foreground italic font-light">
+                {locale === "es" ? "Próximamente más historias..." : "More stories coming soon..."}
+              </p>
+            </div>
+          ) : (
+            <motion.div 
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-24"
+            >
+              {posts.map((post, index) => (
+                <BlogCard key={post.id} post={post} index={index} />
+              ))}
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -339,9 +343,9 @@ export function BlogNewsletterSection() {
           >
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-3 border-2 border-primary bg-transparent px-10 py-4 text-sm font-medium tracking-wide text-primary transition-all hover:bg-primary hover:text-primary-foreground hover:scale-105"
+              className="group inline-flex items-center gap-3 border border-primary/40 bg-transparent px-10 py-4 text-xs font-medium tracking-[0.2em] uppercase text-primary transition-all hover:bg-primary hover:text-white hover:border-primary"
             >
-              <span>Ver Todos los Artículos</span>
+              <span>{locale === "es" ? "Ver Todos los Artículos" : "View All Articles"}</span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </motion.div>

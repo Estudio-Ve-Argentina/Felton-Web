@@ -150,7 +150,7 @@ export function SuggestedProducts() {
     const tablet = window.innerWidth < 1024;
     const step = mobile ? 1 : tablet ? 2 : 4;
     const next = idxRef.current + dir * step;
-    await animate(x, -next * slotW, { duration: 0.5, ease: [0.4, 0, 0.2, 1] });
+    await animate(x, -next * slotW, { duration: 0.7, ease: [0.19, 1, 0.22, 1] });
     let settled = next;
     if (next >= SUGGESTED_COUNT * 2) settled = next - SUGGESTED_COUNT;
     else if (next < SUGGESTED_COUNT) settled = next + SUGGESTED_COUNT;
@@ -205,7 +205,7 @@ export function SuggestedProducts() {
           )}
           {/* containerRef SIEMPRE en el DOM para medir offsetWidth */}
           <div ref={containerRef} className="overflow-hidden">
-            <motion.div style={{ x }} className="flex items-stretch">
+            <motion.div style={{ x, willChange: "transform" }} className="flex items-stretch">
               {EXTENDED.map((product, i) => (
                 <div key={`${i}-${product.id}`} style={{ width: slotW || "25%", flexShrink: 0, padding: "0 8px" }}>
                   <ProductCardMinimal product={product} />

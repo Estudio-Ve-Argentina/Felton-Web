@@ -14,43 +14,42 @@ interface SectionProps {
   id?: string;
 }
 
-export function Section({
-  children,
-  className,
-  variant = "default",
-  size = "default",
-  id,
-}: SectionProps) {
-  return (
-    <section
-      id={id}
-      className={cn(
-        "relative",
-        {
-          "bg-background": variant === "default",
-          "bg-secondary/10": variant === "dark",
-          "bg-card": variant === "light",
-        },
-        {
-          "py-16 lg:py-24": size === "default",
-          "py-20 lg:py-32": size === "large",
-          "py-12 lg:py-16": size === "small",
-        },
-        className,
-      )}
-    >
-      {variant === "textured" && (
-        <>
-          <div className="absolute inset-0 bg-background/95" />
-          <div className="absolute inset-0 textured-bg" />
-        </>
-      )}
-      <div className={cn("mx-auto max-w-7xl px-6 lg:px-8", variant === "textured" && "relative z-10")}>
-        {children}
-      </div>
-    </section>
-  );
-}
+export const Section = React.forwardRef<HTMLElement, SectionProps>(
+  ({ children, className, variant = "default", size = "default", id }, ref) => {
+    return (
+      <section
+        ref={ref}
+        id={id}
+        className={cn(
+          "relative",
+          {
+            "bg-background": variant === "default",
+            "bg-secondary/10": variant === "dark",
+            "bg-card": variant === "light",
+          },
+          {
+            "py-16 lg:py-24": size === "default",
+            "py-20 lg:py-32": size === "large",
+            "py-12 lg:py-16": size === "small",
+          },
+          className,
+        )}
+      >
+        {variant === "textured" && (
+          <>
+            <div className="absolute inset-0 bg-background/95" />
+            <div className="absolute inset-0 textured-bg" />
+          </>
+        )}
+        <div className={cn("mx-auto max-w-7xl px-6 lg:px-8", variant === "textured" && "relative z-10")}>
+          {children}
+        </div>
+      </section>
+    );
+  }
+);
+
+Section.displayName = "Section";
 
 interface SectionHeaderProps {
   eyebrow?: string;

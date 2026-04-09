@@ -342,7 +342,7 @@ export function FeaturedProducts() {
     busy.current = true;
     const step = window.innerWidth < 768 ? 1 : 3;
     const next = idxRef.current + dir * step;
-    await animate(x, -next * slotW, { duration: 0.5, ease: [0.4, 0, 0.2, 1] });
+    await animate(x, -next * slotW, { duration: 0.7, ease: [0.19, 1, 0.22, 1] });
     let settled = next;
     if (next >= FEATURED_COUNT * 2) settled = next - FEATURED_COUNT;
     else if (next < FEATURED_COUNT) settled = next + FEATURED_COUNT;
@@ -376,7 +376,7 @@ export function FeaturedProducts() {
         )}
         {/* containerRef SIEMPRE en el DOM para que offsetWidth se pueda medir */}
         <div ref={containerRef} className="overflow-hidden">
-          <motion.div style={{ x }} className="flex">
+          <motion.div style={{ x, willChange: "transform" }} className="flex">
             {EXTENDED.map((product, i) => (
               <div
                 key={`${i}-${product.id}`}

@@ -15,6 +15,7 @@ export default function BlogPage() {
   const { t, locale } = useTranslation()
   const [posts, setPosts] = useState<TiendaNubeBlogPostScraped[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string>("All")
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -31,6 +32,16 @@ export default function BlogPage() {
     }
     fetchPosts()
   }, [])
+
+  const categories = [
+    "All",
+    ...Array.from(new Set(posts.flatMap((post) => post.categories || []))),
+  ]
+
+  const filteredPosts =
+    selectedCategory === "All"
+      ? posts
+      : posts.filter((post) => post.categories?.includes(selectedCategory))
 
   const getReadTime = (content: string) => {
     const words = content.replace(/<[^>]*>/g, " ").split(/\s+/).filter(Boolean).length
@@ -59,6 +70,29 @@ export default function BlogPage() {
           </div>
         </div>
 
+        {/* Categories */}
+        {!loading && posts.length > 0 && (
+          <div className="border-b border-border/40">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
+              <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2 sm:pb-0">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-6 py-2.5 text-xs font-medium tracking-widest uppercase transition-all duration-300 border ${
+                      selectedCategory === category
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-transparent text-muted-foreground border-border/60 hover:border-primary/40 hover:text-primary"
+                    }`}
+                  >
+                    {category === "All" ? (locale === "es" ? "Todos" : "All") : category}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Posts */}
         <Section variant="default" size="large">
           {loading ? (
@@ -68,22 +102,33 @@ export default function BlogPage() {
                 {locale === "es" ? "Cargando artículos..." : "Loading articles..."}
               </p>
             </div>
-          ) : posts.length === 0 ? (
+          ) : filteredPosts.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-muted-foreground">
-                {locale === "es" ? "No hay artículos publicados aún." : "No articles published yet."}
+                {locale === "es" 
+                  ? "No se encontraron artículos en esta categoría." 
+                  : "No articles found in this category."}
               </p>
+              {selectedCategory !== "All" && (
+                <button
+                  onClick={() => setSelectedCategory("All")}
+                  className="mt-6 text-sm text-primary hover:underline"
+                >
+                  {locale === "es" ? "Ver todos" : "View all"}
+                </button>
+              )}
             </div>
           ) : (
             <motion.div
+              key={selectedCategory}
               initial="initial"
               animate="animate"
               variants={staggerContainer}
               className="grid gap-10 md:grid-cols-2 lg:grid-cols-3"
             >
-              {posts.map((post, index) => (
+              {filteredPosts.map((post, index) => (
                 <motion.article
-                  key={post.id}
+                  key={`${post.id}-${selectedCategory}`}
                   variants={fadeInUp}
                   transition={{ ...luxuryTransition, delay: index * 0.08 }}
                 >
@@ -106,7 +151,7 @@ export default function BlogPage() {
 
                     {/* Content */}
                     <div className="mt-5">
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="h-3 w-3" />
                           {formatDate(post.published_at)}
@@ -117,17 +162,17 @@ export default function BlogPage() {
                         </span>
                       </div>
 
-                      <h2 className="mt-3 font-serif text-xl font-light text-foreground group-hover:text-primary transition-colors lg:text-2xl line-clamp-2">
+                      <h2 className="mt-4 font-serif text-xl font-light text-foreground group-hover:text-primary transition-colors lg:text-2xl line-clamp-2 leading-snug">
                         {post.title}
                       </h2>
 
                       {post.description && (
-                        <p className="mt-2 text-sm font-light text-muted-foreground line-clamp-2">
+                        <p className="mt-3 text-sm font-light text-muted-foreground line-clamp-2 leading-relaxed">
                           {post.description}
                         </p>
                       )}
 
-                      <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary transition-all group-hover:gap-3">
+                      <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary transition-all group-hover:gap-3">
                         {locale === "es" ? "Leer más" : "Read more"}
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </span>
