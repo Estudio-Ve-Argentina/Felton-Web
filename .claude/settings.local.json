@@ -12,7 +12,8 @@
       "Bash(node -e \"const p=require\\('/tmp/tn_products.json'\\); console.log\\(JSON.stringify\\(p.map\\(x=>\\({id:x.id,name:x.name.es}\\)\\),null,2\\)\\)\")",
       "Bash(curl -s \"https://api.tiendanube.com/v1/7241057/products?per_page=50&published=true\" -H \"Authentication: bearer 4d48fca672164fc3940d50c3aa6887d225dece6d\" -H \"User-Agent: Felton Web\" -o \"d:/01_Programacion/felton-website-design/data/tn_products_temp.json\")",
       "Bash(node -e \"const p=require\\('./data/tn_products_temp.json'\\); p.forEach\\(x=>console.log\\(x.id, x.name.es\\)\\)\")",
-      "Bash(git cherry-pick:*)"
+      "Bash(git cherry-pick:*)",
+      "Bash(vercel --version)"
     ]
   }
 }

@@ -74,9 +74,9 @@ export default function BrandPage({ params }: { params: Promise<{ slug: string }
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-20">
+      <main className="min-h-screen pt-4 sm:pt-20">
         {/* Hero Section */}
-        <Section variant="dark" size="large">
+        <Section variant="dark" size="large" className="py-4 sm:py-8">
           {/* Back Link */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -122,6 +122,7 @@ export default function BrandPage({ params }: { params: Promise<{ slug: string }
                 key={product.id}
                 variants={fadeInUp}
                 transition={{ ...luxuryTransition, delay: index * 0.1 }}
+                className="py-2 sm:py-0"
               >
                 <Link href={product.href} className="group block">
                   {/* Image */}
@@ -159,16 +160,11 @@ export default function BrandPage({ params }: { params: Promise<{ slug: string }
                   </div>
 
                   {/* Info */}
-                  <div className="mt-4 space-y-1">
-                    <p className="text-xs font-medium uppercase tracking-wider text-primary/60">
-                      {brand.name}
-                    </p>
-                    <h3 className="font-serif text-lg font-light text-foreground group-hover:text-primary transition-colors">
+                  <div className="mt-1 sm:mt-4">
+                    <h3 className="font-serif text-base sm:text-lg font-light text-foreground group-hover:text-primary transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {product.price}
-                    </p>
+                    <p className="text-sm font-medium text-muted-foreground">{product.price}</p>
                   </div>
                 </Link>
               </motion.div>

@@ -127,7 +127,7 @@ export function ProductDetail({ product, related }: Props) {
     >
       <div className="absolute inset-0 bg-background/95 pointer-events-none" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 pt-56 pb-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 pt-32 pb-16">
         {/* Mobile title */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -141,6 +141,9 @@ export function ProductDetail({ product, related }: Props) {
           <h1 className="font-serif text-3xl sm:text-4xl font-light text-foreground leading-tight">
             {product.name.es}
           </h1>
+          <span className="text-2xl font-semibold text-primary tracking-tight mt-2 block">
+            {selectedVariant ? formatPrice(selectedVariant.price) : ""}
+          </span>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-32">
@@ -241,23 +244,9 @@ export function ProductDetail({ product, related }: Props) {
               <h1 className="font-serif text-4xl xl:text-5xl font-light text-foreground leading-tight">
                 {product.name.es}
               </h1>
-            </div>
-
-            {/* Price */}
-            <div>
-              <span className="text-4xl font-semibold text-primary tracking-tight">
+              <span className="text-3xl font-semibold text-primary tracking-tight mt-2 block">
                 {selectedVariant ? formatPrice(selectedVariant.price) : ""}
               </span>
-              {!outOfStock && stock > 0 && stock <= 3 && (
-                <p className="mt-2 text-sm font-semibold text-red-400 tracking-wide">
-                  ! Solo quedan {stock} unidades
-                </p>
-              )}
-              {outOfStock && (
-                <p className="mt-2 text-sm font-semibold text-red-400 tracking-wide">
-                  ! Sin stock disponible
-                </p>
-              )}
             </div>
 
             <div className="h-px bg-primary/15" />

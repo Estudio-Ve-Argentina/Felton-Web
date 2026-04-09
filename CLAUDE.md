@@ -94,6 +94,18 @@ NEXT_PUBLIC_TIENDANUBE_STORE_URL=https://velmor.mitiendanube.com
 
 ---
 
+## Skills del proyecto
+
+- **Headers de página**: Al crear o modificar cualquier página que tenga un hero/header,
+  seguir estrictamente las reglas de `.claude/skills/page-header/SKILL.md`.
+  Resumen de las reglas críticas:
+  - `<main className="min-h-screen pt-20">` — siempre, sin excepción
+  - Wrapper del hero con `pt-16 pb-14` como padding interno
+  - Usar `SectionHeader` de `@/components/layout` — nunca recrear eyebrow/línea/título a mano
+  - Strings siempre en ES + EN con `locale === "es" ? "..." : "..."`
+
+---
+
 ## Convenciones importantes
 
 - **No modificar** el sistema de colores ni la tipografía sin instrucción explícita

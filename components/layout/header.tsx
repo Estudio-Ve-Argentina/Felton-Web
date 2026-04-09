@@ -248,7 +248,7 @@ export function Header() {
                 </motion.div>
               ))}
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-                <Link href="/contact" className="block py-3 text-lg font-light tracking-wide text-primary" onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/contact" className="block py-3 text-lg font-light tracking-wide text-muted-foreground transition-colors hover:text-primary border-b border-border/20" onClick={() => setMobileMenuOpen(false)}>
                   {t("nav.contact")}
                 </Link>
               </motion.div>

@@ -117,7 +117,7 @@ function ProductCard({ product, index }: { product: TiendaNubeProduct; index: nu
       />
 
       <Link href={`/products/${slug}`} className="flex flex-col flex-1">
-        <div className="relative flex items-center justify-center h-56 p-8 overflow-hidden">
+        <div className="relative flex items-center justify-center h-[168px] sm:h-56 p-4 sm:p-8 overflow-hidden">
           <span
             className="felton-text absolute text-[9rem] leading-none font-semibold select-none pointer-events-none"
             style={{ opacity: 0.04 }}
@@ -139,36 +139,36 @@ function ProductCard({ product, index }: { product: TiendaNubeProduct; index: nu
           )}
         </div>
 
-        <div className="flex flex-col flex-1 px-6 pt-4 pb-4 border-t border-primary/10">
+        <div className="flex flex-col flex-1 px-3 sm:px-6 pt-2 sm:pt-4 pb-2 sm:pb-4 border-t border-primary/10">
           {category && (
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/60 mb-1">
+            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-primary/60 mb-0.5 sm:mb-1">
               {category}
             </p>
           )}
-          <h3 className="font-serif text-lg font-light text-foreground mb-2 leading-snug">
+          <h3 className="font-serif text-sm sm:text-lg font-light text-foreground mb-1 sm:mb-2 leading-snug line-clamp-2">
             {product.name.es}
           </h3>
           {product.description?.es && (
             <p
-              className="text-xs font-light text-muted-foreground leading-relaxed flex-1 line-clamp-2"
+              className="hidden sm:block text-xs font-light text-muted-foreground leading-relaxed flex-1 line-clamp-2"
               dangerouslySetInnerHTML={{ __html: product.description.es }}
             />
           )}
         </div>
       </Link>
 
-      <div className="px-6 pb-5 pt-3 border-t border-primary/5 flex items-center justify-between gap-4">
+      <div className="px-3 sm:px-6 pb-3 sm:pb-5 pt-2 sm:pt-3 border-t border-primary/5 flex items-center justify-between gap-2">
         <div>
-          <span className="text-xl font-semibold text-primary tracking-tight">{price}</span>
+          <span className="text-sm sm:text-xl font-semibold text-primary tracking-tight">{price}</span>
           {!inStock && (
-            <span className="ml-2 text-xs text-red-400/70">Sin stock</span>
+            <span className="ml-1 text-[10px] sm:text-xs text-red-400/70">Sin stock</span>
           )}
         </div>
         <Link
           href={`/products/${slug}`}
-          className="inline-flex items-center gap-2 border border-primary/30 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-foreground/70 hover:border-primary hover:text-primary transition-colors duration-200"
+          className="inline-flex items-center gap-1 border border-primary/30 px-2 sm:px-4 py-1 sm:py-2 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-foreground/70 hover:border-primary hover:text-primary transition-colors duration-200"
         >
-          Ver detalle
+          Ver
         </Link>
       </div>
     </motion.div>
@@ -249,13 +249,13 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="relative max-w-md mx-auto mb-6"
           >
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/50 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60 pointer-events-none" />
             <input
               type="text"
               placeholder="Buscar producto..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent border-b border-primary/30 pl-9 pr-4 py-2.5 text-sm font-light text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors duration-200"
+              className="w-full border border-primary/40 bg-white/[0.06] pl-9 pr-4 py-3 text-sm font-light text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:bg-white/[0.10] focus:outline-none transition-all duration-200 sm:bg-transparent sm:border-0 sm:border-b sm:border-primary/30 sm:py-2.5 sm:focus:bg-transparent"
             />
           </motion.div>
 
@@ -311,7 +311,7 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
               No se encontraron productos.
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
               {filtered.map((product, index) => (
                 <ProductCard key={product.id} product={product} index={index} />
               ))}

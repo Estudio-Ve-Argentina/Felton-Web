@@ -40,6 +40,18 @@ export function BrandCarousel() {
           to   { transform: translateX(calc(-1 * (240px + 4rem) * 6)); }
         }
 
+        @keyframes carousel-scroll-mobile {
+          from { transform: translateX(0); }
+          to   { transform: translateX(calc(-1 * (240px + 1.3rem) * 6)); }
+        }
+
+        @media (max-width: 640px) {
+          .carousel-track {
+            gap: 1.3rem;
+            animation: carousel-scroll-mobile 17s linear infinite;
+          }
+        }
+
         .brand-item {
           flex-shrink: 0;
           display: flex;
