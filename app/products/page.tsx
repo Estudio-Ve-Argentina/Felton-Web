@@ -13,7 +13,7 @@ export default async function ProductsPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen">
+      <main className="min-h-screen pt-20">
         <ProductsContent products={products} />
       </main>
       <Footer />

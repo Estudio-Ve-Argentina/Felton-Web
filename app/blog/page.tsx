@@ -49,13 +49,15 @@ export default function BlogPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <Section variant="dark" size="large">
-          <SectionHeader
-            eyebrow={t("blog.eyebrow")}
-            title={t("blog.title")}
-            description={t("blog.description")}
-          />
-        </Section>
+        <div className="bg-secondary/10">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-14">
+            <SectionHeader
+              eyebrow={t("blog.eyebrow")}
+              title={t("blog.title")}
+              description={t("blog.description")}
+            />
+          </div>
+        </div>
 
         {/* Posts */}
         <Section variant="default" size="large">

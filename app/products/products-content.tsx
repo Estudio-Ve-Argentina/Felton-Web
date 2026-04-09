@@ -10,10 +10,10 @@ import type { TiendaNubeProduct } from "@/lib/tiendanube";
 import { getProductMainImage, formatPrice, getProductStock } from "@/lib/tiendanube";
 
 const PARTICLES = [
-  { left: 8.2, top: 4.1, duration: 4.2, delay: 0.3 },
-  { left: 92.1, top: 9.4, duration: 3.8, delay: 1.1 },
+  { left:  8.2, top:  4.1, duration: 4.2, delay: 0.3 },
+  { left: 92.1, top:  9.4, duration: 3.8, delay: 1.1 },
   { left: 23.5, top: 14.2, duration: 4.7, delay: 0.7 },
-  { left: 67.8, top: 3.8, duration: 3.5, delay: 1.5 },
+  { left: 67.8, top:  3.8, duration: 3.5, delay: 1.5 },
   { left: 45.2, top: 22.1, duration: 4.1, delay: 0.1 },
   { left: 78.9, top: 18.6, duration: 3.9, delay: 1.8 },
   { left: 12.4, top: 38.0, duration: 4.8, delay: 0.9 },
@@ -22,6 +22,67 @@ const PARTICLES = [
   { left: 33.1, top: 70.4, duration: 3.6, delay: 2.0 },
   { left: 71.4, top: 78.8, duration: 4.5, delay: 0.8 },
   { left: 18.9, top: 85.3, duration: 3.4, delay: 1.6 },
+  { left: 38.6, top:  7.2, duration: 4.0, delay: 0.4 },
+  { left: 61.3, top: 13.5, duration: 3.7, delay: 1.2 },
+  { left:  5.1, top: 25.8, duration: 4.6, delay: 0.6 },
+  { left: 82.7, top: 31.4, duration: 3.5, delay: 2.2 },
+  { left: 50.0, top: 41.9, duration: 4.3, delay: 0.2 },
+  { left: 27.3, top: 52.6, duration: 3.8, delay: 1.7 },
+  { left: 90.4, top: 63.2, duration: 4.1, delay: 0.8 },
+  { left: 15.8, top: 72.1, duration: 3.6, delay: 1.3 },
+  { left: 64.5, top: 89.7, duration: 4.4, delay: 0.5 },
+  { left: 42.9, top: 94.3, duration: 3.9, delay: 1.9 },
+  { left: 76.2, top: 47.8, duration: 4.7, delay: 0.1 },
+  { left:  3.7, top: 61.5, duration: 3.4, delay: 2.3 },
+  { left: 58.4, top:  1.9, duration: 4.2, delay: 0.9 },
+  { left: 31.0, top: 33.7, duration: 3.8, delay: 1.5 },
+  { left: 88.1, top: 76.4, duration: 4.5, delay: 0.3 },
+  { left: 47.6, top: 56.2, duration: 3.7, delay: 2.1 },
+  { left: 21.4, top: 17.9, duration: 4.0, delay: 0.7 },
+  { left: 73.8, top: 92.5, duration: 3.5, delay: 1.4 },
+  { left: 10.3, top: 48.6, duration: 4.8, delay: 0.2 },
+  { left: 95.2, top: 36.1, duration: 3.6, delay: 1.8 },
+  { left: 54.7, top: 67.3, duration: 4.3, delay: 0.6 },
+  { left: 37.2, top: 81.0, duration: 3.9, delay: 2.4 },
+  { left: 69.5, top: 28.4, duration: 4.1, delay: 1.0 },
+  { left: 25.8, top: 98.2, duration: 3.7, delay: 0.4 },
+  { left: 14.6, top: 10.3, duration: 4.4, delay: 1.6 },
+  { left: 83.9, top: 20.7, duration: 3.6, delay: 0.5 },
+  { left: 40.1, top: 30.5, duration: 4.9, delay: 2.0 },
+  { left:  6.8, top: 44.2, duration: 3.5, delay: 1.1 },
+  { left: 60.0, top: 50.8, duration: 4.2, delay: 0.8 },
+  { left: 29.4, top: 59.6, duration: 3.8, delay: 1.9 },
+  { left: 97.1, top: 68.0, duration: 4.6, delay: 0.3 },
+  { left: 52.3, top: 75.5, duration: 3.4, delay: 2.2 },
+  { left: 16.7, top: 88.1, duration: 4.1, delay: 0.6 },
+  { left: 79.5, top: 95.7, duration: 3.9, delay: 1.3 },
+  { left: 44.8, top:  6.4, duration: 4.5, delay: 0.9 },
+  { left: 35.3, top: 19.1, duration: 3.7, delay: 2.5 },
+  { left: 87.6, top: 42.3, duration: 4.0, delay: 0.2 },
+  { left:  1.9, top: 55.9, duration: 3.6, delay: 1.7 },
+  { left: 63.2, top: 83.4, duration: 4.8, delay: 0.4 },
+  { left: 20.5, top: 97.0, duration: 3.5, delay: 2.1 },
+  { left: 75.0, top: 11.8, duration: 4.3, delay: 1.0 },
+  { left: 48.7, top: 35.6, duration: 3.8, delay: 1.6 },
+  { left:  9.4, top: 66.2, duration: 4.6, delay: 0.7 },
+  { left: 93.8, top: 82.9, duration: 3.4, delay: 2.3 },
+  { left: 57.1, top: 26.7, duration: 4.1, delay: 0.1 },
+  { left: 30.6, top: 73.8, duration: 3.9, delay: 1.4 },
+  { left: 66.4, top: 90.3, duration: 4.4, delay: 0.8 },
+  { left: 43.5, top: 16.0, duration: 3.7, delay: 2.0 },
+  { left: 80.2, top: 53.4, duration: 4.2, delay: 0.5 },
+  { left: 11.8, top: 79.1, duration: 3.5, delay: 1.2 },
+  { left: 59.9, top: 37.8, duration: 4.7, delay: 2.6 },
+  { left: 22.7, top:  2.5, duration: 3.6, delay: 0.6 },
+  { left: 96.3, top: 49.7, duration: 4.0, delay: 1.8 },
+  { left: 34.9, top: 62.4, duration: 3.8, delay: 0.3 },
+  { left: 72.6, top: 86.5, duration: 4.5, delay: 1.5 },
+  { left:  7.3, top: 32.0, duration: 3.3, delay: 2.4 },
+  { left: 51.4, top: 77.3, duration: 4.1, delay: 0.9 },
+  { left: 84.7, top:  5.6, duration: 3.9, delay: 1.7 },
+  { left: 17.2, top: 43.1, duration: 4.6, delay: 0.2 },
+  { left: 62.8, top: 60.9, duration: 3.5, delay: 2.2 },
+  { left: 39.0, top: 22.8, duration: 4.3, delay: 0.6 },
 ];
 
 function ProductCard({ product, index }: { product: TiendaNubeProduct; index: number }) {
@@ -144,7 +205,7 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
     <>
       {/* Hero + Filters */}
       <div
-        className="relative pt-28 pb-10 overflow-hidden"
+        className="relative pt-16 pb-10 overflow-hidden"
         style={{
           backgroundImage: 'url("/images/leather-texture.png")',
           backgroundSize: "cover",
@@ -177,10 +238,17 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-xs font-semibold uppercase tracking-[0.3em] text-primary/70 mb-3"
+            className="text-xs font-semibold uppercase tracking-[0.3em] text-primary/70 mb-4"
           >
             Catálogo
           </motion.p>
+
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.6, delay: 0.05 }}
+            className="mx-auto mb-6 h-px w-16 bg-primary/60 origin-center"
+          />
 
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
