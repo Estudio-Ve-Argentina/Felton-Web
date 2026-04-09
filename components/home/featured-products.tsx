@@ -9,6 +9,7 @@ import { useTranslation } from "@/lib/i18n";
 import { Section, SectionHeader } from "@/components/layout";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
 import featuredIds from "@/data/featured-product-ids.json";
+import { useAllProducts } from "@/lib/hooks/useHomeProducts";
 
 export interface ProductItem {
   id: string;
@@ -32,23 +33,14 @@ function tnToProductItem(p: any): ProductItem {
 }
 
 function useFeaturedProducts(): ProductItem[] {
-  const [products, setProducts] = useState<ProductItem[]>([]);
-
-  useEffect(() => {
-    fetch("/api/tiendanube/products?per_page=200&published=true")
-      .then((r) => r.json())
-      .then((data: any[]) => {
-        const ids: number[] = featuredIds.featured;
-        const filtered =
-          ids.length > 0
-            ? ids.map((id) => data.find((p) => p.id === id)).filter(Boolean)
-            : data.slice(0, 9);
-        setProducts(filtered.map(tnToProductItem));
-      })
-      .catch(() => {});
-  }, []);
-
-  return products;
+  const allProducts = useAllProducts();
+  const ids: number[] = featuredIds.featured;
+  if (allProducts.length === 0) return [];
+  const filtered =
+    ids.length > 0
+      ? ids.map((id) => allProducts.find((p) => p.id === id)).filter(Boolean)
+      : allProducts.slice(0, 9);
+  return filtered.map(tnToProductItem);
 }
 
 interface ProductCardProps {
@@ -59,9 +51,14 @@ function ProductCard({ product }: ProductCardProps) {
   const [particles, setParticles] = useState<
     Array<{ id: number; style: React.CSSProperties }>
   >([]);
+  const particlesCreated = useRef(false);
 
-  useEffect(() => {
-    const newParticles = Array.from({ length: 120 }).map((_, i) => {
+  const createParticles = () => {
+    if (particlesCreated.current) return;
+    // Skip on mobile (no hover possible)
+    if (window.matchMedia("(hover: none)").matches) return;
+    particlesCreated.current = true;
+    const newParticles = Array.from({ length: 40 }).map((_, i) => {
       const size = 0.3 + Math.random() * 0.8;
       const startX = 180 + Math.random() * 240;
       const startY = 340 + Math.random() * 170;
@@ -82,7 +79,7 @@ function ProductCard({ product }: ProductCardProps) {
       };
     });
     setParticles(newParticles);
-  }, []);
+  };
 
   return (
     <motion.div
@@ -259,7 +256,7 @@ function ProductCard({ product }: ProductCardProps) {
       `}</style>
 
       <Link href={`/products/${product.slug}`} className="block">
-        <div className="product-container group">
+        <div className="product-container group" onMouseEnter={createParticles}>
           <div className="lighting-container">
             <div className="ambient-glow" />
             <div className="main-light-cone" />

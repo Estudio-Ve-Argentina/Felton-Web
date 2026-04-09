@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -229,27 +229,10 @@ function NewsletterForm() {
   );
 }
 
-export function BlogNewsletterSection() {
+export function BlogNewsletterSection({ initialPosts }: { initialPosts?: TiendaNubeBlogPostScraped[] }) {
   const { locale } = useTranslation();
-  const [posts, setPosts] = useState<TiendaNubeBlogPostScraped[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch("/api/tiendanube/blog");
-        if (!res.ok) throw new Error("Error");
-        const data = await res.json();
-        // Limit to 3 posts for the homepage
-        setPosts(Array.isArray(data) ? data.slice(0, 3) : []);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, []);
+  const [posts] = useState<TiendaNubeBlogPostScraped[]>(initialPosts ?? []);
+  const loading = false;
 
   return (
     <section

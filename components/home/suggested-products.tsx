@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useAllProducts } from "@/lib/hooks/useHomeProducts";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, animate, useMotionValue } from "framer-motion";
@@ -24,40 +25,33 @@ function tnToProductItem(p: any): ProductItem {
 }
 
 function useSuggestedProducts(): ProductItem[] {
-  const [products, setProducts] = useState<ProductItem[]>([]);
-  useEffect(() => {
-    fetch("/api/tiendanube/products?per_page=200&published=true")
-      .then((r) => r.json())
-      .then((data: any[]) => {
-        const ids: number[] = featuredIds.suggested;
-        const filtered =
-          ids.length > 0
-            ? ids.map((id) => data.find((p) => p.id === id)).filter(Boolean)
-            : data.slice(0, 9);
-        setProducts(filtered.map(tnToProductItem));
-      })
-      .catch(() => {});
-  }, []);
-  return products;
+  const allProducts = useAllProducts();
+  const ids: number[] = featuredIds.suggested;
+  if (allProducts.length === 0) return [];
+  const filtered =
+    ids.length > 0
+      ? ids.map((id) => allProducts.find((p) => p.id === id)).filter(Boolean)
+      : allProducts.slice(0, 9);
+  return filtered.map(tnToProductItem);
 }
 
 const PARTICLES = [
-  { left: 5.2,  top: 15.4, duration: 4.2, delay: 0.3,  dx: 16,  dy: -24 },
-  { left: 91.8, top: 42.1, duration: 3.8, delay: 1.1,  dx: -20, dy: -20 },
-  { left: 23.5, top: 78.2, duration: 4.7, delay: 0.7,  dx: 14,  dy: -26 },
-  { left: 67.9, top: 8.6,  duration: 3.5, delay: 1.5,  dx: -18, dy: -22 },
-  { left: 44.1, top: 55.3, duration: 4.1, delay: 0.1,  dx: 22,  dy: -18 },
-  { left: 78.4, top: 31.7, duration: 3.9, delay: 1.8,  dx: -14, dy: -26 },
-  { left: 12.7, top: 63.0, duration: 4.8, delay: 0.9,  dx: 28,  dy: -12 },
-  { left: 56.3, top: 22.4, duration: 3.7, delay: 1.4,  dx: -22, dy: -18 },
-  { left: 35.8, top: 88.1, duration: 4.4, delay: 0.5,  dx: 18,  dy: -22 },
-  { left: 83.2, top: 71.5, duration: 3.6, delay: 2.1,  dx: -26, dy: -14 },
-  { left: 49.6, top: 4.3,  duration: 4.9, delay: 0.4,  dx: 12,  dy: -28 },
-  { left: 18.4, top: 47.8, duration: 4.3, delay: 2.0,  dx: -30, dy: 0   },
-  { left: 72.1, top: 93.2, duration: 3.4, delay: 0.8,  dx: 20,  dy: -20 },
-  { left: 29.7, top: 36.5, duration: 4.6, delay: 1.3,  dx: -16, dy: -24 },
-  { left: 95.3, top: 60.8, duration: 3.8, delay: 0.6,  dx: -24, dy: -16 },
-  { left: 8.9,  top: 25.1, duration: 5.0, delay: 1.7,  dx: 26,  dy: -14 },
+  { left: 5.2,  top: 15.4, duration: 4.2, delay: 0.3  },
+  { left: 91.8, top: 42.1, duration: 3.8, delay: 1.1  },
+  { left: 23.5, top: 78.2, duration: 4.7, delay: 0.7  },
+  { left: 67.9, top: 8.6,  duration: 3.5, delay: 1.5  },
+  { left: 44.1, top: 55.3, duration: 4.1, delay: 0.1  },
+  { left: 78.4, top: 31.7, duration: 3.9, delay: 1.8  },
+  { left: 12.7, top: 63.0, duration: 4.8, delay: 0.9  },
+  { left: 56.3, top: 22.4, duration: 3.7, delay: 1.4  },
+  { left: 35.8, top: 88.1, duration: 4.4, delay: 0.5  },
+  { left: 83.2, top: 71.5, duration: 3.6, delay: 2.1  },
+  { left: 49.6, top: 4.3,  duration: 4.9, delay: 0.4  },
+  { left: 18.4, top: 47.8, duration: 4.3, delay: 2.0  },
+  { left: 72.1, top: 93.2, duration: 3.4, delay: 0.8  },
+  { left: 29.7, top: 36.5, duration: 4.6, delay: 1.3  },
+  { left: 95.3, top: 60.8, duration: 3.8, delay: 0.6  },
+  { left: 8.9,  top: 25.1, duration: 5.0, delay: 1.7  },
 ];
 
 function ProductCardMinimal({ product }: { product: ProductItem }) {
@@ -170,12 +164,15 @@ export function SuggestedProducts() {
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {PARTICLES.map((p, i) => (
-          <motion.div
+          <div
             key={i}
-            className="absolute w-1 h-1 bg-primary/60 rounded-full"
-            style={{ left: `${p.left}%`, top: `${p.top}%`, willChange: "transform, opacity" }}
-            animate={{ x: [0, p.dx * 0.6, p.dx, p.dx], y: [0, p.dy * 0.6, p.dy, p.dy], opacity: [0, 1, 0, 0] }}
-            transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, times: [0, 0.45, 0.75, 1], ease: "easeOut" }}
+            className="absolute w-1 h-1 rounded-full"
+            style={{
+              left: `${p.left}%`,
+              top: `${p.top}%`,
+              background: "rgba(212,175,55,0.6)",
+              animation: `particleFloat ${p.duration}s ease-out ${p.delay}s infinite`,
+            }}
           />
         ))}
       </div>
