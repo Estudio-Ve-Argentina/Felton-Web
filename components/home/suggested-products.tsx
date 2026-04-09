@@ -5,7 +5,8 @@ import { useAllProducts } from "@/lib/hooks/useHomeProducts";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, animate, useMotionValue } from "framer-motion";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, ShoppingCart } from "lucide-react";
+import { useCart } from "@/lib/cart";
 import type { ProductItem } from "./featured-products";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
 import featuredIds from "@/data/featured-product-ids.json";
@@ -21,6 +22,9 @@ function tnToProductItem(p: any): ProductItem {
     category: p.categories?.[0]?.name?.es ?? "",
     price: variant ? formatPrice(variant.price) : "",
     image: getProductMainImage(p) ?? "",
+    variantId: variant?.id,
+    rawPrice: variant?.price ?? "",
+    stock: variant?.stock_management ? (variant?.stock ?? 0) : 999,
   };
 }
 
@@ -55,48 +59,73 @@ const PARTICLES = [
 ];
 
 function ProductCardMinimal({ product }: { product: ProductItem }) {
+  const { addToCart, openCart } = useCart();
+  const inStock = (product.stock ?? 999) > 0;
+
   return (
-    <Link
-      href={`/products/${product.slug}`}
-      className="group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-300 overflow-hidden h-full bg-white/[0.03]"
-    >
+    <div className="group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-300 overflow-hidden h-full bg-white/[0.03]">
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.08) 0%, transparent 65%)" }}
       />
-      <div className="relative flex items-center justify-center h-52 p-7 overflow-hidden">
-        <span className="absolute font-serif text-[7rem] leading-none font-semibold select-none pointer-events-none text-white" style={{ opacity: 0.04 }}>
-          F
-        </span>
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            width={160}
-            height={160}
-            className="relative z-10 object-contain transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="relative z-10 w-24 h-24 flex items-center justify-center text-primary/10 text-5xl font-serif">F</div>
-        )}
-      </div>
-      <div className="px-5 pt-3 pb-5 border-t border-primary/10">
+
+      {/* Imagen — lleva al producto */}
+      <Link href={`/products/${product.slug}`} className="block">
+        <div className="relative flex items-center justify-center h-32 sm:h-52 p-4 sm:p-7 overflow-hidden">
+          <span className="absolute font-serif text-[5rem] sm:text-[7rem] leading-none font-semibold select-none pointer-events-none text-white" style={{ opacity: 0.04 }}>
+            F
+          </span>
+          {product.image ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              width={160}
+              height={160}
+              className="relative z-10 object-contain transition-transform duration-500 group-hover:scale-105 max-h-24 sm:max-h-full"
+            />
+          ) : (
+            <div className="relative z-10 w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center text-primary/10 text-4xl sm:text-5xl font-serif">F</div>
+          )}
+        </div>
+      </Link>
+
+      {/* Info + botón */}
+      <div className="px-3 sm:px-5 pt-2 sm:pt-3 pb-3 sm:pb-5 border-t border-primary/10">
         {product.category && (
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/60 mb-1">
+          <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] text-primary/60 mb-0.5 sm:mb-1">
             {product.category}
           </p>
         )}
-        <h3 className="font-serif text-base font-light text-foreground mb-3 leading-snug line-clamp-1">
-          {product.name}
-        </h3>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-lg font-semibold text-primary tracking-tight">{product.price}</span>
-          <span className="inline-flex items-center gap-1.5 border border-primary/30 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-foreground/70 group-hover:border-primary group-hover:text-primary transition-colors duration-200">
-            Ver detalle
-          </span>
+        <Link href={`/products/${product.slug}`}>
+          <h3 className="font-serif text-sm sm:text-base font-light text-foreground mb-2 sm:mb-3 leading-snug line-clamp-1 hover:text-primary transition-colors duration-200">
+            {product.name}
+          </h3>
+        </Link>
+        <div className="flex items-center justify-between gap-1">
+          <span className="text-base sm:text-lg font-semibold text-primary tracking-tight">{product.price}</span>
+          <button
+            onClick={() => {
+              if (!inStock || !product.variantId) return;
+              addToCart({
+                id: String(product.variantId),
+                variantId: product.variantId,
+                name: product.name,
+                price: product.rawPrice ?? "",
+                image: product.image,
+                category: product.category,
+                stock: product.stock ?? 999,
+              });
+              openCart();
+            }}
+            disabled={!inStock || !product.variantId}
+            className="inline-flex items-center gap-1 border border-primary/30 px-2 py-1 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-foreground/70 hover:border-primary hover:text-primary transition-colors duration-200 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ShoppingCart className="h-3 w-3" />
+            <span className="hidden sm:inline">Agregar</span>
+          </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -122,7 +151,7 @@ export function SuggestedProducts() {
       const w = containerRef.current.offsetWidth;
       const mobile = window.innerWidth < 640;
       const tablet = window.innerWidth < 1024;
-      setSlotW(w / (mobile ? 1.4 : tablet ? 2.4 : 4));
+      setSlotW(w / (mobile ? 2.5 : tablet ? 2.4 : 4));
     };
     calc();
     window.addEventListener("resize", calc);
@@ -142,7 +171,7 @@ export function SuggestedProducts() {
     busy.current = true;
     const mobile = window.innerWidth < 640;
     const tablet = window.innerWidth < 1024;
-    const step = mobile ? 1 : tablet ? 2 : 4;
+    const step = mobile ? 2 : tablet ? 2 : 4;
     const next = idxRef.current + dir * step;
     await animate(x, -next * slotW, { duration: 0.7, ease: [0.19, 1, 0.22, 1] });
     let settled = next;
@@ -151,6 +180,41 @@ export function SuggestedProducts() {
     idxRef.current = settled;
     if (settled !== next) x.set(-settled * slotW);
     busy.current = false;
+  };
+
+  // ── Swipe / drag táctil ────────────────────────────────────────
+  const dragStartX = useRef<number | null>(null);
+  const dragLocked = useRef(false);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (busy.current) return;
+    dragStartX.current = e.clientX;
+    dragLocked.current = false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (dragStartX.current === null || busy.current) return;
+    const deltaX = e.clientX - dragStartX.current;
+    const deltaY = Math.abs((e as any).movementY ?? 0);
+    if (!dragLocked.current) {
+      if (Math.abs(deltaX) < 6) return;
+      dragLocked.current = Math.abs(deltaX) > deltaY;
+      if (!dragLocked.current) { dragStartX.current = null; return; }
+    }
+    e.preventDefault();
+    x.set(-idxRef.current * slotW + deltaX);
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (dragStartX.current === null) return;
+    const delta = e.clientX - dragStartX.current;
+    dragStartX.current = null;
+    dragLocked.current = false;
+    const threshold = slotW * 0.25;
+    if (delta < -threshold) go(1);
+    else if (delta > threshold) go(-1);
+    else animate(x, -idxRef.current * slotW, { duration: 0.35, ease: "easeOut" });
   };
 
   const loaded = products.length > 0;
@@ -196,12 +260,20 @@ export function SuggestedProducts() {
         <div className="relative">
           {loaded && (
             <button onClick={() => go(-1)} aria-label="Anterior"
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30">
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 hidden sm:flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30">
               <ChevronLeft className="w-5 h-5" />
             </button>
           )}
           {/* containerRef SIEMPRE en el DOM para medir offsetWidth */}
-          <div ref={containerRef} className="overflow-hidden">
+          <div
+            ref={containerRef}
+            className="overflow-hidden"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            style={{ touchAction: "pan-y" }}
+          >
             <motion.div style={{ x, willChange: "transform" }} className="flex items-stretch">
               {EXTENDED.map((product, i) => (
                 <div key={`${i}-${product.id}`} style={{ width: slotW || "25%", flexShrink: 0, padding: "0 8px" }}>
@@ -212,7 +284,7 @@ export function SuggestedProducts() {
           </div>
           {loaded && (
             <button onClick={() => go(1)} aria-label="Siguiente"
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30">
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 hidden sm:flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30">
               <ChevronRight className="w-5 h-5" />
             </button>
           )}

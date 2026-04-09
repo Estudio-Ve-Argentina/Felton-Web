@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Instagram, Mail } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
-import { Newsletter, FeltonLogo } from "@/components/shared";
+import { Newsletter, FeltonLogo, LanguageSwitcher } from "@/components/shared";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 export function Footer() {
@@ -163,12 +163,13 @@ export function Footer() {
             >
               {t("footer.privacy")}
             </Link>
-<Link
+            <Link
               href="/legal"
               className="text-xs font-light text-muted-foreground/60 transition-colors hover:text-primary"
             >
               {t("footer.legal")}
             </Link>
+            <LanguageSwitcher variant="minimal" />
           </div>
         </motion.div>
       </motion.div>

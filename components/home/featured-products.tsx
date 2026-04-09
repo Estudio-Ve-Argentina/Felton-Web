@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, animate, useMotionValue } from "framer-motion";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, ShoppingCart } from "lucide-react";
+import { useCart } from "@/lib/cart";
 import { useTranslation } from "@/lib/i18n";
 import { Section, SectionHeader } from "@/components/layout";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
@@ -18,6 +19,9 @@ export interface ProductItem {
   category: string;
   price: string;
   image: string;
+  variantId?: number;
+  rawPrice?: string;
+  stock?: number;
 }
 
 function tnToProductItem(p: any): ProductItem {
@@ -29,6 +33,9 @@ function tnToProductItem(p: any): ProductItem {
     category: p.categories?.[0]?.name?.es ?? "",
     price: variant ? formatPrice(variant.price) : "",
     image: getProductMainImage(p) ?? "",
+    variantId: variant?.id,
+    rawPrice: variant?.price ?? "",
+    stock: variant?.stock_management ? (variant?.stock ?? 0) : 999,
   };
 }
 
@@ -51,7 +58,26 @@ function ProductCard({ product }: ProductCardProps) {
   const [particles, setParticles] = useState<
     Array<{ id: number; style: React.CSSProperties }>
   >([]);
+  const [hovered, setHovered] = useState(false);
   const particlesCreated = useRef(false);
+  const { addToCart, openCart } = useCart();
+  const inStock = (product.stock ?? 999) > 0;
+
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!inStock || !product.variantId) return;
+    addToCart({
+      id: String(product.variantId),
+      variantId: product.variantId,
+      name: product.name,
+      price: product.rawPrice ?? "",
+      image: product.image,
+      category: product.category,
+      stock: product.stock ?? 999,
+    });
+    openCart();
+  }, [product, inStock, addToCart, openCart]);
 
   const createParticles = () => {
     if (particlesCreated.current) return;
@@ -88,6 +114,8 @@ function ProductCard({ product }: ProductCardProps) {
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
       className="product-card-wrapper"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <style jsx>{`
         .product-card-wrapper { position: relative; width: 100%; }
@@ -214,7 +242,7 @@ function ProductCard({ product }: ProductCardProps) {
           text-align: center; padding: 0 26px; z-index: 10;
           transition: all 2.2s cubic-bezier(0.23,1,0.32,1);
         }
-        .product-container:hover .product-info { transform: translateY(-46px); }
+        .product-container:hover .product-info { transform: translateY(0); }
         .product-brand {
           font-size: 10px; font-weight: 600; letter-spacing: 0.25em;
           text-transform: uppercase; color: rgba(212,175,55,0.65); margin-bottom: 14px;
@@ -237,22 +265,6 @@ function ProductCard({ product }: ProductCardProps) {
           text-shadow: 0 0 25px rgba(212,175,55,0.35), 0 0 10px rgba(255,235,150,0.2);
           transform: scale(1.05);
         }
-        .add-to-cart-btn {
-          position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%);
-          padding: 11px 28px;
-          background: linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.08) 100%);
-          border: 1px solid rgba(212,175,55,0.3); color: rgba(255,255,255,0.9);
-          font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
-          cursor: pointer; opacity: 0; transition: all 0.6s cubic-bezier(0.23,1,0.32,1);
-          z-index: 15; backdrop-filter: blur(10px); white-space: nowrap;
-        }
-        .product-container:hover .add-to-cart-btn { opacity: 1; bottom: 13px; }
-        .add-to-cart-btn:hover {
-          background: linear-gradient(135deg, rgba(212,175,55,0.25) 0%, rgba(212,175,55,0.15) 100%);
-          border-color: rgba(212,175,55,0.6); color: rgba(255,255,255,1);
-          transform: translateX(-50%) translateY(-2px);
-        }
-        .add-to-cart-btn:active { transform: translateX(-50%) translateY(0px); }
       `}</style>
 
       <Link href={`/products/${product.slug}`} className="block">
@@ -290,9 +302,40 @@ function ProductCard({ product }: ProductCardProps) {
             <h3 className="product-name">{product.name}</h3>
             <p className="product-price">{product.price}</p>
           </div>
-          <span className="add-to-cart-btn">Ver detalle</span>
         </div>
       </Link>
+
+      {/* Botón agregar — hermano del Link, z-index mayor, visible en hover */}
+      <button
+        onClick={handleAddToCart}
+        disabled={!inStock || !product.variantId}
+        style={{
+          position: "absolute",
+          bottom: hovered ? "13px" : "-60px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          opacity: hovered ? 1 : 0,
+          transition: "all 0.5s cubic-bezier(0.23,1,0.32,1)",
+          zIndex: 20,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "10px 24px",
+          background: "rgba(212,175,55,0.15)",
+          border: "1px solid rgba(212,175,55,0.4)",
+          color: "rgba(255,255,255,0.9)",
+          fontSize: "10px",
+          fontWeight: 600,
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          backdropFilter: "blur(10px)",
+          whiteSpace: "nowrap",
+          cursor: !inStock || !product.variantId ? "not-allowed" : "pointer",
+        }}
+      >
+        <ShoppingCart style={{ width: 14, height: 14 }} />
+        {inStock ? "Agregar al carrito" : "Sin stock"}
+      </button>
     </motion.div>
   );
 }
@@ -319,7 +362,7 @@ export function FeaturedProducts() {
     const calc = () => {
       if (!containerRef.current) return;
       const w = containerRef.current.offsetWidth;
-      setSlotW(window.innerWidth < 768 ? w / 1.2 : w / 3);
+      setSlotW(window.innerWidth < 768 ? w / 1.6 : w / 3);
     };
     calc();
     window.addEventListener("resize", calc);
@@ -348,6 +391,42 @@ export function FeaturedProducts() {
     busy.current = false;
   };
 
+  // ── Swipe / drag táctil ────────────────────────────────────────
+  const dragStartX = useRef<number | null>(null);
+  const dragLocked = useRef(false); // true = gesto horizontal confirmado
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (busy.current) return;
+    dragStartX.current = e.clientX;
+    dragLocked.current = false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (dragStartX.current === null || busy.current) return;
+    const deltaX = e.clientX - dragStartX.current;
+    const deltaY = Math.abs((e as any).movementY ?? 0);
+    // Confirmar gesto horizontal solo si supera 6px y es más ancho que alto
+    if (!dragLocked.current) {
+      if (Math.abs(deltaX) < 6) return;
+      dragLocked.current = Math.abs(deltaX) > deltaY;
+      if (!dragLocked.current) { dragStartX.current = null; return; }
+    }
+    e.preventDefault();
+    x.set(-idxRef.current * slotW + deltaX);
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (dragStartX.current === null) return;
+    const delta = e.clientX - dragStartX.current;
+    dragStartX.current = null;
+    dragLocked.current = false;
+    const threshold = slotW * 0.25;
+    if (delta < -threshold) go(1);
+    else if (delta > threshold) go(-1);
+    else animate(x, -idxRef.current * slotW, { duration: 0.35, ease: "easeOut" });
+  };
+
   const loaded = products.length > 0;
 
   return (
@@ -366,13 +445,21 @@ export function FeaturedProducts() {
           <button
             onClick={() => go(-1)}
             aria-label="Anterior"
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 hidden sm:flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         )}
         {/* containerRef SIEMPRE en el DOM para que offsetWidth se pueda medir */}
-        <div ref={containerRef} className="overflow-hidden">
+        <div
+          ref={containerRef}
+          className="overflow-hidden"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          style={{ touchAction: "pan-y" }}
+        >
           <motion.div style={{ x, willChange: "transform" }} className="flex">
             {EXTENDED.map((product, i) => (
               <div
@@ -388,7 +475,7 @@ export function FeaturedProducts() {
           <button
             onClick={() => go(1)}
             aria-label="Siguiente"
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 hidden sm:flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

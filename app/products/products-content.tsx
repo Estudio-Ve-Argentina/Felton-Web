@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, Suspense, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Search, ArrowRight } from "lucide-react";
+import { Search, ArrowRight, ShoppingCart } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import type { TiendaNubeProduct } from "@/lib/tiendanube";
 import { getProductMainImage, formatPrice, getProductStock } from "@/lib/tiendanube";
+import { useCart } from "@/lib/cart";
 
 const PARTICLES = [
   { left:  8.2, top:  4.1, duration: 4.2, delay: 0.3 },
@@ -93,6 +94,7 @@ function ProductCard({ product, index }: { product: TiendaNubeProduct; index: nu
   const slug = product.handle.es;
   const stock = getProductStock(product);
   const inStock = stock === null || stock > 0;
+  const { addToCart, openCart } = useCart();
 
   return (
     <motion.div
@@ -164,12 +166,87 @@ function ProductCard({ product, index }: { product: TiendaNubeProduct; index: nu
             <span className="ml-1 text-[10px] sm:text-xs text-red-400/70">Sin stock</span>
           )}
         </div>
-        <Link
-          href={`/products/${slug}`}
-          className="inline-flex items-center gap-1 border border-primary/30 px-2 sm:px-4 py-1 sm:py-2 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-foreground/70 hover:border-primary hover:text-primary transition-colors duration-200"
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            if (!inStock || !variant) return;
+            addToCart({
+              id: String(variant.id),
+              variantId: variant.id,
+              name: product.name.es,
+              price: variant.price,
+              image: image ?? "",
+              category,
+              stock: stock ?? 999,
+            });
+            openCart();
+          }}
+          disabled={!inStock}
+          className="inline-flex items-center gap-1.5 border border-primary/30 px-2 sm:px-3 py-1 sm:py-2 text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-foreground/70 hover:border-primary hover:text-primary transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Ver
-        </Link>
+          <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+          <span className="hidden sm:inline">Agregar</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+function CategoryFilter({
+  categories,
+  active,
+  onChange,
+}: {
+  categories: string[];
+  active: string;
+  onChange: (cat: string) => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    const idx = categories.indexOf(active);
+    const btn = btnRefs.current[idx];
+    if (btn && scrollRef.current) {
+      btn.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+    }
+  }, [active, categories]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.4 }}
+      className="relative"
+    >
+      {/* fade derecho — solo mobile */}
+      <div
+        className="sm:hidden absolute right-0 top-0 bottom-0 w-8 pointer-events-none z-10"
+        style={{ background: "linear-gradient(to right, transparent, rgba(0,0,0,0.85))" }}
+      />
+
+      {/* scroll horizontal en mobile, wrap en desktop */}
+      <div
+        ref={scrollRef}
+        className="flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-visible sm:justify-center px-1"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+      >
+        {categories.map((cat, i) => (
+          <button
+            key={cat}
+            ref={(el) => { btnRefs.current[i] = el; }}
+            type="button"
+            onClick={() => onChange(cat)}
+            style={{ minWidth: "calc((100vw - 2rem) / 3.7)" }}
+            className={`sm:min-w-0 flex-shrink-0 px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-200 ${
+              active === cat
+                ? "bg-primary text-black"
+                : "bg-transparent border border-primary/20 text-white/50 hover:border-primary/40 hover:text-white/70"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
     </motion.div>
   );
@@ -203,9 +280,37 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
 
   return (
     <>
-      {/* Hero */}
-      <div className="bg-background border-b border-primary/10">
-        <div className="max-w-3xl mx-auto px-6 lg:px-8 pt-16 pb-10 text-center">
+      {/* Hero + Filters */}
+      <div
+        className="relative pt-16 pb-10 overflow-hidden"
+        style={{
+          backgroundImage: 'url("/images/leather-texture.png")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "multiply",
+          backgroundColor: "rgba(0,0,0,0.96)",
+        }}
+      >
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: `linear-gradient(rgba(212,175,55,0.4) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(212,175,55,0.4) 1px, transparent 1px)`,
+            backgroundSize: "50px 50px",
+          }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 55%)",
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{ height: "80px", background: "linear-gradient(to bottom, transparent 0%, #000 100%)" }}
+        />
+
+        <div className="relative z-10 max-w-3xl mx-auto px-6 lg:px-8 text-center">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -237,50 +342,32 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-sm font-light text-muted-foreground mb-8"
+            className="text-sm font-light text-white/40 mb-8"
           >
             Accesorios de lujo para quienes reconocen la diferencia.
           </motion.p>
 
-          {/* Search */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="relative max-w-md mx-auto mb-6"
           >
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/50 pointer-events-none" />
             <input
               type="text"
               placeholder="Buscar producto..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-primary/40 bg-white/[0.06] pl-9 pr-4 py-3 text-sm font-light text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:bg-white/[0.10] focus:outline-none transition-all duration-200 sm:bg-transparent sm:border-0 sm:border-b sm:border-primary/30 sm:py-2.5 sm:focus:bg-transparent"
+              className="w-full bg-transparent border-b border-primary/30 pl-9 pr-4 py-2.5 text-sm font-light text-white placeholder:text-white/30 focus:border-primary focus:outline-none transition-colors duration-200"
             />
           </motion.div>
 
-          {/* Category filters */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-2"
-          >
-            {allCategories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-200 ${
-                  activeCategory === cat
-                    ? "bg-primary text-black"
-                    : "bg-transparent border border-primary/20 text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </motion.div>
+          <CategoryFilter
+            categories={allCategories}
+            active={activeCategory}
+            onChange={setActiveCategory}
+          />
         </div>
       </div>
 
