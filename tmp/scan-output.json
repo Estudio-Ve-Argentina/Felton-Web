@@ -1,0 +1,32 @@
+{
+  "urls": [
+    "/blog/posts/dfsa-c7171f84a0d8"
+  ],
+  "headlines": [
+    "dfsa",
+    "dfsa"
+  ],
+  "dates": [
+    "2026-04-09T03:15:53.870Z",
+    "2026-04-09T03:15:53.870Z"
+  ],
+  "authors": [
+    "Agustin Montoro",
+    "Agustin Montoro"
+  ],
+  "images": [],
+  "ids": [
+    "https://felton2.mitiendanube.com/blog/",
+    "https://felton2.mitiendanube.com/blog/posts/dfsa-c7171f84a0d8",
+    "https://felton2.mitiendanube.com/blog/posts/dfsa-c7171f84a0d8"
+  ]
+}
+
+POST DATA:
+{
+  "headline": "dfsa",
+  "description": "dsfaadsfdsdfsadfs",
+  "datePublished": "2026-04-09T03:15:53.870Z",
+  "author": "Agustin Montoro",
+  "body": null
+}

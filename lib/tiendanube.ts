@@ -83,6 +83,10 @@ async function tiendaNubeFetch<T>(
   });
 
   if (!response.ok) {
+    if (response.status === 404) {
+      // If endpoint doesn't exist, return empty data structure for the expected type
+      return (endpoint.includes("blog_posts") ? [] : {}) as T;
+    }
     const error = await response.text();
     throw new Error(`Tienda Nube API Error: ${response.status} - ${error}`);
   }
@@ -166,6 +170,57 @@ export interface TiendaNubeCategory {
 
 export async function getCategories(): Promise<TiendaNubeCategory[]> {
   return tiendaNubeFetch<TiendaNubeCategory[]>("/categories");
+}
+
+// Blog Posts
+export interface TiendaNubeBlogPost {
+  id: number;
+  title: { es: string; en?: string };
+  content: { es: string; en?: string };
+  excerpt?: { es: string; en?: string };
+  handle: { es: string; en?: string };
+  status: "published" | "draft";
+  image?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getBlogPosts(params?: {
+  page?: number;
+  per_page?: number;
+  status?: "published" | "draft";
+}): Promise<TiendaNubeBlogPost[]> {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", String(params.page));
+  if (params?.per_page) searchParams.set("per_page", String(params.per_page));
+  if (params?.status) searchParams.set("status", params.status);
+  
+  const query = searchParams.toString();
+  return tiendaNubeFetch<TiendaNubeBlogPost[]>(`/blog_posts${query ? `?${query}` : ""}`);
+}
+
+export async function getBlogPost(id: number): Promise<TiendaNubeBlogPost> {
+  return tiendaNubeFetch<TiendaNubeBlogPost>(`/blog_posts/${id}`);
+}
+
+export async function createBlogPost(data: Partial<TiendaNubeBlogPost>): Promise<TiendaNubeBlogPost> {
+  return tiendaNubeFetch<TiendaNubeBlogPost>("/blog_posts", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateBlogPost(id: number, data: Partial<TiendaNubeBlogPost>): Promise<TiendaNubeBlogPost> {
+  return tiendaNubeFetch<TiendaNubeBlogPost>(`/blog_posts/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteBlogPost(id: number): Promise<void> {
+  return tiendaNubeFetch<void>(`/blog_posts/${id}`, {
+    method: "DELETE",
+  });
 }
 
 // Checkout URL generator
