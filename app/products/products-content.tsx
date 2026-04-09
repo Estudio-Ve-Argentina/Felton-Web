@@ -203,37 +203,9 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
 
   return (
     <>
-      {/* Hero + Filters */}
-      <div
-        className="relative pt-16 pb-10 overflow-hidden"
-        style={{
-          backgroundImage: 'url("/images/leather-texture.png")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundBlendMode: "multiply",
-          backgroundColor: "rgba(0,0,0,0.96)",
-        }}
-      >
-        <div
-          className="absolute inset-0 opacity-[0.05] pointer-events-none"
-          style={{
-            backgroundImage: `linear-gradient(rgba(212,175,55,0.4) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(212,175,55,0.4) 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 55%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ height: "80px", background: "linear-gradient(to bottom, transparent 0%, #000 100%)" }}
-        />
-
-        <div className="relative z-10 max-w-3xl mx-auto px-6 lg:px-8 text-center">
+      {/* Hero */}
+      <div className="bg-background border-b border-primary/10">
+        <div className="max-w-3xl mx-auto px-6 lg:px-8 pt-16 pb-10 text-center">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -265,11 +237,12 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-sm font-light text-white/40 mb-8"
+            className="text-sm font-light text-muted-foreground mb-8"
           >
             Accesorios de lujo para quienes reconocen la diferencia.
           </motion.p>
 
+          {/* Search */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -282,10 +255,11 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
               placeholder="Buscar producto..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent border-b border-primary/30 pl-9 pr-4 py-2.5 text-sm font-light text-white placeholder:text-white/30 focus:border-primary focus:outline-none transition-colors duration-200"
+              className="w-full bg-transparent border-b border-primary/30 pl-9 pr-4 py-2.5 text-sm font-light text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none transition-colors duration-200"
             />
           </motion.div>
 
+          {/* Category filters */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -300,7 +274,7 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
                 className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-200 ${
                   activeCategory === cat
                     ? "bg-primary text-black"
-                    : "bg-transparent border border-primary/20 text-white/50 hover:border-primary/40 hover:text-white/70"
+                    : "bg-transparent border border-primary/20 text-muted-foreground hover:border-primary/40 hover:text-foreground"
                 }`}
               >
                 {cat}
@@ -311,7 +285,16 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
       </div>
 
       {/* Product Grid */}
-      <div className="relative bg-black overflow-hidden">
+      <div
+        className="relative overflow-hidden"
+        style={{
+          backgroundImage: 'url("/images/leather-texture.png")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "multiply",
+          backgroundColor: "rgba(0,0,0,0.96)",
+        }}
+      >
         {PARTICLES.map((p, i) => (
           <motion.div
             key={i}

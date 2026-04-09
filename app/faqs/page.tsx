@@ -226,14 +226,8 @@ export default function FAQsPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero Section */}
-        <Section size="large" variant="textured" className="relative">
-          <div className="absolute inset-0 bg-background/90" />
-          <motion.div 
-            className="relative z-10"
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-          >
+        <div className="bg-background border-b border-primary/10">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-14 text-center">
             <SectionHeader
               eyebrow={locale === "es" ? "Soporte" : "Support"}
               title={locale === "es" ? "Preguntas Frecuentes" : "Frequently Asked Questions"}
@@ -242,25 +236,28 @@ export default function FAQsPage() {
                 : "Answers to common questions about ordering, shipping, care, and everything else you might want to know about Felton products."
               }
             />
-          </motion.div>
-        </Section>
+          </div>
+        </div>
 
         {/* Quick Navigation */}
-        <Section size="small" className="border-b border-primary/10">
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <a
-                key={category.id}
-                href={`#${category.id}`}
-                className="text-sm font-light text-muted-foreground transition-colors hover:text-primary border-b border-transparent hover:border-primary pb-1"
-              >
-                {category.name}
-              </a>
-            ))}
+        <div className="bg-secondary/10 border-b border-primary/10">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
+            <div className="flex flex-wrap justify-center gap-4">
+              {categories.map((category) => (
+                <a
+                  key={category.id}
+                  href={`#${category.id}`}
+                  className="text-sm font-light text-muted-foreground transition-colors hover:text-primary border-b border-transparent hover:border-primary pb-1"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
           </div>
-        </Section>
+        </div>
 
         {/* FAQ Categories */}
+        <div className="bg-secondary/10">
         <Section size="large">
           <motion.div 
             className="space-y-16"
@@ -293,6 +290,7 @@ export default function FAQsPage() {
             ))}
           </motion.div>
         </Section>
+        </div>
 
         {/* Newsletter */}
         <Newsletter variant="elegant" />

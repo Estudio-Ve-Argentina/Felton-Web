@@ -2,157 +2,200 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { ArrowLeft } from "lucide-react"
-import { Header, Footer, Section, SectionHeader } from "@/components/layout"
-import { useTranslation } from "@/lib/i18n"
-import { fadeInUp, luxuryTransition } from "@/lib/animations"
+import { ArrowRight } from "lucide-react"
+import { Header, Footer, SectionHeader } from "@/components/layout"
+import { fadeInUp, staggerContainer, luxuryTransition } from "@/lib/animations"
+
+const sections = [
+  {
+    id: "recopilacion",
+    title: "1. Información que Recopilamos",
+    content: [
+      "Recopilamos la información que nos brindás directamente, por ejemplo cuando realizás una compra o nos contactás. Esto incluye nombre, dirección de email, dirección de envío y datos de pago.",
+      "También recopilamos datos técnicos de uso del sitio de forma automática, como dirección IP, tipo de navegador, páginas visitadas y tiempo de permanencia, a través de cookies y herramientas de analítica.",
+    ],
+  },
+  {
+    id: "uso",
+    title: "2. Cómo Usamos tu Información",
+    content: ["Utilizamos la información recopilada para los siguientes fines:"],
+    list: [
+      "Procesar y despachar tus pedidos.",
+      "Comunicarnos sobre tu cuenta o transacciones.",
+      "Brindar soporte al cliente.",
+      "Enviar comunicaciones de marketing (solo con tu consentimiento).",
+      "Mejorar nuestros productos, servicios y experiencia del sitio.",
+      "Detectar y prevenir fraudes o usos indebidos.",
+    ],
+  },
+  {
+    id: "compartir",
+    title: "3. Compartir Información",
+    content: [
+      "No vendemos ni compartimos tu información personal con terceros sin tu consentimiento.",
+      "Podemos compartir tus datos únicamente con proveedores que nos ayudan a operar el sitio, como plataformas de pago (ej. MercadoPago) y empresas logísticas, exclusivamente para los fines indicados en esta política.",
+      "En caso de requerimiento legal, podemos divulgar información cuando así lo exija la ley o una autoridad competente.",
+    ],
+  },
+  {
+    id: "seguridad",
+    title: "4. Seguridad de los Datos",
+    content: [
+      "Implementamos medidas técnicas y organizativas razonables para proteger tu información contra accesos no autorizados, alteración, divulgación o destrucción.",
+      "No almacenamos datos completos de tarjetas de crédito en nuestros servidores. Todas las transacciones se procesan a través de plataformas con cumplimiento PCI DSS.",
+    ],
+  },
+  {
+    id: "cookies",
+    title: "5. Cookies",
+    content: [
+      "El sitio utiliza cookies para mejorar la experiencia de navegación, recordar preferencias y obtener analíticas de uso.",
+      "Podés configurar tu navegador para rechazar cookies o recibir una notificación antes de aceptarlas. Ten en cuenta que deshabilitar cookies puede afectar algunas funcionalidades del sitio.",
+      "El uso continuado del sitio implica la aceptación del uso de cookies conforme a esta política.",
+    ],
+  },
+  {
+    id: "derechos",
+    title: "6. Tus Derechos",
+    content: ["Como usuario, tenés derecho a:"],
+    list: [
+      "Acceder a los datos personales que tenemos sobre vos.",
+      "Solicitar la corrección de datos incorrectos o desactualizados.",
+      "Solicitar la eliminación de tus datos personales.",
+      "Retirar el consentimiento para comunicaciones de marketing en cualquier momento.",
+      "Configurar tus preferencias de cookies desde tu navegador.",
+    ],
+  },
+  {
+    id: "retencion",
+    title: "7. Retención de Datos",
+    content: [
+      "Conservamos tus datos personales durante el tiempo necesario para cumplir con los fines descritos en esta política, o según lo exija la legislación aplicable.",
+      "Una vez que los datos ya no sean necesarios, los eliminamos o los anonimizamos de forma segura.",
+    ],
+  },
+  {
+    id: "modificaciones",
+    title: "8. Modificaciones a esta Política",
+    content: [
+      "Felton se reserva el derecho de actualizar esta Política de Privacidad en cualquier momento. Los cambios entrarán en vigencia desde su publicación en el sitio.",
+      "Recomendamos revisar esta página periódicamente. Si los cambios son significativos, lo comunicaremos de forma destacada.",
+    ],
+  },
+  {
+    id: "contacto",
+    title: "9. Contacto",
+    content: [
+      "Si tenés dudas, consultas o solicitudes relacionadas con esta política o con el manejo de tus datos personales, podés contactarnos:",
+    ],
+    contact: true,
+  },
+]
 
 export default function PrivacyPage() {
-  const { t, locale } = useTranslation()
-
-  const privacyContent = {
-    es: {
-      title: "Politica de Privacidad",
-      lastUpdated: "Ultima actualizacion: 15 de Enero, 2026",
-      sections: [
-        {
-          title: "Introduccion",
-          content: `En Felton, nos comprometemos a proteger su privacidad y sus datos personales. Esta Politica de Privacidad describe como recopilamos, utilizamos y protegemos la informacion que nos proporciona cuando utiliza nuestro sitio web.`
-        },
-        {
-          title: "Informacion que Recopilamos",
-          content: `Recopilamos informacion que usted nos proporciona directamente, como su nombre, direccion de correo electronico, direccion de envio y facturacion, numero de telefono e informacion de pago. Tambien recopilamos automaticamente cierta informacion cuando visita nuestro sitio, incluyendo su direccion IP, tipo de navegador, paginas visitadas y tiempo de permanencia.`
-        },
-        {
-          title: "Uso de la Informacion",
-          content: `Utilizamos la informacion recopilada para: procesar y enviar sus pedidos, comunicarnos con usted sobre su cuenta o pedidos, enviarle comunicaciones de marketing (con su consentimiento), mejorar nuestro sitio web y servicios, y cumplir con obligaciones legales.`
-        },
-        {
-          title: "Cookies y Tecnologias de Seguimiento",
-          content: `Utilizamos cookies y tecnologias similares para mejorar su experiencia en nuestro sitio, analizar el trafico y personalizar el contenido. Puede configurar su navegador para rechazar cookies, aunque esto puede afectar algunas funcionalidades del sitio.`
-        },
-        {
-          title: "Comparticion de Datos",
-          content: `No vendemos ni alquilamos su informacion personal a terceros. Podemos compartir su informacion con proveedores de servicios que nos ayudan a operar nuestro negocio (procesadores de pago, empresas de logistica), siempre bajo estrictos acuerdos de confidencialidad.`
-        },
-        {
-          title: "Seguridad de los Datos",
-          content: `Implementamos medidas de seguridad tecnicas y organizativas para proteger su informacion contra acceso no autorizado, alteracion, divulgacion o destruccion. Utilizamos encriptacion SSL para todas las transacciones.`
-        },
-        {
-          title: "Sus Derechos",
-          content: `Usted tiene derecho a acceder, corregir, actualizar o solicitar la eliminacion de su informacion personal. Tambien puede oponerse al procesamiento de sus datos u optar por no recibir comunicaciones de marketing en cualquier momento.`
-        },
-        {
-          title: "Retencion de Datos",
-          content: `Conservamos su informacion personal solo durante el tiempo necesario para los fines para los que fue recopilada, o segun lo requieran las obligaciones legales aplicables.`
-        },
-        {
-          title: "Cambios a esta Politica",
-          content: `Podemos actualizar esta Politica de Privacidad periodicamente. Le notificaremos sobre cambios significativos publicando la nueva politica en nuestro sitio web y, cuando sea apropiado, por correo electronico.`
-        },
-        {
-          title: "Contacto",
-          content: `Si tiene preguntas sobre esta Politica de Privacidad o desea ejercer sus derechos, contactenos en privacy@felton.ar.`
-        }
-      ]
-    },
-    en: {
-      title: "Privacy Policy",
-      lastUpdated: "Last updated: January 15, 2026",
-      sections: [
-        {
-          title: "Introduction",
-          content: `At Felton, we are committed to protecting your privacy and personal data. This Privacy Policy describes how we collect, use, and protect the information you provide to us when you use our website.`
-        },
-        {
-          title: "Information We Collect",
-          content: `We collect information that you provide directly to us, such as your name, email address, shipping and billing address, phone number, and payment information. We also automatically collect certain information when you visit our site, including your IP address, browser type, pages visited, and time spent.`
-        },
-        {
-          title: "Use of Information",
-          content: `We use the information collected to: process and ship your orders, communicate with you about your account or orders, send you marketing communications (with your consent), improve our website and services, and comply with legal obligations.`
-        },
-        {
-          title: "Cookies and Tracking Technologies",
-          content: `We use cookies and similar technologies to enhance your experience on our site, analyze traffic, and personalize content. You can configure your browser to reject cookies, although this may affect some site functionality.`
-        },
-        {
-          title: "Data Sharing",
-          content: `We do not sell or rent your personal information to third parties. We may share your information with service providers who help us operate our business (payment processors, logistics companies), always under strict confidentiality agreements.`
-        },
-        {
-          title: "Data Security",
-          content: `We implement technical and organizational security measures to protect your information against unauthorized access, alteration, disclosure, or destruction. We use SSL encryption for all transactions.`
-        },
-        {
-          title: "Your Rights",
-          content: `You have the right to access, correct, update, or request deletion of your personal information. You can also object to the processing of your data or opt out of receiving marketing communications at any time.`
-        },
-        {
-          title: "Data Retention",
-          content: `We retain your personal information only for as long as necessary for the purposes for which it was collected, or as required by applicable legal obligations.`
-        },
-        {
-          title: "Changes to this Policy",
-          content: `We may update this Privacy Policy periodically. We will notify you of significant changes by posting the new policy on our website and, where appropriate, by email.`
-        },
-        {
-          title: "Contact",
-          content: `If you have questions about this Privacy Policy or wish to exercise your rights, contact us at privacy@felton.ar.`
-        }
-      ]
-    }
-  }
-
-  const content = locale === "es" ? privacyContent.es : privacyContent.en
-
   return (
     <>
       <Header />
       <main className="min-h-screen pt-20">
-        <Section variant="dark" size="default">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={luxuryTransition}
-          >
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              {t("common.back")}
-            </Link>
-          </motion.div>
-          
-          <SectionHeader
-            title={content.title}
-            description={content.lastUpdated}
-            align="left"
-          />
-        </Section>
-
-        <Section variant="default" size="large">
-          <div className="max-w-3xl">
-            {content.sections.map((section, index) => (
-              <motion.div
-                key={section.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ ...luxuryTransition, delay: index * 0.05 }}
-                className="mb-10"
-              >
-                <h2 className="font-serif text-xl font-light text-foreground mb-4">
-                  {section.title}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {section.content}
-                </p>
-              </motion.div>
-            ))}
+        {/* Hero */}
+        <div className="bg-background border-b border-primary/10">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-14 text-center">
+            <SectionHeader
+              eyebrow="Legal"
+              title="Política de Privacidad"
+              description="Última actualización: 09 de abril de 2026"
+            />
           </div>
-        </Section>
+        </div>
+
+        {/* Content */}
+        <div className="bg-secondary/10">
+          <div className="max-w-4xl mx-auto px-6 lg:px-8 py-20">
+            <motion.div
+              className="space-y-14"
+              variants={staggerContainer}
+              initial="initial"
+              animate="animate"
+            >
+              {sections.map((section) => (
+                <motion.section
+                  key={section.id}
+                  id={section.id}
+                  variants={fadeInUp}
+                  transition={{ ...luxuryTransition }}
+                  className="scroll-mt-28"
+                >
+                  <h2 className="font-serif text-2xl font-light tracking-tight text-foreground lg:text-3xl mb-5 pb-3 border-b border-primary/15">
+                    {section.title}
+                  </h2>
+                  <div className="space-y-4">
+                    {section.content.map((paragraph, i) => (
+                      <p key={i} className="text-base font-light leading-relaxed text-muted-foreground">
+                        {paragraph}
+                      </p>
+                    ))}
+                    {"list" in section && section.list && (
+                      <ul className="space-y-2 mt-2 ml-4">
+                        {section.list.map((item, i) => (
+                          <li key={i} className="flex items-start gap-3 text-base font-light text-muted-foreground">
+                            <span className="mt-2.5 w-1 h-1 rounded-full bg-primary/50 flex-shrink-0" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {"contact" in section && section.contact && (
+                      <div className="mt-6 space-y-3">
+                        <div className="flex items-center gap-3 text-base font-light text-muted-foreground">
+                          <span className="text-primary/60">Email</span>
+                          <a href="mailto:Felton26.01@gmail.com" className="hover:text-primary transition-colors">
+                            Felton26.01@gmail.com
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-3 text-base font-light text-muted-foreground">
+                          <span className="text-primary/60">Instagram</span>
+                          <a
+                            href="https://www.instagram.com/felton.ar/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-primary transition-colors"
+                          >
+                            @felton.ar
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-3 text-base font-light text-muted-foreground">
+                          <span className="text-primary/60">FAQ</span>
+                          <Link href="/faqs" className="hover:text-primary transition-colors">
+                            Preguntas Frecuentes
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.section>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="border-t border-primary/10 bg-background">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary/70 mb-4">
+              ¿Tenés dudas?
+            </p>
+            <h3 className="font-serif text-2xl font-light tracking-tight text-foreground lg:text-3xl mb-8">
+              Estamos para ayudarte
+            </h3>
+            <Link
+              href="/contact"
+              className="group inline-flex items-center gap-2 border border-primary bg-primary px-8 py-3 text-sm font-medium tracking-wide text-primary-foreground transition-all hover:bg-primary/90"
+            >
+              Contactanos
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
       </main>
       <Footer />
     </>
