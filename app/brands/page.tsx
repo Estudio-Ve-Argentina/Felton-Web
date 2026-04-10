@@ -155,7 +155,7 @@ export default function BrandsPage() {
                     transition={{ duration: 0.6, delay: index * 0.08 }}
                   >
                     <Link
-                      href={`/brands/${brand.slug}`}
+                      href="/products"
                       className="group relative flex flex-col overflow-hidden border border-primary/15 hover:border-primary/45 transition-all duration-300"
                       style={{
                         backgroundImage: 'url("/images/leather-texture.png")',

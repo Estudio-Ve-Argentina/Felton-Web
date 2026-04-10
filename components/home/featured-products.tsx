@@ -52,6 +52,7 @@ function useFeaturedProducts(): ProductItem[] {
 
 interface ProductCardProps {
   product: ProductItem;
+  idx: number;
   isDragging: React.RefObject<boolean>;
 }
 
@@ -63,9 +64,6 @@ function ProductCard({ product, isDragging }: ProductCardProps) {
   const particlesCreated = useRef(false);
   const { addToCart, openCart } = useCart();
   const inStock = (product.stock ?? 999) > 0;
-
-  const canHover = () =>
-    !isDragging.current && !window.matchMedia("(hover: none)").matches;
 
   const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,7 +83,6 @@ function ProductCard({ product, isDragging }: ProductCardProps) {
 
   const createParticles = () => {
     if (particlesCreated.current) return;
-    // Skip on mobile (no hover possible)
     if (window.matchMedia("(hover: none)").matches) return;
     particlesCreated.current = true;
     const newParticles = Array.from({ length: 40 }).map((_, i) => {
@@ -117,25 +114,25 @@ function ProductCard({ product, isDragging }: ProductCardProps) {
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="product-card-wrapper"
-      onMouseEnter={() => { if (canHover()) setHovered(true); }}
-      onMouseLeave={() => { if (!window.matchMedia("(hover: none)").matches) setHovered(false); }}
+      className="product-card-wrapper relative"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <style jsx>{`
         .product-card-wrapper { position: relative; width: 100%; }
 
         .product-container {
-          position: relative; cursor: pointer; width: 100%; height: 552px;
-          display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+          position: relative; cursor: pointer; width: 100%; height: 500px;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
           background-image: url("/images/leather-texture.png");
           background-size: cover; background-position: center;
           background-blend-mode: multiply; background-color: rgba(11, 17, 32, 0.85);
           border: 1px solid rgba(212, 175, 55, 0.12);
           transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
-          overflow: hidden; padding: 34px 26px 26px 26px;
+          overflow: hidden; padding: 20px;
         }
         @media (max-width: 768px) {
-          .product-container { height: 468px; padding: 26px 17px 17px 17px; }
+          .product-container { height: 420px; padding: 15px; }
         }
         .product-container:hover {
           border-color: rgba(212, 175, 55, 0.35);
@@ -178,43 +175,45 @@ function ProductCard({ product, isDragging }: ProductCardProps) {
         }
         .product-container:hover .product-rim-light { opacity: 0.3; }
         .product {
-          position: relative; width: 204px; height: 204px; margin-top: 102px; z-index: 5;
-          transform: translateY(34px);
+          position: relative; width: 240px; height: 240px; z-index: 5;
+          transform: translateY(10px);
           transition: transform 3.5s cubic-bezier(0.19,1,0.22,1), scale 3.5s cubic-bezier(0.19,1,0.22,1);
+          display: flex; align-items: center; justify-content: center;
         }
-        @media (max-width: 768px) { .product { width: 170px; height: 170px; margin-top: 77px; transform: translateY(26px); } }
+        @media (max-width: 768px) { .product { width: 180px; height: 180px; transform: translateY(5px); } }
         .product-img {
           filter: brightness(0.6) contrast(1.1) saturate(0.85);
           transition: filter 3.5s cubic-bezier(0.19,1,0.22,1);
+          object-fit: contain;
         }
-        .product-container:hover .product { transform: translateY(-10px); scale: 1.04; }
+        .product-container:hover .product { transform: translateY(-15px); scale: 1.08; }
         .product-container:hover .product-img {
-          filter: brightness(1.45) contrast(1.3) saturate(1.2)
-            drop-shadow(0 25px 50px rgba(212,175,55,0.45))
-            drop-shadow(0 10px 25px rgba(255,235,150,0.3));
+          filter: brightness(1.35) contrast(1.2) saturate(1.15)
+            drop-shadow(0 20px 40px rgba(212,175,55,0.4))
+            drop-shadow(0 8px 20px rgba(255,235,150,0.25));
         }
         .product-shadow-main {
-          position: absolute; bottom: 204px; left: 50%; transform: translateX(-50%);
-          width: 238px; height: 60px;
+          position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%);
+          width: 240px; height: 50px;
           background: radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 90%);
           opacity: 0.9; transition: all 1.5s cubic-bezier(0.25,0.46,0.45,0.94) 0.4s;
-          filter: blur(20px); z-index: 3;
+          filter: blur(15px); z-index: 3;
         }
-        .product-container:hover .product-shadow-main { opacity: 0.45; width: 204px; height: 47px; bottom: 208px; filter: blur(28px); }
+        .product-container:hover .product-shadow-main { opacity: 0.45; width: 200px; bottom: 170px; filter: blur(25px); }
         .product-shadow-soft {
-          position: absolute; bottom: 196px; left: 50%; transform: translateX(-50%);
-          width: 323px; height: 77px;
+          position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%);
+          width: 300px; height: 60px;
           background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.12) 60%, transparent 85%);
           opacity: 0.7; transition: all 1.5s cubic-bezier(0.25,0.46,0.45,0.94) 0.35s;
-          filter: blur(35px); z-index: 2;
+          filter: blur(30px); z-index: 2;
         }
-        .product-container:hover .product-shadow-soft { opacity: 0.35; width: 289px; bottom: 200px; filter: blur(42px); }
+        .product-container:hover .product-shadow-soft { opacity: 0.35; width: 260px; bottom: 160px; filter: blur(40px); }
         .floor-reflection {
-          position: absolute; bottom: 179px; left: 50%; transform: translateX(-50%);
-          width: 75%; height: 102px;
-          background: radial-gradient(ellipse at center, rgba(212,175,55,0.42) 0%, rgba(212,175,55,0.04) 65%, transparent 80%);
+          position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%);
+          width: 70%; height: 80px;
+          background: radial-gradient(ellipse at center, rgba(212,175,55,0.35) 0%, rgba(212,175,55,0.03) 65%, transparent 80%);
           opacity: 0; transition: opacity 1.6s cubic-bezier(0.25,0.46,0.45,0.94) 0.5s;
-          filter: blur(35px); z-index: 1;
+          filter: blur(30px); z-index: 1;
         }
         .product-container:hover .floor-reflection { opacity: 1; }
         .particles-container {
@@ -242,32 +241,25 @@ function ProductCard({ product, isDragging }: ProductCardProps) {
         }
         .product-container:hover .ambient-glow { opacity: 1; }
         .product-info {
-          position: absolute; bottom: 17px; left: 0; right: 0;
-          text-align: center; padding: 0 26px; z-index: 10;
-          transition: all 2.2s cubic-bezier(0.23,1,0.32,1);
+          position: absolute; bottom: 25px; left: 0; right: 0;
+          text-align: center; padding: 0 20px; z-index: 10;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
-        .product-container:hover .product-info { transform: translateY(0); }
         .product-brand {
-          font-size: 10px; font-weight: 600; letter-spacing: 0.25em;
-          text-transform: uppercase; color: rgba(212,175,55,0.65); margin-bottom: 14px;
-          transition: all 2s cubic-bezier(0.23,1,0.32,1);
+          font-size: 9px; font-weight: 700; letter-spacing: 0.3em;
+          text-transform: uppercase; color: rgba(212,175,55,0.7); margin-bottom: 8px;
         }
-        .product-container:hover .product-brand { color: rgba(255,215,100,1); letter-spacing: 0.3em; text-shadow: 0 0 15px rgba(212,175,55,0.4); }
         .product-name {
-          font-family: var(--font-serif, serif); font-size: 20px; font-weight: 300;
-          color: rgba(255,255,255,0.88); margin-bottom: 10px; line-height: 1.3;
-          transition: all 2s cubic-bezier(0.23,1,0.32,1); padding: 0 16px;
+          font-family: var(--font-serif, serif); font-size: 18px; font-weight: 300;
+          color: white; margin-bottom: 6px; line-height: 1.2;
         }
-        .product-container:hover .product-name { color: rgba(255,255,255,1); text-shadow: 0 2px 20px rgba(0,0,0,0.3); }
         .product-price {
-          font-size: 27px; font-weight: 600; color: rgba(212,175,55,0.92);
-          letter-spacing: 0.03em; transition: all 2s cubic-bezier(0.23,1,0.32,1);
+          font-size: 24px; font-weight: 600; color: rgba(212,175,55,1);
+          letter-spacing: 0.02em;
         }
-        @media (max-width: 768px) { .product-price { font-size: 24px; } }
-        .product-container:hover .product-price {
-          color: rgba(255,225,120,1);
-          text-shadow: 0 0 25px rgba(212,175,55,0.35), 0 0 10px rgba(255,235,150,0.2);
-          transform: scale(1.05);
+        @media (max-width: 768px) {
+          .product-name { font-size: 16px; }
+          .product-price { font-size: 20px; }
         }
       `}</style>
 
@@ -293,15 +285,15 @@ function ProductCard({ product, isDragging }: ProductCardProps) {
               <Image
                 src={product.image}
                 alt={product.name}
-                width={204}
-                height={204}
+                width={240}
+                height={240}
                 className="product-img"
               />
             ) : (
-              <div style={{ width: 204, height: 204, display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.1, fontSize: 80, fontFamily: "serif" }}>F</div>
+              <div style={{ width: 240, height: 240, display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.1, fontSize: 80, fontFamily: "serif" }}>F</div>
             )}
           </div>
-          <div className="product-info">
+          <div className={`product-info transition-all duration-500 ${hovered ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
             <p className="product-brand">{product.category}</p>
             <h3 className="product-name">{product.name}</h3>
             <p className="product-price">{product.price}</p>
@@ -309,61 +301,39 @@ function ProductCard({ product, isDragging }: ProductCardProps) {
         </div>
       </Link>
 
-      {/* Botón agregar — hermano del Link, z-index mayor, visible en hover */}
-      <button
-        onClick={handleAddToCart}
-        disabled={!inStock || !product.variantId}
-        style={{
-          position: "absolute",
-          bottom: hovered ? "13px" : "-60px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          opacity: hovered ? 1 : 0,
-          transition: "all 0.5s cubic-bezier(0.23,1,0.32,1)",
-          zIndex: 20,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          padding: "10px 24px",
-          background: "rgba(212,175,55,0.15)",
-          border: "1px solid rgba(212,175,55,0.4)",
-          color: "rgba(255,255,255,0.9)",
-          fontSize: "10px",
-          fontWeight: 600,
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          backdropFilter: "blur(10px)",
-          whiteSpace: "nowrap",
-          cursor: !inStock || !product.variantId ? "not-allowed" : "pointer",
-        }}
+      <div 
+        className={`absolute bottom-0 left-0 right-0 z-30 transition-all duration-500 pointer-events-none ${hovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
       >
-        <ShoppingCart style={{ width: 14, height: 14 }} />
-        {inStock ? "Agregar al carrito" : "Sin stock"}
-      </button>
+        <button
+          onClick={handleAddToCart}
+          disabled={!inStock || !product.variantId}
+          className="pointer-events-auto w-full flex items-center justify-center gap-2.5 py-5 bg-primary text-black font-bold text-[11px] uppercase tracking-[0.2em] shadow-[0_-10px_40px_rgba(0,0,0,0.4)] transition-all duration-300 hover:bg-white active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <ShoppingCart className="w-4 h-4" />
+          {inStock ? "Comprar ahora" : "Sin stock"}
+        </button>
+      </div>
     </motion.div>
   );
 }
 
-// Cantidad fija del JSON — no depende del fetch async
-const FEATURED_COUNT = featuredIds.featured.length; // 6
+const FEATURED_COUNT = featuredIds.featured.length;
 
 export function FeaturedProducts() {
   const { t } = useTranslation();
   const products = useFeaturedProducts();
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
-  const idxRef = useRef(FEATURED_COUNT); // arranca en la copia del medio
+  const idxRef = useRef(FEATURED_COUNT);
   const busy = useRef(false);
   const isDragging = useRef(false);
   const queuedDir = useRef<1 | -1 | null>(null);
   const [slotW, setSlotW] = useState(0);
 
-  // Triplicar productos (o placeholders vacíos) para el loop infinito
   const EXTENDED = products.length > 0
     ? [...products, ...products, ...products]
     : Array.from({ length: FEATURED_COUNT * 3 }, (_, i) => ({ id: String(i), slug: "", name: "", category: "", price: "", image: "" }));
 
-  // Calcular ancho de slot — no depende de que lleguen los productos
   useEffect(() => {
     const calc = () => {
       if (!containerRef.current) return;
@@ -375,13 +345,12 @@ export function FeaturedProducts() {
     return () => window.removeEventListener("resize", calc);
   }, []);
 
-  // Posicionar en la copia del medio apenas slotW esté listo
   useEffect(() => {
     if (slotW > 0) {
       idxRef.current = FEATURED_COUNT;
       x.set(-FEATURED_COUNT * slotW);
     }
-  }, [slotW]); // solo slotW — FEATURED_COUNT es constante
+  }, [slotW]);
 
   const go = async (dir: 1 | -1) => {
     if (slotW === 0) return;
@@ -391,12 +360,14 @@ export function FeaturedProducts() {
     const step = window.innerWidth < 768 ? 1 : 3;
     const next = idxRef.current + dir * step;
     await animate(x, -next * slotW, { duration: 0.45, ease: [0.19, 1, 0.22, 1] });
+    
     let settled = next;
     if (next >= FEATURED_COUNT * 2) settled = next - FEATURED_COUNT;
     else if (next < FEATURED_COUNT) settled = next + FEATURED_COUNT;
     idxRef.current = settled;
     if (settled !== next) x.set(-settled * slotW);
     busy.current = false;
+    
     if (queuedDir.current !== null) {
       const queued = queuedDir.current;
       queuedDir.current = null;
@@ -404,11 +375,12 @@ export function FeaturedProducts() {
     }
   };
 
-  // ── Swipe / drag táctil ────────────────────────────────────────
   const dragStartX = useRef<number | null>(null);
-  const dragLocked = useRef(false); // true = gesto horizontal confirmado
+  const dragLocked = useRef(false);
 
   const onPointerDown = (e: React.PointerEvent) => {
+    if (window.matchMedia("(pointer: fine)").matches && window.innerWidth > 1024) return;
+    
     isDragging.current = true;
     dragStartX.current = e.clientX;
     dragLocked.current = false;
@@ -420,7 +392,7 @@ export function FeaturedProducts() {
     const deltaX = e.clientX - dragStartX.current;
     const deltaY = Math.abs((e as any).movementY ?? 0);
     if (!dragLocked.current) {
-      if (Math.abs(deltaX) < 6) return;
+      if (Math.abs(deltaX) < 10) return;
       dragLocked.current = Math.abs(deltaX) > deltaY;
       if (!dragLocked.current) { dragStartX.current = null; return; }
     }
@@ -433,17 +405,30 @@ export function FeaturedProducts() {
     const delta = e.clientX - dragStartX.current;
     dragStartX.current = null;
     dragLocked.current = false;
-    const threshold = slotW * 0.25;
+    
+    const threshold = slotW * 0.4;
     if (delta < -threshold) go(1);
     else if (delta > threshold) go(-1);
-    else if (!busy.current) animate(x, -idxRef.current * slotW, { duration: 0.35, ease: "easeOut" });
+    else if (!busy.current) {
+        const currentX = x.get();
+        const currentIdx = -currentX / slotW;
+        idxRef.current = currentIdx;
+        
+        if (currentIdx >= FEATURED_COUNT * 2.2) {
+          idxRef.current = currentIdx - FEATURED_COUNT;
+          x.set(-idxRef.current * slotW);
+        } else if (currentIdx <= FEATURED_COUNT * 0.8) {
+          idxRef.current = currentIdx + FEATURED_COUNT;
+          x.set(-idxRef.current * slotW);
+        }
+    }
     setTimeout(() => { isDragging.current = false; }, 350);
   };
 
   const loaded = products.length > 0;
 
   return (
-    <Section variant="dark" size="large" className="relative !bg-transparent">
+    <Section variant="dark" size="large" className="relative bg-transparent">
       {loaded && (
         <SectionHeader
           eyebrow={t("products.eyebrow")}
@@ -463,7 +448,6 @@ export function FeaturedProducts() {
             <ChevronLeft className="w-5 h-5" />
           </button>
         )}
-        {/* containerRef SIEMPRE en el DOM para que offsetWidth se pueda medir */}
         <div
           ref={containerRef}
           className="overflow-hidden"
@@ -479,7 +463,7 @@ export function FeaturedProducts() {
                 key={`${i}-${product.id}`}
                 style={{ width: slotW || "33.33%", flexShrink: 0, padding: "0 12px" }}
               >
-                <ProductCard product={product} isDragging={isDragging} />
+                <ProductCard idx={i} product={product} isDragging={isDragging} />
               </div>
             ))}
           </motion.div>

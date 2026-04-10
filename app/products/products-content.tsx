@@ -7,14 +7,18 @@ import { motion } from "framer-motion";
 import { Search, ArrowRight, ShoppingCart } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import type { TiendaNubeProduct } from "@/lib/tiendanube";
-import { getProductMainImage, formatPrice, getProductStock } from "@/lib/tiendanube";
+import {
+  getProductMainImage,
+  formatPrice,
+  getProductStock,
+} from "@/lib/tiendanube";
 import { useCart } from "@/lib/cart";
 
 const PARTICLES = [
-  { left:  8.2, top:  4.1, duration: 4.2, delay: 0.3 },
-  { left: 92.1, top:  9.4, duration: 3.8, delay: 1.1 },
+  { left: 8.2, top: 4.1, duration: 4.2, delay: 0.3 },
+  { left: 92.1, top: 9.4, duration: 3.8, delay: 1.1 },
   { left: 23.5, top: 14.2, duration: 4.7, delay: 0.7 },
-  { left: 67.8, top:  3.8, duration: 3.5, delay: 1.5 },
+  { left: 67.8, top: 3.8, duration: 3.5, delay: 1.5 },
   { left: 45.2, top: 22.1, duration: 4.1, delay: 0.1 },
   { left: 78.9, top: 18.6, duration: 3.9, delay: 1.8 },
   { left: 12.4, top: 38.0, duration: 4.8, delay: 0.9 },
@@ -23,19 +27,10 @@ const PARTICLES = [
   { left: 33.1, top: 70.4, duration: 3.6, delay: 2.0 },
   { left: 71.4, top: 78.8, duration: 4.5, delay: 0.8 },
   { left: 18.9, top: 85.3, duration: 3.4, delay: 1.6 },
-  { left: 38.6, top:  7.2, duration: 4.0, delay: 0.4 },
-  { left: 61.3, top: 13.5, duration: 3.7, delay: 1.2 },
-  { left:  5.1, top: 25.8, duration: 4.6, delay: 0.6 },
-  { left: 82.7, top: 31.4, duration: 3.5, delay: 2.2 },
-  { left: 50.0, top: 41.9, duration: 4.3, delay: 0.2 },
-  { left: 27.3, top: 52.6, duration: 3.8, delay: 1.7 },
-  { left: 90.4, top: 63.2, duration: 4.1, delay: 0.8 },
-  { left: 15.8, top: 72.1, duration: 3.6, delay: 1.3 },
-  { left: 64.5, top: 89.7, duration: 4.4, delay: 0.5 },
   { left: 42.9, top: 94.3, duration: 3.9, delay: 1.9 },
   { left: 76.2, top: 47.8, duration: 4.7, delay: 0.1 },
-  { left:  3.7, top: 61.5, duration: 3.4, delay: 2.3 },
-  { left: 58.4, top:  1.9, duration: 4.2, delay: 0.9 },
+  { left: 3.7, top: 61.5, duration: 3.4, delay: 2.3 },
+  { left: 58.4, top: 1.9, duration: 4.2, delay: 0.9 },
   { left: 31.0, top: 33.7, duration: 3.8, delay: 1.5 },
   { left: 88.1, top: 76.4, duration: 4.5, delay: 0.3 },
   { left: 47.6, top: 56.2, duration: 3.7, delay: 2.1 },
@@ -45,27 +40,9 @@ const PARTICLES = [
   { left: 95.2, top: 36.1, duration: 3.6, delay: 1.8 },
   { left: 54.7, top: 67.3, duration: 4.3, delay: 0.6 },
   { left: 37.2, top: 81.0, duration: 3.9, delay: 2.4 },
-  { left: 69.5, top: 28.4, duration: 4.1, delay: 1.0 },
-  { left: 25.8, top: 98.2, duration: 3.7, delay: 0.4 },
-  { left: 14.6, top: 10.3, duration: 4.4, delay: 1.6 },
-  { left: 83.9, top: 20.7, duration: 3.6, delay: 0.5 },
-  { left: 40.1, top: 30.5, duration: 4.9, delay: 2.0 },
-  { left:  6.8, top: 44.2, duration: 3.5, delay: 1.1 },
-  { left: 60.0, top: 50.8, duration: 4.2, delay: 0.8 },
-  { left: 29.4, top: 59.6, duration: 3.8, delay: 1.9 },
-  { left: 97.1, top: 68.0, duration: 4.6, delay: 0.3 },
-  { left: 52.3, top: 75.5, duration: 3.4, delay: 2.2 },
-  { left: 16.7, top: 88.1, duration: 4.1, delay: 0.6 },
-  { left: 79.5, top: 95.7, duration: 3.9, delay: 1.3 },
-  { left: 44.8, top:  6.4, duration: 4.5, delay: 0.9 },
-  { left: 35.3, top: 19.1, duration: 3.7, delay: 2.5 },
-  { left: 87.6, top: 42.3, duration: 4.0, delay: 0.2 },
-  { left:  1.9, top: 55.9, duration: 3.6, delay: 1.7 },
-  { left: 63.2, top: 83.4, duration: 4.8, delay: 0.4 },
-  { left: 20.5, top: 97.0, duration: 3.5, delay: 2.1 },
   { left: 75.0, top: 11.8, duration: 4.3, delay: 1.0 },
   { left: 48.7, top: 35.6, duration: 3.8, delay: 1.6 },
-  { left:  9.4, top: 66.2, duration: 4.6, delay: 0.7 },
+  { left: 9.4, top: 66.2, duration: 4.6, delay: 0.7 },
   { left: 93.8, top: 82.9, duration: 3.4, delay: 2.3 },
   { left: 57.1, top: 26.7, duration: 4.1, delay: 0.1 },
   { left: 30.6, top: 73.8, duration: 3.9, delay: 1.4 },
@@ -74,19 +51,25 @@ const PARTICLES = [
   { left: 80.2, top: 53.4, duration: 4.2, delay: 0.5 },
   { left: 11.8, top: 79.1, duration: 3.5, delay: 1.2 },
   { left: 59.9, top: 37.8, duration: 4.7, delay: 2.6 },
-  { left: 22.7, top:  2.5, duration: 3.6, delay: 0.6 },
+  { left: 22.7, top: 2.5, duration: 3.6, delay: 0.6 },
   { left: 96.3, top: 49.7, duration: 4.0, delay: 1.8 },
   { left: 34.9, top: 62.4, duration: 3.8, delay: 0.3 },
   { left: 72.6, top: 86.5, duration: 4.5, delay: 1.5 },
-  { left:  7.3, top: 32.0, duration: 3.3, delay: 2.4 },
+  { left: 7.3, top: 32.0, duration: 3.3, delay: 2.4 },
   { left: 51.4, top: 77.3, duration: 4.1, delay: 0.9 },
-  { left: 84.7, top:  5.6, duration: 3.9, delay: 1.7 },
+  { left: 84.7, top: 5.6, duration: 3.9, delay: 1.7 },
   { left: 17.2, top: 43.1, duration: 4.6, delay: 0.2 },
   { left: 62.8, top: 60.9, duration: 3.5, delay: 2.2 },
   { left: 39.0, top: 22.8, duration: 4.3, delay: 0.6 },
 ];
 
-function ProductCard({ product, index }: { product: TiendaNubeProduct; index: number }) {
+function ProductCard({
+  product,
+  index,
+}: {
+  product: TiendaNubeProduct;
+  index: number;
+}) {
   const image = getProductMainImage(product);
   const variant = product.variants[0];
   const price = variant ? formatPrice(variant.price) : "";
@@ -114,7 +97,8 @@ function ProductCard({ product, index }: { product: TiendaNubeProduct; index: nu
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.08) 0%, transparent 65%)",
+          background:
+            "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.08) 0%, transparent 65%)",
         }}
       />
 
@@ -162,9 +146,13 @@ function ProductCard({ product, index }: { product: TiendaNubeProduct; index: nu
 
       <div className="px-3 sm:px-6 pb-3 sm:pb-5 pt-2 sm:pt-3 border-t border-primary/5 flex items-center justify-between gap-2">
         <div>
-          <span className="text-sm sm:text-xl font-semibold text-primary tracking-tight">{price}</span>
+          <span className="text-sm sm:text-xl font-semibold text-primary tracking-tight">
+            {price}
+          </span>
           {!inStock && (
-            <span className="ml-1 text-[10px] sm:text-xs text-red-400/70">Sin stock</span>
+            <span className="ml-1 text-[10px] sm:text-xs text-red-400/70">
+              Sin stock
+            </span>
           )}
         </div>
         <button
@@ -209,7 +197,11 @@ function CategoryFilter({
     const idx = categories.indexOf(active);
     const btn = btnRefs.current[idx];
     if (btn && scrollRef.current) {
-      btn.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+      btn.scrollIntoView({
+        block: "nearest",
+        inline: "center",
+        behavior: "smooth",
+      });
     }
   }, [active, categories]);
 
@@ -223,26 +215,35 @@ function CategoryFilter({
       {/* fade derecho — solo mobile */}
       <div
         className="sm:hidden absolute right-0 top-0 bottom-0 w-8 pointer-events-none z-10"
-        style={{ background: "linear-gradient(to right, transparent, rgba(0,0,0,0.85))" }}
+        style={{
+          background:
+            "linear-gradient(to right, transparent, rgba(0,0,0,0.85))",
+        }}
       />
 
-      {/* scroll horizontal en mobile, wrap en desktop */}
+      {/* Contenedor con scroll horizontal en mobile, centrado en desktop */}
       <div
         ref={scrollRef}
-        className="flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-visible sm:justify-center px-1"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+        className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto sm:flex-wrap sm:overflow-visible pb-4 sm:pb-0 px-2 sm:px-0"
+        style={
+          {
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          } as React.CSSProperties
+        }
       >
         {categories.map((cat, i) => (
           <button
             key={cat}
-            ref={(el) => { btnRefs.current[i] = el; }}
+            ref={(el) => {
+              btnRefs.current[i] = el;
+            }}
             type="button"
             onClick={() => onChange(cat)}
-            style={{ minWidth: "calc((100vw - 2rem) / 3.7)" }}
-            className={`sm:min-w-0 flex-shrink-0 px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-200 ${
+            className={`whitespace-nowrap px-6 py-3 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 border ${
               active === cat
-                ? "bg-primary text-black"
-                : "bg-transparent border border-primary/20 text-white/50 hover:border-primary/40 hover:text-white/70"
+                ? "bg-primary border-primary text-black"
+                : "bg-transparent border-primary/10 text-white/30 hover:border-primary/40 hover:text-white/60"
             }`}
           >
             {cat}
@@ -266,12 +267,14 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
   }, [products]);
 
   const [activeCategory, setActiveCategory] = useState(
-    allCategories.includes(initialCategory) ? initialCategory : "Todos"
+    allCategories.includes(initialCategory) ? initialCategory : "Todos",
   );
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
-      const matchesSearch = p.name.es.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = p.name.es
+        .toLowerCase()
+        .includes(search.toLowerCase());
       const matchesCategory =
         activeCategory === "Todos" ||
         p.categories.some((c) => c.name.es === activeCategory);
@@ -303,12 +306,16 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 55%)",
+            background:
+              "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 55%)",
           }}
         />
         <div
           className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ height: "80px", background: "linear-gradient(to bottom, transparent 0%, #000 100%)" }}
+          style={{
+            height: "80px",
+            background: "linear-gradient(to bottom, transparent 0%, #000 100%)",
+          }}
         />
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 lg:px-8 text-center">
@@ -389,7 +396,11 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
             className="absolute w-1 h-1 bg-primary/40 rounded-full pointer-events-none"
             style={{ left: `${p.left}%`, top: `${p.top}%` }}
             animate={{ y: [0, -30, 0], opacity: [0, 1, 0] }}
-            transition={{ duration: p.duration, repeat: Infinity, delay: p.delay }}
+            transition={{
+              duration: p.duration,
+              repeat: Infinity,
+              delay: p.delay,
+            }}
           />
         ))}
 
@@ -430,7 +441,11 @@ function ProductsInner({ products }: { products: TiendaNubeProduct[] }) {
   );
 }
 
-export function ProductsContent({ products }: { products: TiendaNubeProduct[] }) {
+export function ProductsContent({
+  products,
+}: {
+  products: TiendaNubeProduct[];
+}) {
   return (
     <Suspense fallback={null}>
       <ProductsInner products={products} />

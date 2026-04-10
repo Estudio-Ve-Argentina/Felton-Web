@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight, Truck, ShieldCheck, Ruler, Plus, Minus } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import type { TiendaNubeProduct } from "@/lib/tiendanube";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
@@ -127,7 +127,7 @@ export function ProductDetail({ product, related }: Props) {
     >
       <div className="absolute inset-0 bg-background/95 pointer-events-none" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 pt-32 pb-16">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 pt-32 pb-16">
         {/* Mobile title */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -146,7 +146,7 @@ export function ProductDetail({ product, related }: Props) {
           </span>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 xl:gap-32">
           {/* Gallery */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -177,7 +177,7 @@ export function ProductDetail({ product, related }: Props) {
                   alt={`${product.name.es} — foto ${selectedImg + 1}`}
                   width={560}
                   height={560}
-                  className="relative z-10 object-contain p-12 w-full h-full"
+                  className="relative z-10 object-contain w-full h-full transition-all duration-700"
                   priority
                 />
               ) : (
@@ -249,7 +249,7 @@ export function ProductDetail({ product, related }: Props) {
               </span>
             </div>
 
-            <div className="h-px bg-primary/15" />
+            <div className="h-px bg-primary/10" />
 
             {/* Description */}
             {product.description?.es && (
@@ -290,7 +290,6 @@ export function ProductDetail({ product, related }: Props) {
                 </div>
               </div>
             )}
-
             {/* Add to cart */}
             <div className="pt-3 space-y-3">
               <button
@@ -321,28 +320,75 @@ export function ProductDetail({ product, related }: Props) {
             </div>
           </motion.div>
         </div>
+
+        {/* Product Info Accordions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-primary/10 pt-12"
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-primary">
+              <Truck className="h-5 w-5" />
+              <h3 className="font-serif text-lg font-light">Calculador de envíos</h3>
+            </div>
+            <p className="text-xs text-white/50 leading-relaxed">
+              Realizamos envíos a todo el país. El costo se calculará al finalizar tu compra según tu ubicación.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-primary">
+              <ShieldCheck className="h-5 w-5" />
+              <h3 className="font-serif text-lg font-light">Cuidados del producto</h3>
+            </div>
+            <p className="text-xs text-white/50 leading-relaxed">
+              Nuestros productos están fabricados con materiales premium. Evitar el contacto prolongado con el agua y guardar en su funda original.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-primary">
+              <Ruler className="h-5 w-5" />
+              <h3 className="font-serif text-lg font-light">Guía de talles</h3>
+            </div>
+            <p className="text-xs text-white/50 leading-relaxed">
+              ¿Dudas con tu talle? Consultá nuestra guía completa para asegurar el ajuste perfecto de tu nueva prenda Felton.
+            </p>
+          </div>
+        </motion.div>
       </div>
 
       {/* Related products */}
       {related.length > 0 && (
-        <div className="relative z-10">
-          <div className="max-w-6xl mx-auto px-6 lg:px-8 pt-4 pb-12">
+        <div className="relative z-10 bg-black/20 border-t border-primary/5">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-20">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="mb-5"
+              className="flex items-end justify-between mb-10"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-primary/60 mb-2">
-                También te puede gustar
-              </p>
-              <h2 className="font-serif text-xl font-light text-foreground">
-                Productos relacionados
-              </h2>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-primary/60 mb-3">
+                  Recomendados para vos
+                </p>
+                <h2 className="font-serif text-3xl xl:text-4xl font-light text-foreground">
+                  También te puede interesar
+                </h2>
+              </div>
+              <Link 
+                href="/products" 
+                className="text-xs font-semibold uppercase tracking-[0.2em] text-primary hover:text-white transition-colors pb-1 border-b border-primary/30"
+              >
+                Ver todo el catálogo
+              </Link>
             </motion.div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {related.map((p) => (
                 <RelatedCard key={p.id} product={p} />
               ))}

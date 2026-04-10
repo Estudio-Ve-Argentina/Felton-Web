@@ -1,9 +1,10 @@
 import { getProducts } from "@/lib/tiendanube";
 import { Header, Footer } from "@/components/layout";
 import { ProductsContent } from "./products-content";
+import type { TiendaNubeProduct } from "@/lib/tiendanube";
 
 export default async function ProductsPage() {
-  let products = [];
+  let products: TiendaNubeProduct[] = [];
   try {
     products = await getProducts({ published: true, per_page: 200 });
   } catch (error) {
@@ -13,7 +14,7 @@ export default async function ProductsPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen pt-20">
+      <main className="min-h-screen pt-10">
         <ProductsContent products={products} />
       </main>
       <Footer />
