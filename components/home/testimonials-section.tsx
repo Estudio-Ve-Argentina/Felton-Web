@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Star, Quote } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
 const testimonials = [
@@ -37,12 +38,66 @@ const testimonials = [
   },
 ];
 
+function TestimonialCard({ testimonial, index, locale }: { testimonial: typeof testimonials[0]; index: number; locale: string }) {
+  return (
+    <motion.div
+      key={testimonial.id}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, delay: index * 0.12 }}
+      className="group relative"
+    >
+      <div className="absolute inset-0 border border-primary/20 group-hover:border-primary/35 transition-colors duration-700" />
+      <div className="absolute inset-0 bg-white/[0.02] group-hover:bg-white/[0.04] transition-colors duration-700" />
+
+      <div className="relative p-8 lg:p-10">
+        <div className="text-6xl leading-none text-primary/25 font-serif mb-4 -ml-1">"</div>
+
+        <div className="flex gap-1 mb-6">
+          {Array.from({ length: testimonial.rating }).map((_, i) => (
+            <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
+          ))}
+        </div>
+
+        <p className="font-serif text-lg font-light italic leading-relaxed text-white/75 mb-8">
+          {locale === "es" ? testimonial.content : testimonial.contentEn}
+        </p>
+
+        <div className="pt-6 border-t border-primary/15">
+          <p className="text-sm font-medium text-white/80 tracking-wide">{testimonial.author}</p>
+          <p className="text-xs text-primary/50 tracking-[0.2em] uppercase mt-1">{testimonial.role}</p>
+        </div>
+
+        <motion.div
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.4 + index * 0.12 }}
+          className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/60 to-transparent origin-left"
+        />
+      </div>
+    </motion.div>
+  );
+}
+
 export function TestimonialsSection() {
   const { t, locale } = useTranslation();
+  const [current, setCurrent] = useState(0);
+  const [isNarrow, setIsNarrow] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsNarrow(window.innerWidth < 910);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const prev = () => setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
+  const next = () => setCurrent((c) => (c + 1) % testimonials.length);
 
   return (
     <section className="relative w-full overflow-hidden pt-32 lg:pt-40 pb-44 lg:pb-52">
-      {/* Bottom fade into brand carousel */}
       <div className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none z-20"
         style={{ background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }} />
 
@@ -94,60 +149,47 @@ export function TestimonialsSection() {
           </motion.p>
         </motion.div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 lg:gap-14">
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={testimonial.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: index * 0.12 }}
-              className="group relative"
-            >
-              <div className="absolute inset-0 border border-primary/20 group-hover:border-primary/35 transition-colors duration-700" />
-              <div className="absolute inset-0 bg-white/[0.02] group-hover:bg-white/[0.04] transition-colors duration-700" />
-
-              <div className="relative p-8 lg:p-10">
-                {/* Decorative quote */}
-                <div className="text-6xl leading-none text-primary/25 font-serif mb-4 -ml-1">
-                  "
-                </div>
-
-                {/* Rating */}
-                <div className="flex gap-1 mb-6">
-                  {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
-                  ))}
-                </div>
-
-                {/* Content */}
-                <p className="font-serif text-lg font-light italic leading-relaxed text-white/75 mb-8">
-                  {locale === "es" ? testimonial.content : testimonial.contentEn}
-                </p>
-
-                {/* Author */}
-                <div className="pt-6 border-t border-primary/15">
-                  <p className="text-sm font-medium text-white/80 tracking-wide">
-                    {testimonial.author}
-                  </p>
-                  <p className="text-xs text-primary/50 tracking-[0.2em] uppercase mt-1">
-                    {testimonial.role}
-                  </p>
-                </div>
-
-                {/* Bottom line */}
+        {/* Carousel (< 910px) */}
+        {isNarrow ? (
+          <div>
+            <div className="relative overflow-hidden">
+              <AnimatePresence mode="wait">
                 <motion.div
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1, delay: 0.4 + index * 0.12 }}
-                  className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/60 to-transparent origin-left"
-                />
+                  key={current}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <TestimonialCard testimonial={testimonials[current]} index={0} locale={locale} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <div className="flex items-center justify-center gap-6 mt-8">
+              <button onClick={prev} className="p-2 border border-primary/30 text-primary/70 hover:border-primary hover:text-primary transition-colors">
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <div className="flex gap-2">
+                {testimonials.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrent(i)}
+                    className={`h-1 transition-all duration-300 ${i === current ? "w-6 bg-primary" : "w-2 bg-primary/30"}`}
+                  />
+                ))}
               </div>
-            </motion.div>
-          ))}
-        </div>
+              <button onClick={next} className="p-2 border border-primary/30 text-primary/70 hover:border-primary hover:text-primary transition-colors">
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-10 lg:gap-14">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard key={testimonial.id} testimonial={testimonial} index={index} locale={locale} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

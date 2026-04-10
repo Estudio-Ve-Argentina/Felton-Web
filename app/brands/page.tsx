@@ -145,7 +145,7 @@ export default function BrandsPage() {
 
           {/* ── Brands Grid ─────────────────────────────────── */}
           <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pb-20">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                 {brands.map((brand, index) => (
                   <motion.div
                     key={brand.id}
@@ -179,35 +179,35 @@ export default function BrandsPage() {
                       <div className="absolute bottom-0 right-0 w-7 h-7 border-b border-r border-primary/25 transition-all duration-500 group-hover:border-primary/70 group-hover:w-10 group-hover:h-10" />
 
                       {/* Logo area */}
-                      <div className="relative flex items-center justify-center h-52 px-12 py-10">
+                      <div className="relative flex items-center justify-center h-32 sm:h-52 px-6 sm:px-12 py-6 sm:py-10">
                         <Image
                           src={brand.logo}
                           alt={brand.name}
                           width={200}
                           height={100}
-                          className="object-contain max-h-24 w-auto transition-all duration-500 group-hover:scale-105"
+                          className="object-contain max-h-16 sm:max-h-24 w-auto transition-all duration-500 group-hover:scale-105"
                           style={{ filter: "brightness(0) invert(1)", opacity: 0.8 }}
                         />
                       </div>
 
                       {/* Divider */}
-                      <div className="mx-8 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+                      <div className="mx-4 sm:mx-8 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
                       {/* Info */}
-                      <div className="px-8 py-7 flex flex-col flex-1">
-                        <h3 className="font-serif text-xl font-light tracking-wide text-white/90 mb-2 group-hover:text-primary transition-colors duration-300">
+                      <div className="px-4 sm:px-8 py-4 sm:py-7 flex flex-col flex-1">
+                        <h3 className="font-serif text-base sm:text-xl font-light tracking-wide text-white/90 mb-1 sm:mb-2 group-hover:text-primary transition-colors duration-300">
                           {brand.name}
                         </h3>
-                        <p className="text-xs font-light text-white/40 leading-relaxed flex-1">
+                        <p className="text-xs font-light text-white/40 leading-relaxed flex-1 hidden sm:block">
                           {locale === "es" ? brand.description : brand.descriptionEn}
                         </p>
-                        <div className="flex items-center justify-between mt-6 pt-4 border-t border-primary/10">
-                          <span className="text-xs text-white/25 tracking-wide">
-                            {brand.productCount} {locale === "es" ? "productos" : "products"}
+                        <div className="flex items-center justify-between mt-3 sm:mt-6 pt-3 sm:pt-4 border-t border-primary/10">
+                          <span className="text-[10px] sm:text-xs text-white/25 tracking-wide">
+                            {brand.productCount} {locale === "es" ? "prod." : "prod."}
                           </span>
-                          <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary/60 group-hover:text-primary transition-all duration-300 group-hover:gap-3">
-                            {t("brands.viewProducts")}
-                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                          <span className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-primary/60 group-hover:text-primary transition-all duration-300">
+                            {locale === "es" ? "Ver" : "View"}
+                            <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </div>
                       </div>

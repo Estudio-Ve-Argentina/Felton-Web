@@ -2,7 +2,7 @@ const STORE_ID = "7241057";
 const ACCESS_TOKEN = "4d48fca672164fc3940d50c3aa6887d225dece6d";
 const BASE_URL = `https://api.tiendanube.com/v1/${STORE_ID}`;
 
-async function test(endpoint: string) {
+async function test(endpoint) {
   console.log(`Testing ${endpoint}...`);
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
@@ -19,7 +19,7 @@ async function test(endpoint: string) {
         const text = await res.text();
         console.log(`Error: ${text}`);
     }
-  } catch (e: any) {
+  } catch (e) {
     console.log(`Exception: ${e.message}`);
   }
   console.log('---');

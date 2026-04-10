@@ -47,10 +47,24 @@ export function PhilosophySection() {
               </span>
             </h2>
 
-            <p className="text-base text-white/50 leading-relaxed max-w-md mb-14">
+            <p className="text-base text-white/50 leading-relaxed max-w-md mb-8">
               Para quienes reconocen la diferencia entre lo común y lo
               extraordinario. Artistas, creadores, visionarios.
             </p>
+
+            {/* Image — solo visible en mobile, entre descripción y cards */}
+            <div className="lg:hidden mb-10">
+              <div className="relative">
+                <Image
+                  src="/about/43.jpg"
+                  alt="Felton — selección premium"
+                  width={800}
+                  height={1067}
+                  className="w-full h-auto"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-background/50 via-transparent to-transparent" />
+              </div>
+            </div>
 
             {/* Feature list */}
             <div className="space-y-6">
@@ -97,13 +111,13 @@ export function PhilosophySection() {
             </motion.div>
           </motion.div>
 
-          {/* Right — image */}
+          {/* Right — image (solo desktop) */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="relative"
+            className="relative hidden lg:block"
           >
             <div className="relative">
               <Image

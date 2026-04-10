@@ -4,12 +4,19 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { Section, SectionHeader } from "@/components/layout";
-import { fadeInUp, luxuryTransition } from "@/lib/animations";
+import { fadeInUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { getProducts, TiendaNubeProduct } from "@/lib/tiendanube";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 // Sample products - in production this would come from an API/database
 const products = [
@@ -78,22 +85,18 @@ interface Product {
 }
 
 export function ProductCarousel() {
-  const { t, locale } = useTranslation();
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const isInView = useInView(carouselRef, { once: true, amount: 0.2 });
+  const { t } = useTranslation();
+  const carouselContainerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(carouselContainerRef, { once: true, amount: 0.2 });
   const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const cardWidth = 420; // approximate width including gap
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const tiendaProducts: TiendaNubeProduct[] = await getProducts({
           published: true,
-          per_page: 7,
+          per_page: 10,
         });
         const mappedProducts: Product[] = tiendaProducts.map((product) => ({
           id: product.id.toString(),
@@ -106,7 +109,6 @@ export function ProductCarousel() {
         setFetchedProducts(mappedProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
-        // Fallback to sample products
         setFetchedProducts(products);
       } finally {
         setLoading(false);
@@ -116,56 +118,7 @@ export function ProductCarousel() {
     fetchProducts();
   }, []);
 
-  const displayProducts = fetchedProducts.length > 0 ? fetchedProducts.slice(0, 7) : products.slice(0, 7);
-  const infiniteProducts = [...displayProducts, ...displayProducts];
-
-  const checkScroll = () => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (carousel) {
-      const handleScroll = () => {
-        checkScroll();
-        // For infinite scroll effect
-        const { scrollLeft, scrollWidth, clientWidth } = carousel;
-        const itemWidth = 400; // approximate
-        const totalItems = displayProducts.length * 2;
-        const halfwayPoint = (totalItems / 2) * itemWidth;
-
-        if (scrollLeft >= halfwayPoint) {
-          carousel.scrollLeft = scrollLeft - halfwayPoint;
-        } else if (scrollLeft <= 0) {
-          carousel.scrollLeft = halfwayPoint;
-        }
-      };
-
-      carousel.addEventListener("scroll", handleScroll);
-      return () => carousel.removeEventListener("scroll", handleScroll);
-    }
-  }, [displayProducts]);
-
-  const next = () => {
-    setCurrentIndex((prev) => (prev + 1) % infiniteProducts.length);
-  };
-
-  const prev = () => {
-    setCurrentIndex((prev) => (prev - 1 + infiniteProducts.length) % infiniteProducts.length);
-  };
-
-  // For infinite effect, reset when reaching duplicate
-  useEffect(() => {
-    if (currentIndex >= displayProducts.length) {
-      setTimeout(() => setCurrentIndex(currentIndex - displayProducts.length), 300);
-    } else if (currentIndex < 0) {
-      setTimeout(() => setCurrentIndex(currentIndex + displayProducts.length), 300);
-    }
-  }, [currentIndex, displayProducts.length]);
+  const displayProducts = fetchedProducts.length > 0 ? fetchedProducts : products;
 
   const getBadgeText = (badge: string) => {
     if (badge === "new") return t("products.new");
@@ -174,54 +127,39 @@ export function ProductCarousel() {
   };
 
   return (
-    <Section variant="dark" size="large" className="relative">
+    <Section variant="dark" size="large" className="relative" ref={carouselContainerRef}>
       {/* Gradient transition from previous section */}
       <div className="absolute top-0 left-0 right-0 h-32 gradient-transition-top pointer-events-none z-10" />
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
-        <SectionHeader
-          eyebrow={t("products.eyebrow")}
-          title={t("products.title")}
-          description={t("products.description")}
-          align="left"
-          className="lg:max-w-xl"
-        />
 
-        {/* Navigation arrows - desktop */}
-        <div className="hidden lg:flex items-center gap-3">
-          <button
-            onClick={prev}
-            className="flex items-center justify-center w-12 h-12 border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
-            aria-label={locale === "es" ? "Anterior" : "Previous"}
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            onClick={next}
-            className="flex items-center justify-center w-12 h-12 border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
-            aria-label={locale === "es" ? "Siguiente" : "Next"}
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Carousel */}
-      <motion.div
-        ref={carouselRef}
-        className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+          skipSnaps: false,
+          dragFree: false,
+        }}
+        className="w-full"
       >
-        {loading ? (
-          // Loading skeleton
-          Array.from({ length: 7 }).map((_, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.35, ease: "easeOut", delay: index * 0.05 }}
-              className="shrink-0 w-[400px] md:w-[500px] snap-start"
-            >
-              <div className="block">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+          <SectionHeader
+            eyebrow={t("products.eyebrow")}
+            title={t("products.title")}
+            description={t("products.description")}
+            align="left"
+            className="lg:max-w-xl"
+          />
+
+          {/* Navigation arrows - desktop */}
+          <div className="hidden lg:flex items-center gap-3 relative mr-12">
+            <CarouselPrevious className="static translate-y-0 h-12 w-12 border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all rounded-none" />
+            <CarouselNext className="static translate-y-0 h-12 w-12 border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all rounded-none" />
+          </div>
+        </div>
+
+        <CarouselContent className="-ml-6">
+          {loading ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <CarouselItem key={index} className="pl-6 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                 <div className="relative aspect-square overflow-hidden bg-secondary/30 border-2 border-border/30 animate-pulse">
                   <div className="w-full h-full bg-muted" />
                 </div>
@@ -230,104 +168,81 @@ export function ProductCarousel() {
                   <div className="h-4 bg-muted animate-pulse rounded" />
                   <div className="h-3 bg-muted animate-pulse rounded w-1/2" />
                 </div>
-              </div>
-            </motion.div>
-          ))
-        ) : (
-          displayProducts.map((product, index) => (
-            <motion.div
-              key={`${product.id}-${index}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.35, ease: "easeOut", delay: index * 0.05 }}
-              className="shrink-0 w-[400px] md:w-[500px] snap-start"
-            >
-              <Link href={product.href} className="group block">
-                {/* Image */}
+              </CarouselItem>
+            ))
+          ) : (
+            displayProducts.map((product, index) => (
+              <CarouselItem
+                key={`${product.id}-${index}`}
+                className="pl-6 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+              >
                 <motion.div
-                  className="relative aspect-square overflow-hidden bg-secondary/30 border-2 border-border/30 transition-all duration-500 group-hover:border-primary/40 group-hover:shadow-[0_0_30px_rgba(184,147,89,0.3)]"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1], delay: index * 0.05 }}
+                  className="h-full"
                 >
-                  <Image
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  <Link href={product.href} className="group block h-full">
+                    {/* Image */}
+                    <div
+                      className="relative aspect-square overflow-hidden bg-secondary/30 border-2 border-border/30 transition-all duration-700 group-hover:border-primary/40 group-hover:shadow-[0_0_40px_rgba(184,147,89,0.25)]"
+                      style={{ willChange: "transform, border-color, box-shadow" }}
+                    >
+                      <Image
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform duration-1000 cubic-bezier(0.19, 1, 0.22, 1) group-hover:scale-110"
+                      />
 
-                  {/* Badge */}
-                  {product.badge && (
-                    <div className="absolute top-4 left-4">
-                      <span
-                        className={cn(
-                          "px-3 py-1 text-xs font-medium uppercase tracking-wider",
-                          product.badge === "new"
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-foreground text-background",
-                        )}
-                      >
-                        {getBadgeText(product.badge)}
-                      </span>
+                      {/* Badge */}
+                      {product.badge && (
+                        <div className="absolute top-4 left-4 z-20">
+                          <span
+                            className={cn(
+                              "px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em]",
+                              product.badge === "new"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-foreground text-background",
+                            )}
+                          >
+                            {getBadgeText(product.badge)}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center z-10">
+                        <span className="flex items-center gap-2 text-sm font-medium text-primary transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 luxury-text-shadow">
+                          {t("products.viewProduct")}
+                          <ArrowRight className="h-4 w-4" />
+                        </span>
+                      </div>
                     </div>
-                  )}
 
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="flex items-center gap-2 text-sm font-medium text-primary">
-                      {t("products.viewProduct")}
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </div>
+                    {/* Info */}
+                    <div className="mt-6 space-y-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/70">
+                        {product.brand}
+                      </p>
+                      <h3 className="font-serif text-xl font-light text-foreground group-hover:text-primary transition-colors duration-500 line-clamp-1">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm font-medium text-muted-foreground/80 tracking-tighter">
+                        {product.price}
+                      </p>
+                    </div>
+                  </Link>
                 </motion.div>
-
-                {/* Info */}
-                <div className="mt-4 space-y-1">
-                  <p className="text-xs font-medium uppercase tracking-wider text-primary/60">
-                    {product.brand}
-                  </p>
-                  <h3 className="font-serif text-lg font-light text-foreground group-hover:text-primary transition-colors">
-                    {product.name}
-                  </h3>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {product.price}
-                  </p>
-                </div>
-              </Link>
-            </motion.div>
-          ))
-        )}
-      </motion.div>
-
-      {/* Mobile navigation */}
-      <div className="flex lg:hidden items-center justify-center gap-3 mt-6">
-        <button
-          onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          className={cn(
-            "flex items-center justify-center w-10 h-10 border-2 transition-all",
-            canScrollLeft
-              ? "border-primary/50 text-primary"
-              : "border-border/30 text-muted-foreground/30",
+              </CarouselItem>
+            ))
           )}
-          aria-label={locale === "es" ? "Anterior" : "Previous"}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-        <button
-          onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          className={cn(
-            "flex items-center justify-center w-10 h-10 border-2 transition-all",
-            canScrollRight
-              ? "border-primary/50 text-primary"
-              : "border-border/30 text-muted-foreground/30",
-          )}
-          aria-label={locale === "es" ? "Siguiente" : "Next"}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
+        </CarouselContent>
+
+        {/* Mobile controls integrated into Carousel component normally, 
+            but we can add a mobile-only indicator or buttons if needed. 
+            Standard Embla handling is usually enough. */}
+      </Carousel>
 
       {/* View All CTA */}
       <motion.div
@@ -335,14 +250,17 @@ export function ProductCarousel() {
         initial="initial"
         whileInView="animate"
         viewport={{ once: true }}
-        className="mt-12 text-center"
+        className="mt-20 text-center"
       >
         <Link
           href="/collections"
-          className="group inline-flex items-center gap-2 text-sm font-medium tracking-wide text-primary transition-all hover:gap-3"
+          className="group inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-primary transition-all hover:gap-5"
         >
-          {t("collections.viewAll")}
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <span className="relative">
+            {t("collections.viewAll")}
+            <span className="absolute -bottom-2 left-0 w-0 h-px bg-primary transition-all duration-500 group-hover:w-full" />
+          </span>
+          <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-2" />
         </Link>
       </motion.div>
 
@@ -351,3 +269,4 @@ export function ProductCarousel() {
     </Section>
   );
 }
+

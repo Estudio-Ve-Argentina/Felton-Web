@@ -371,6 +371,14 @@
         transparent 100%);
   }
 
+  /* Particle float animation — CSS-only, runs on GPU compositor */
+  @keyframes particleFloat {
+    0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+    25%  { opacity: 0.8; }
+    75%  { opacity: 0.2; transform: translateY(-32px) scale(1); }
+    100% { opacity: 0; transform: translateY(-40px) scale(0.3); }
+  }
+
   /* Textured background with golden lights */
   .textured-bg {
     background: 

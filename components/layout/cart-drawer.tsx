@@ -1,26 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
-function formatPrice(num: number): string {
-  return "$" + num.toLocaleString("es-AR");
+function formatARS(num: number): string {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  }).format(num);
 }
 
 export function CartDrawer() {
   const { items, totalItems, totalPrice, isOpen, closeCart, increment, decrement, remove } =
     useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  // Lock body scroll while open
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  // Close on Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeCart();
@@ -29,11 +32,32 @@ export function CartDrawer() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [closeCart]);
 
+  async function handleCheckout() {
+    if (!items.length) return;
+    setIsCheckingOut(true);
+    try {
+      const res = await fetch("/api/tiendanube/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
+        }),
+      });
+      const data = await res.json();
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+    } finally {
+      setIsCheckingOut(false);
+    }
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -44,7 +68,6 @@ export function CartDrawer() {
             onClick={closeCart}
           />
 
-          {/* Panel */}
           <motion.aside
             key="panel"
             initial={{ x: "100%" }}
@@ -95,30 +118,33 @@ export function CartDrawer() {
                     transition={{ duration: 0.22 }}
                     className="flex gap-4 pb-5 border-b border-primary/10 last:border-0"
                   >
-                    {/* Image */}
                     <div className="flex-shrink-0 w-20 h-20 bg-white/[0.04] border border-primary/10 flex items-center justify-center overflow-hidden">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        width={64}
-                        height={64}
-                        className="object-contain"
-                      />
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={64}
+                          height={64}
+                          className="object-contain"
+                        />
+                      ) : (
+                        <span className="text-primary/20 text-2xl font-serif">F</span>
+                      )}
                     </div>
 
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 mb-0.5">
-                        {item.category}
-                      </p>
+                      {item.category && (
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-primary/60 mb-0.5">
+                          {item.category}
+                        </p>
+                      )}
                       <p className="text-sm font-light text-foreground leading-snug mb-2 truncate">
                         {item.name}
                       </p>
                       <p className="text-base font-semibold text-primary">
-                        {item.price}
+                        {formatARS(parseFloat(item.price))}
                       </p>
 
-                      {/* Quantity controls */}
                       <div className="flex items-center gap-2 mt-3">
                         <button
                           onClick={() => decrement(item.id)}
@@ -138,15 +164,12 @@ export function CartDrawer() {
                         >
                           <Plus className="h-3 w-3" />
                         </button>
-                        {item.quantity >= item.stock && (
-                          <span className="text-[10px] text-primary/50 ml-1">
-                            Máx
-                          </span>
+                        {item.quantity >= item.stock && item.stock < 999 && (
+                          <span className="text-[10px] text-primary/50 ml-1">Máx</span>
                         )}
                       </div>
                     </div>
 
-                    {/* Delete */}
                     <button
                       onClick={() => remove(item.id)}
                       className="self-start p-1 text-muted-foreground/40 hover:text-red-400 transition-colors"
@@ -162,22 +185,24 @@ export function CartDrawer() {
             {/* Footer */}
             {items.length > 0 && (
               <div className="px-6 py-5 border-t border-primary/10 space-y-4">
-                {/* Subtotal */}
                 <div className="flex items-center justify-between">
                   <span className="text-xs uppercase tracking-widest text-muted-foreground">
                     Total
                   </span>
                   <span className="text-xl font-semibold text-primary tracking-tight">
-                    {formatPrice(totalPrice)}
+                    {formatARS(totalPrice)}
                   </span>
                 </div>
 
-                {/* CTA */}
                 <button
-                  className="w-full group relative inline-flex items-center justify-center gap-3 py-4 bg-primary text-black font-semibold text-xs tracking-[0.25em] uppercase overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] hover:scale-[1.02]"
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                  className="w-full group relative inline-flex items-center justify-center gap-3 py-4 bg-primary text-black font-semibold text-xs tracking-[0.25em] uppercase overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <span className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                  <span className="relative">Ir a comprar</span>
+                  <span className="relative">
+                    {isCheckingOut ? "Procesando..." : "Ir a comprar"}
+                  </span>
                 </button>
 
                 <button

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Search, ShoppingBag } from "lucide-react";
+import { Menu, X, Search, ShoppingCart } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { LanguageSwitcher, FeltonLogo } from "@/components/shared";
@@ -91,7 +91,7 @@ export function Header() {
         {/* Search bar — fixed 280px */}
         <form
           onSubmit={handleSearch}
-          className="flex items-center overflow-hidden border border-primary/50 bg-white/[0.08] focus-within:border-primary focus-within:bg-white/[0.12] transition-all duration-200"
+          className="flex items-center overflow-hidden rounded-full bg-white transition-all duration-200"
         >
           <input
             ref={searchInputRef}
@@ -99,14 +99,14 @@ export function Header() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar producto..."
-            className="flex-1 bg-transparent px-3 py-2 text-sm font-light text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+            className="flex-1 bg-transparent pl-4 pr-2 py-2 text-sm font-light text-black placeholder:text-black/40 focus:outline-none"
           />
           <button
             type="submit"
-            className="flex-shrink-0 bg-primary hover:bg-primary/85 px-3 py-2 flex items-center justify-center transition-colors duration-200"
+            className="flex-shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-3 py-1.5 flex items-center justify-center transition-colors duration-200"
             aria-label="Buscar"
           >
-            <Search className="h-4 w-4 text-black" />
+            <Search className="h-3.5 w-3.5 text-black" />
           </button>
         </form>
 
@@ -162,7 +162,7 @@ export function Header() {
             className="relative p-1.5 text-muted-foreground hover:text-primary transition-colors"
             aria-label="Abrir carrito"
           >
-            <ShoppingBag className="h-5 w-5" />
+            <ShoppingCart className="h-5 w-5" />
             {totalItems > 0 && (
               <span className="absolute -top-1 -right-1 bg-primary text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
                 {totalItems > 9 ? "9+" : totalItems}
@@ -172,25 +172,35 @@ export function Header() {
         </div>
       </nav>
 
-      {/* Mobile nav */}
-      <nav className="mx-auto flex lg:hidden max-w-7xl items-center justify-between px-4 py-3">
-        <Link href="/">
+      {/* Mobile nav — una sola fila: Logo | Search | Hamburger + Cart */}
+      <nav className="lg:hidden mx-auto flex max-w-7xl items-center gap-2 px-3 py-2.5">
+        <Link href="/" className="flex-shrink-0">
           <FeltonLogo textClassName="text-xl" />
         </Link>
-        <div className="flex items-center gap-3">
-          <LanguageSwitcher variant="minimal" />
+
+        {/* Search — ocupa el espacio disponible */}
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-1 items-center overflow-hidden rounded-full bg-white min-w-0"
+        >
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar..."
+            className="flex-1 min-w-0 bg-transparent pl-3.5 pr-1 py-2 text-sm text-black placeholder:text-black/40 focus:outline-none"
+          />
           <button
-            onClick={openCart}
-            className="relative p-1.5 text-muted-foreground hover:text-primary transition-colors"
-            aria-label="Abrir carrito"
+            type="submit"
+            className="flex-shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-2.5 py-1.5 flex items-center justify-center transition-colors duration-200"
+            aria-label="Buscar"
           >
-            <ShoppingBag className="h-5 w-5" />
-            {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
-                {totalItems > 9 ? "9+" : totalItems}
-              </span>
-            )}
+            <Search className="h-3.5 w-3.5 text-black" />
           </button>
+        </form>
+
+        {/* Hamburger + Cart */}
+        <div className="flex items-center flex-shrink-0">
           <button
             type="button"
             className="inline-flex items-center justify-center p-2 text-muted-foreground hover:text-primary transition-colors"
@@ -208,6 +218,18 @@ export function Header() {
               )}
             </AnimatePresence>
           </button>
+          <button
+            onClick={openCart}
+            className="relative p-2 text-muted-foreground hover:text-primary transition-colors"
+            aria-label="Abrir carrito"
+          >
+            <ShoppingCart className="h-6 w-6" />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                {totalItems > 9 ? "9+" : totalItems}
+              </span>
+            )}
+          </button>
         </div>
       </nav>
 
@@ -222,19 +244,6 @@ export function Header() {
             transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="lg:hidden overflow-hidden bg-background/98 backdrop-blur-md border-t border-primary/10"
           >
-            {/* Mobile search */}
-            <form onSubmit={handleSearch} className="px-6 pt-4 pb-2 flex items-center gap-3 border-b border-primary/10">
-              <Search className="h-4 w-4 text-primary/50 flex-shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar producto..."
-                className="flex-1 bg-transparent text-sm font-light text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-              />
-              <button type="submit" className="text-xs text-primary tracking-wide uppercase">Ir</button>
-            </form>
-
             <div className="px-6 pb-8 pt-4 space-y-1">
               {navigation.map((item, index) => (
                 <motion.div key={item.name} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }}>
@@ -248,7 +257,7 @@ export function Header() {
                 </motion.div>
               ))}
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-                <Link href="/contact" className="block py-3 text-lg font-light tracking-wide text-primary" onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/contact" className="block py-3 text-lg font-light tracking-wide text-muted-foreground transition-colors hover:text-primary border-b border-border/20" onClick={() => setMobileMenuOpen(false)}>
                   {t("nav.contact")}
                 </Link>
               </motion.div>
