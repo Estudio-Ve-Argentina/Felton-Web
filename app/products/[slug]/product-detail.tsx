@@ -47,11 +47,10 @@ function toCartProduct(product: TiendaNubeProduct, variantId: number) {
   };
 }
 
-import { ProductCardMinimal } from "@/components/home/suggested-products";
-import { tnToProductItem } from "@/components/products/product-card";
+import { ProductCard, tnToProductItem } from "@/components/products/product-card";
 
 function RelatedCard({ product }: { product: TiendaNubeProduct }) {
-  return <ProductCardMinimal product={tnToProductItem(product)} />;
+  return <ProductCard product={tnToProductItem(product)} idx={0} />;
 }
 
 interface Props {
