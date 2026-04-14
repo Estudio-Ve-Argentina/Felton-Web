@@ -1,8 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+
+const TIMER_MS = 3600;
 
 const testimonials = [
   {
@@ -55,15 +58,9 @@ const testimonials = [
   },
 ];
 
-function TestimonialCard({ testimonial, index, locale }: { testimonial: typeof testimonials[0]; index: number; locale: string }) {
+function TestimonialCard({ testimonial, locale }: { testimonial: typeof testimonials[0]; locale: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.08 }}
-      className="group relative text-center"
-    >
+    <div className="group relative text-center">
       {/* Glow hover */}
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
@@ -105,21 +102,41 @@ function TestimonialCard({ testimonial, index, locale }: { testimonial: typeof t
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-    </motion.div>
+    </div>
   );
 }
 
 export function TestimonialsSection() {
   const { t, locale } = useTranslation();
+  const [current, setCurrent] = useState(0);
+  const [timerKey, setTimerKey] = useState(0);
+
+  const advance = useCallback(() => {
+    setCurrent((c) => (c + 1) % testimonials.length);
+    setTimerKey((k) => k + 1);
+  }, []);
+
+  useEffect(() => {
+    const id = setTimeout(advance, TIMER_MS);
+    return () => clearTimeout(id);
+  }, [current, advance]);
+
+  const goTo = (i: number) => {
+    if (i === current) return;
+    setCurrent(i);
+    setTimerKey((k) => k + 1);
+  };
+
+  const item = testimonials[current];
 
   return (
-    <section className="relative w-full overflow-hidden pt-16 lg:pt-20 pb-20 lg:pb-24">
+    <section className="relative w-full overflow-hidden pt-16 lg:pt-20 pb-24 lg:pb-28">
       <div
-        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-20"
+        className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none z-20"
         style={{ background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="relative z-10 max-w-md mx-auto px-6 lg:px-8">
 
         <motion.div
           initial={{ scale: 0.85, opacity: 0 }}
@@ -137,19 +154,49 @@ export function TestimonialsSection() {
         </motion.div>
 
         <motion.h2
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-serif text-4xl md:text-5xl font-light text-white mb-12 leading-tight text-center"
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="font-serif text-4xl md:text-5xl font-light text-white mb-14 leading-tight text-center"
         >
           {t("testimonials.title")}
         </motion.h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-          {testimonials.map((t, i) => (
-            <TestimonialCard key={t.id} testimonial={t} index={i} locale={locale} />
-          ))}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+          >
+            <TestimonialCard testimonial={item} locale={locale} />
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="relative w-48 h-px bg-white/10 overflow-hidden rounded-full">
+            <motion.div
+              key={timerKey}
+              className="absolute inset-y-0 left-0 rounded-full"
+              style={{
+                background: "linear-gradient(90deg, oklch(0.72 0.12 85 / 0.5), oklch(0.85 0.10 85), oklch(0.72 0.12 85 / 0.5))",
+              }}
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: TIMER_MS / 1000, ease: "linear" }}
+            />
+          </div>
+          <div className="flex gap-2">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={`h-1 transition-all duration-300 ${i === current ? "w-6 bg-primary" : "w-2 bg-primary/30"}`}
+              />
+            ))}
+          </div>
         </div>
 
       </div>
