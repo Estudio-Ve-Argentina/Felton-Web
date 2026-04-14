@@ -6,7 +6,7 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import { useTranslation } from "@/lib/i18n";
 
-const TIMER_MS = 6000;
+const TIMER_MS = 3600;
 
 const testimonials = [
   {
@@ -14,11 +14,8 @@ const testimonials = [
     image: "/Customers/Testimonio 1.jpeg",
     quote: "Muy buena calidad. Gracias por sus buenos precios.",
     quoteEn: "Very good quality. Thank you for your great prices.",
-    highlight: "Muy buena calidad",
-    highlightEn: "Very good quality",
     author: "Martin R.",
-    authorEn: "Martin R.",
-    product: "Buenos Aires",
+    role: "Buenos Aires",
     rating: 5,
   },
   {
@@ -26,14 +23,46 @@ const testimonials = [
     image: "/Customers/Testimonio 2.jpeg",
     quote: "Me encanta su atención al cliente.",
     quoteEn: "I love their customer service.",
-    highlight: "Atención al cliente",
-    highlightEn: "Customer service",
     author: "Sofia L.",
-    authorEn: "Sofia L.",
-    product: "Cordoba",
+    role: "Cordoba",
     rating: 5,
   },
 ];
+
+function TestimonialCard({ testimonial, locale }: { testimonial: typeof testimonials[0]; locale: string }) {
+  return (
+    <div className="group relative">
+      <div className="absolute inset-0 border border-primary/20 group-hover:border-primary/35 transition-colors duration-700" />
+      <div className="absolute inset-0 bg-white/[0.02] group-hover:bg-white/[0.04] transition-colors duration-700" />
+
+      <div className="relative p-8 lg:p-10">
+        <div className="text-6xl leading-none text-primary/25 font-serif mb-4 -ml-1">"</div>
+
+        <div className="flex gap-1 mb-6">
+          {Array.from({ length: testimonial.rating }).map((_, i) => (
+            <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
+          ))}
+        </div>
+
+        <p className="font-serif text-lg font-light italic leading-relaxed text-white/75 mb-8">
+          {locale === "es" ? testimonial.quote : testimonial.quoteEn}
+        </p>
+
+        <div className="pt-6 border-t border-primary/15 flex items-center gap-3">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-primary/30 shrink-0">
+            <Image src={testimonial.image} alt={testimonial.author} fill className="object-cover" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-white/80 tracking-wide">{testimonial.author}</p>
+            <p className="text-xs text-primary/50 tracking-[0.2em] uppercase mt-0.5">{testimonial.role}</p>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+      </div>
+    </div>
+  );
+}
 
 export function TestimonialsSection() {
   const { t, locale } = useTranslation();
@@ -60,15 +89,13 @@ export function TestimonialsSection() {
 
   return (
     <section className="relative w-full overflow-hidden pt-32 lg:pt-40 pb-44 lg:pb-52">
-      {/* Bottom fade */}
       <div
         className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none z-20"
         style={{ background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }}
       />
 
-      <div className="relative z-10 max-w-xl mx-auto px-6 lg:px-8 text-center">
+      <div className="relative z-10 max-w-2xl mx-auto px-6 lg:px-8">
 
-        {/* Eyebrow */}
         <motion.div
           initial={{ scale: 0.85, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 1 }}
@@ -84,71 +111,29 @@ export function TestimonialsSection() {
           </div>
         </motion.div>
 
-        {/* Headline */}
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.15 }}
-          className="font-serif text-4xl md:text-5xl font-light text-white mb-14 leading-tight"
+          className="font-serif text-4xl md:text-5xl font-light text-white mb-14 leading-tight text-center"
         >
           {t("testimonials.title")}
         </motion.h2>
 
-        {/* Card */}
         <AnimatePresence mode="wait">
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.45, ease: "easeInOut" }}
-            className="flex flex-col items-center"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
           >
-            <>
-                {/* Phone screenshot frame */}
-                <div className="relative w-[220px] sm:w-[260px]">
-                  {/* Glow detrás */}
-                  <div
-                    className="absolute -inset-3 rounded-3xl opacity-20 blur-xl pointer-events-none"
-                    style={{ background: "radial-gradient(ellipse, oklch(0.72 0.12 85) 0%, transparent 70%)" }}
-                  />
-
-                  {/* Frame */}
-                  <div className="relative rounded-[22px] overflow-hidden border border-primary/35 shadow-2xl"
-                    style={{ boxShadow: "0 0 0 1px rgba(212,175,55,0.15), 0 32px 64px rgba(0,0,0,0.6)" }}
-                  >
-                    {/* Notch top bar */}
-                    <div className="flex items-center justify-center py-2 bg-black/80 border-b border-white/5">
-                      <div className="w-16 h-1 rounded-full bg-white/20" />
-                    </div>
-
-                    {/* Screenshot — sin recorte, altura natural */}
-                    <div className="relative w-full bg-black">
-                      <Image
-                        src={item.image!}
-                        alt="Testimonio de cliente"
-                        width={600}
-                        height={800}
-                        className="w-full h-auto block"
-                      />
-                    </div>
-
-                    {/* Bottom bar */}
-                    <div className="py-2 bg-black/80 border-t border-white/5" />
-                  </div>
-                </div>
-
-                {/* Quote */}
-                <p className="mt-8 font-serif text-lg md:text-xl font-light italic text-white/80 leading-relaxed max-w-xs">
-                  &ldquo;{locale === "es" ? item.quote : item.quoteEn}&rdquo;
-                </p>
-            </>
+            <TestimonialCard testimonial={item} locale={locale} />
           </motion.div>
         </AnimatePresence>
 
-        {/* Timer */}
-        <div className="mt-12 flex flex-col items-center">
+        <div className="mt-10 flex flex-col items-center gap-4">
           <div className="relative w-48 h-px bg-white/10 overflow-hidden rounded-full">
             <motion.div
               key={timerKey}
@@ -161,7 +146,15 @@ export function TestimonialsSection() {
               transition={{ duration: TIMER_MS / 1000, ease: "linear" }}
             />
           </div>
-
+          <div className="flex gap-2">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={`h-1 transition-all duration-300 ${i === current ? "w-6 bg-primary" : "w-2 bg-primary/30"}`}
+              />
+            ))}
+          </div>
         </div>
 
       </div>

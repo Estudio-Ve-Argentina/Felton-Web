@@ -87,13 +87,6 @@ function CategoryCard({ name, slug, image, index }: { name: string; slug: string
           </div>
         </div>
 
-        {/* Nombre debajo */}
-        <div className="pt-3 pb-1 text-center">
-          <p className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-white/70 group-hover:text-primary transition-colors duration-300 relative">
-            {name}
-            <span className="absolute bottom-0 left-0 w-0 group-hover:w-full h-px bg-primary transition-all duration-300" />
-          </p>
-        </div>
       </Link>
     </motion.div>
   );
