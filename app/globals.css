@@ -379,6 +379,17 @@
     100% { opacity: 0; transform: translateY(-40px) scale(0.3); }
   }
 
+  /* Hide scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+  /* Display P3 fix — leather texture becomes too visible on wide-gamut screens (e.g. iPhone) */
+  @media (color-gamut: p3) {
+    .product-leather-card {
+      background-color: rgba(2, 4, 8, 1) !important;
+    }
+  }
+
   /* Textured background with golden lights */
   .textured-bg {
     background: 

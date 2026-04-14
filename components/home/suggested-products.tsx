@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useAllProducts } from "@/lib/hooks/useHomeProducts";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, animate, useMotionValue } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight, ShoppingCart } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 import { useCart } from "@/lib/cart";
 import type { ProductItem } from "./featured-products";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
@@ -128,111 +128,15 @@ function ProductCardMinimal({ product }: { product: ProductItem }) {
   );
 }
 
-const SUGGESTED_COUNT = featuredIds.suggested.length;
-
 export function SuggestedProducts() {
   const products = useSuggestedProducts();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const idxRef = useRef(SUGGESTED_COUNT);
-  const busy = useRef(false);
-  const [slotW, setSlotW] = useState(0);
-
-  const EXTENDED = products.length > 0
-    ? [...products, ...products, ...products]
-    : Array.from({ length: SUGGESTED_COUNT * 3 }, (_, i) => ({ id: String(i), slug: "", name: "", category: "", price: "", image: "" }));
-
-  useEffect(() => {
-    const calc = () => {
-      if (!containerRef.current) return;
-      const w = containerRef.current.offsetWidth;
-      const mobile = window.innerWidth < 640;
-      const tablet = window.innerWidth < 1024;
-      setSlotW(w / (mobile ? 2.5 : tablet ? 2.4 : 4));
-    };
-    calc();
-    window.addEventListener("resize", calc);
-    return () => window.removeEventListener("resize", calc);
-  }, []);
-
-  useEffect(() => {
-    if (slotW > 0) {
-      idxRef.current = SUGGESTED_COUNT;
-      x.set(-SUGGESTED_COUNT * slotW);
-    }
-  }, [slotW]);
-
-  const go = async (dir: 1 | -1) => {
-    if (busy.current || slotW === 0) return;
-    busy.current = true;
-    const mobile = window.innerWidth < 640;
-    const tablet = window.innerWidth < 1024;
-    const step = mobile ? 2 : tablet ? 2 : 4;
-    const next = idxRef.current + dir * step;
-    await animate(x, -next * slotW, { duration: 0.7, ease: [0.19, 1, 0.22, 1] });
-    
-    let settled = next;
-    if (next >= SUGGESTED_COUNT * 2) settled = next - SUGGESTED_COUNT;
-    else if (next < SUGGESTED_COUNT) settled = next + SUGGESTED_COUNT;
-    idxRef.current = settled;
-    if (settled !== next) x.set(-settled * slotW);
-    busy.current = false;
-  };
-
-  const dragStartX = useRef<number | null>(null);
-  const dragLocked = useRef(false);
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (busy.current) return;
-    // Solo permitir drag en dispositivos táctiles o pantallas chicas
-    if (window.matchMedia("(pointer: fine)").matches && window.innerWidth > 1024) return;
-    
-    dragStartX.current = e.clientX;
-    dragLocked.current = false;
-    e.currentTarget.setPointerCapture(e.pointerId);
-  };
-
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (dragStartX.current === null || busy.current) return;
-    const deltaX = e.clientX - dragStartX.current;
-    const deltaY = Math.abs((e as any).movementY ?? 0);
-    if (!dragLocked.current) {
-      if (Math.abs(deltaX) < 10) return;
-      dragLocked.current = Math.abs(deltaX) > deltaY;
-      if (!dragLocked.current) { dragStartX.current = null; return; }
-    }
-    e.preventDefault();
-    x.set(-idxRef.current * slotW + deltaX);
-  };
-
-  const onPointerUp = (e: React.PointerEvent) => {
-    if (dragStartX.current === null) return;
-    const delta = e.clientX - dragStartX.current;
-    dragStartX.current = null;
-    dragLocked.current = false;
-    
-    const threshold = slotW * 0.4;
-    if (delta < -threshold) go(1);
-    else if (delta > threshold) go(-1);
-    else {
-      // Dejar donde el usuario quiera si es fluido, o volver al centro
-      // Para ser "fluido" animamos suavemente a donde esté la posición actual o al más cercano
-      const currentX = x.get();
-      const currentIdx = -currentX / slotW;
-      idxRef.current = currentIdx;
-      
-      // Corregir límites de infinito si se sale mucho
-      if (currentIdx >= SUGGESTED_COUNT * 2.2) {
-        idxRef.current = currentIdx - SUGGESTED_COUNT;
-        x.set(-idxRef.current * slotW);
-      } else if (currentIdx <= SUGGESTED_COUNT * 0.8) {
-        idxRef.current = currentIdx + SUGGESTED_COUNT;
-        x.set(-idxRef.current * slotW);
-      }
-    }
-  };
-
   const loaded = products.length > 0;
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    dragFree: true,
+  });
 
   return (
     <section className="relative w-full overflow-hidden py-24 lg:py-32 bg-black">
@@ -272,37 +176,29 @@ export function SuggestedProducts() {
           </div>
         )}
 
-        <div className="relative">
-          {loaded && (
-            <button onClick={() => go(-1)} aria-label="Anterior"
+        {loaded && (
+          <div className="relative">
+            <button onClick={() => emblaApi?.scrollPrev()} aria-label="Anterior"
               className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-20 hidden sm:flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30">
               <ChevronLeft className="w-5 h-5" />
             </button>
-          )}
-          <div
-            ref={containerRef}
-            className="overflow-hidden"
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-            style={{ touchAction: "pan-y" }}
-          >
-            <motion.div style={{ x, willChange: "transform" }} className="flex items-stretch">
-              {EXTENDED.map((product, i) => (
-                <div key={`${i}-${product.id}`} style={{ width: slotW || "25%", flexShrink: 0, padding: "0 8px" }}>
-                  <ProductCardMinimal product={product} />
-                </div>
-              ))}
-            </motion.div>
-          </div>
-          {loaded && (
-            <button onClick={() => go(1)} aria-label="Siguiente"
+
+            <div ref={emblaRef} className="overflow-hidden">
+              <div className="flex items-stretch">
+                {products.map((product, i) => (
+                  <div key={product.id} className="shrink-0 grow-0 basis-[40vw] sm:basis-[42vw] lg:basis-[25vw] px-2">
+                    <ProductCardMinimal product={product} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button onClick={() => emblaApi?.scrollNext()} aria-label="Siguiente"
               className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-20 hidden sm:flex items-center justify-center w-11 h-11 rounded-full border border-primary/40 bg-background/80 backdrop-blur-sm text-primary hover:bg-primary hover:text-black transition-all duration-300 hover:scale-110 shadow-lg shadow-black/30">
               <ChevronRight className="w-5 h-5" />
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {loaded && (
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-12 flex justify-center">
