@@ -7,7 +7,7 @@ import Image from "next/image";
 import { motion, animate, useMotionValue } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight, ShoppingCart } from "lucide-react";
 import { useCart } from "@/lib/cart";
-import type { ProductItem } from "./featured-products";
+import type { ProductItem } from "../products/product-card";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
 import featuredIds from "@/data/featured-product-ids.json";
 
@@ -56,12 +56,12 @@ const PARTICLES = [
   { left: 8.9,  top: 25.1, duration: 5.0, delay: 1.7  },
 ];
 
-function ProductCardMinimal({ product }: { product: ProductItem }) {
+export function ProductCardMinimal({ product }: { product: ProductItem }) {
   const { addToCart, openCart } = useCart();
   const inStock = (product.stock ?? 999) > 0;
 
   return (
-    <div className="group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-500 overflow-hidden bg-white/[0.03]" style={{ height: 320 }}>
+    <div className="group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-500 overflow-hidden bg-white/3" style={{ height: 320 }}>
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 50% 30%, rgba(212,175,55,0.12) 0%, transparent 70%)" }}
@@ -85,7 +85,7 @@ function ProductCardMinimal({ product }: { product: ProductItem }) {
           )}
         </div>
 
-        <div className="flex-shrink-0 px-4 pt-0 pb-3 text-center">
+        <div className="shrink-0 px-4 pt-0 pb-3 text-center transition-all duration-500 sm:group-hover:opacity-0 sm:group-hover:translate-y-2">
           {product.category && (
             <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-primary/60 mb-1">
               {product.category}
@@ -100,7 +100,7 @@ function ProductCardMinimal({ product }: { product: ProductItem }) {
         </div>
       </Link>
 
-      <div className="px-4 pb-4 mt-auto relative z-20">
+      <div className="absolute bottom-0 left-0 right-0 z-30 transition-all duration-500 sm:opacity-0 sm:translate-y-4 sm:group-hover:opacity-100 sm:group-hover:translate-y-0">
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -118,10 +118,14 @@ function ProductCardMinimal({ product }: { product: ProductItem }) {
             openCart();
           }}
           disabled={!inStock || !product.variantId}
-          className="w-full flex items-center justify-center gap-2 py-2 border border-primary/30 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary hover:text-black transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2.5 py-4 bg-primary text-black font-bold text-[10px] uppercase tracking-widest shadow-[0_-10px_40px_rgba(0,0,0,0.4)] transition-all duration-300 hover:bg-gold-light disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+             position: "relative",
+             overflow: "hidden"
+          }}
         >
-          <ShoppingCart className="w-3.5 h-3.5" />
-          {inStock ? "Agregar" : "Sin stock"}
+          <ShoppingCart className="w-4 h-4" />
+          {inStock ? "Comprar ahora" : "Sin stock"}
         </button>
       </div>
     </div>

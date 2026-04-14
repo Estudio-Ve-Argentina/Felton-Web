@@ -27,6 +27,7 @@ export interface TiendaNubeProduct {
   variants: TiendaNubeVariant[];
   categories: { id: number; name: { es: string } }[];
   brand: string | null;
+  tags: string;
   created_at: string;
   updated_at: string;
 }
@@ -92,6 +93,22 @@ async function tiendaNubeFetch<T>(
   }
 
   return response.json();
+}
+
+export async function subscribeNewsletter(email: string): Promise<any> {
+  // Tiendanube allows creating a customer with email and accepts_marketing
+  return tiendaNubeFetch("/customers", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      name: "Newsletter Subscriber",
+      accepts_marketing: true,
+    }),
+  }).catch((err) => {
+    // Ignore error if customer exists already (e.g. status 422)
+    console.error("Newsletter error:", err.message);
+    return null;
+  });
 }
 
 // Products

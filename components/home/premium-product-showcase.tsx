@@ -78,7 +78,7 @@ function ProductCard({ product, index }: ProductShowcaseProps) {
           background-size: cover;
           background-position: center;
           background-blend-mode: multiply;
-          background-color: rgba(11, 17, 32, 0.85);
+          background-color: rgba(10, 10, 14, 0.95);
           border: 3px solid rgba(212, 175, 55, 0.12);
           transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
           overflow: hidden;
@@ -721,14 +721,14 @@ export function PremiumProductShowcase() {
   ];
 
   return (
-    <section className="premium-showcase-section relative w-full min-h-screen bg-[#0B1120] pt-16 pb-28">
+    <section className="premium-showcase-section relative w-full min-h-screen bg-[#0D0D10] pt-16 pb-28">
       {/* Soft top gradient — blends hero into products seamlessly */}
       <div
         className="absolute top-0 left-0 right-0 pointer-events-none"
         style={{
           height: "180px",
           background:
-            "linear-gradient(to bottom, rgba(8,13,26,0.9) 0%, rgba(9,14,28,0.6) 25%, rgba(10,16,30,0.3) 50%, rgba(11,17,32,0.1) 75%, transparent 100%)",
+            "linear-gradient(to bottom, rgba(10,10,14,0.9) 0%, rgba(10,10,14,0.6) 25%, rgba(10,10,14,0.3) 50%, rgba(10,10,14,0.1) 75%, transparent 100%)",
           zIndex: 3,
         }}
       />
