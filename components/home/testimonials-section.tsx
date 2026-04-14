@@ -31,35 +31,61 @@ const testimonials = [
 
 function TestimonialCard({ testimonial, locale }: { testimonial: typeof testimonials[0]; locale: string }) {
   return (
-    <div className="group relative">
+    <div className="group relative text-center">
+      {/* Glow hover */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.06) 0%, transparent 70%)" }}
+      />
+
+      {/* Border */}
       <div className="absolute inset-0 border border-primary/20 group-hover:border-primary/35 transition-colors duration-700" />
-      <div className="absolute inset-0 bg-white/[0.02] group-hover:bg-white/[0.04] transition-colors duration-700" />
 
-      <div className="relative p-8 lg:p-10">
-        <div className="text-6xl leading-none text-primary/25 font-serif mb-4 -ml-1">"</div>
+      {/* Corner accents */}
+      <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-primary/50" />
+      <div className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-primary/50" />
+      <div className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-primary/50" />
+      <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-primary/50" />
 
-        <div className="flex gap-1 mb-6">
+      <div className="relative px-10 py-12 lg:px-16 lg:py-14">
+        {/* Quote mark */}
+        <div className="text-8xl leading-none text-primary/20 font-serif mb-2">"</div>
+
+        {/* Stars */}
+        <div className="flex justify-center gap-1 mb-8">
           {Array.from({ length: testimonial.rating }).map((_, i) => (
-            <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
+            <Star key={i} className="h-4 w-4 fill-primary text-primary" />
           ))}
         </div>
 
-        <p className="font-serif text-lg font-light italic leading-relaxed text-white/75 mb-8">
+        {/* Quote */}
+        <p className="font-serif text-xl md:text-2xl font-light italic leading-relaxed text-white/80 mb-10">
           {locale === "es" ? testimonial.quote : testimonial.quoteEn}
         </p>
 
-        <div className="pt-6 border-t border-primary/15 flex items-center gap-3">
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-primary/30 shrink-0">
-            <Image src={testimonial.image} alt={testimonial.author} fill className="object-cover" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-white/80 tracking-wide">{testimonial.author}</p>
-            <p className="text-xs text-primary/50 tracking-[0.2em] uppercase mt-0.5">{testimonial.role}</p>
-          </div>
+        {/* Diamond divider */}
+        <div className="flex items-center gap-4 mb-8 justify-center">
+          <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
+          <div className="w-1.5 h-1.5 bg-primary/60 rotate-45" />
+          <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+        {/* Author */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-primary/25 blur-md" />
+            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary/40">
+              <Image src={testimonial.image} alt={testimonial.author} fill className="object-cover" />
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white/90 tracking-[0.2em] uppercase">{testimonial.author}</p>
+            <p className="text-xs text-primary/60 tracking-[0.25em] uppercase mt-1">{testimonial.role}</p>
+          </div>
+        </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
     </div>
   );
 }
