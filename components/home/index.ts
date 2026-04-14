@@ -7,7 +7,7 @@ export { BrandCarousel } from "./brand-carousel";
 export { FeaturedBrandsSection } from "./featured-brands-section";
 export { TestimonialsSection } from "./testimonials-section";
 export { PremiumProductShowcase } from "./premium-product-showcase";
-export { SuggestedProducts } from "./suggested-products";
+export { CategoriesSection } from "./suggested-products";
 export { BlogSection } from "./blog-section";
 export { NewsletterSection } from "./newsletter-section";
 export { BlogNewsletterSection } from "./blog-newsletter-section";

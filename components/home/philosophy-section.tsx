@@ -12,8 +12,8 @@ const features = [
   },
   {
     icon: TrendingUp,
-    label: "Marcas Elite",
-    description: "Del top 1% del mercado mundial de accesorios.",
+    label: "Envíos a todo Argentina",
+    description: "Llevamos las marcas top 1% del mercado mundial a todas las ciudades de Argentina.",
   },
   {
     icon: Zap,

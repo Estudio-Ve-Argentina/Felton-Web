@@ -6,7 +6,7 @@ import {
   BrandCarousel,
   TestimonialsSection,
   BlogNewsletterSection,
-  SuggestedProducts,
+  CategoriesSection,
 } from "@/components/home";
 import { scrapeBlogPosts } from "@/lib/tiendanube-blog";
 
@@ -103,7 +103,7 @@ export default async function HomePage() {
 
         <BrandCarousel />
         <PhilosophySection />
-        <SuggestedProducts />
+        <CategoriesSection />
         <BlogNewsletterSection initialPosts={blogPosts} />
       </main>
       <Footer />
