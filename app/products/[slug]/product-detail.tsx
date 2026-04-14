@@ -4,13 +4,37 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ShoppingBag, ArrowLeft, ChevronLeft, ChevronRight, Truck, ShieldCheck, Ruler, Plus, Minus } from "lucide-react";
+import {
+  ShoppingBag,
+  ChevronLeft,
+  ChevronRight,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+} from "lucide-react";
 import { useCart } from "@/lib/cart";
 import type { TiendaNubeProduct } from "@/lib/tiendanube";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 function toCartProduct(product: TiendaNubeProduct, variantId: number) {
-  const variant = product.variants.find((v) => v.id === variantId) ?? product.variants[0];
+  const variant =
+    product.variants.find((v) => v.id === variantId) ?? product.variants[0];
   const stock = variant.stock_management ? (variant.stock ?? 0) : 999;
   return {
     id: String(variant.id),
@@ -23,69 +47,11 @@ function toCartProduct(product: TiendaNubeProduct, variantId: number) {
   };
 }
 
-function RelatedCard({ product }: { product: TiendaNubeProduct }) {
-  const { addToCart, items } = useCart();
-  const variant = product.variants[0];
-  const cartItem = items.find((i) => i.id === String(variant?.id));
-  const stock = variant?.stock_management ? (variant.stock ?? 0) : 999;
-  const atMax = cartItem ? cartItem.quantity >= stock : false;
-  const image = getProductMainImage(product);
+import { ProductCardMinimal } from "@/components/home/suggested-products";
+import { tnToProductItem } from "@/components/products/product-card";
 
-  return (
-    <Link href={`/products/${product.handle.es}`} className="group block">
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.45 }}
-        className="border border-primary/15 group-hover:border-primary/35 transition-colors duration-300 overflow-hidden"
-        style={{
-          backgroundImage: 'url("/images/leather-texture.png")',
-          backgroundSize: "cover",
-          backgroundBlendMode: "multiply",
-          backgroundColor: "rgba(11,17,32,0.92)",
-        }}
-      >
-        <div className="relative h-44 flex items-center justify-center p-6">
-          {image ? (
-            <Image
-              src={image}
-              alt={product.name.es}
-              width={130}
-              height={130}
-              className="object-contain transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-24 h-24 bg-primary/5 flex items-center justify-center text-primary/20 text-3xl font-serif">F</div>
-          )}
-        </div>
-        <div className="px-5 py-4 border-t border-primary/10">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/55 mb-1">
-            {product.categories[0]?.name.es ?? ""}
-          </p>
-          <h3 className="font-serif text-sm font-light text-foreground/90 mb-2 leading-snug">
-            {product.name.es}
-          </h3>
-          <div className="flex items-center justify-between">
-            <span className="text-base font-semibold text-primary">
-              {variant ? formatPrice(variant.price) : ""}
-            </span>
-            <button
-              type="button"
-              disabled={atMax || !variant}
-              onClick={(e) => {
-                e.preventDefault();
-                if (!atMax && variant) addToCart(toCartProduct(product, variant.id));
-              }}
-              className="text-[10px] font-semibold uppercase tracking-widest text-foreground/50 hover:text-primary transition-colors disabled:opacity-30"
-            >
-              {atMax ? "Agotado" : "+ Carrito"}
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </Link>
-  );
+function RelatedCard({ product }: { product: TiendaNubeProduct }) {
+  return <ProductCardMinimal product={tnToProductItem(product)} />;
 }
 
 interface Props {
@@ -97,23 +63,48 @@ export function ProductDetail({ product, related }: Props) {
   const { addToCart, openCart, items } = useCart();
   const [selectedImg, setSelectedImg] = useState(0);
   const [selectedVariantId, setSelectedVariantId] = useState(
-    product.variants[0]?.id ?? 0
+    product.variants[0]?.id ?? 0,
   );
+  const [zipcode, setZipcode] = useState("");
+  const [shippingOptions, setShippingOptions] = useState<{name: string, price: number | "Gratis", time: string}[] | null>(null);
+  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
 
-  const selectedVariant = product.variants.find((v) => v.id === selectedVariantId) ?? product.variants[0];
-  const stock = selectedVariant?.stock_management ? (selectedVariant.stock ?? 0) : 999;
+  const selectedVariant =
+    product.variants.find((v) => v.id === selectedVariantId) ??
+    product.variants[0];
+  const stock = selectedVariant?.stock_management
+    ? (selectedVariant.stock ?? 0)
+    : 999;
   const outOfStock = stock === 0;
   const cartItem = items.find((i) => i.id === String(selectedVariantId));
   const atMax = cartItem ? cartItem.quantity >= stock : false;
 
-  const images = product.images.length > 0
-    ? product.images.sort((a, b) => a.position - b.position).map((img) => img.src)
-    : [];
+  const images =
+    product.images.length > 0
+      ? product.images
+          .sort((a, b) => a.position - b.position)
+          .map((img) => img.src)
+      : [];
 
   const hasMultipleVariants = product.variants.length > 1;
 
-  const prevImg = () => setSelectedImg((i) => (i - 1 + images.length) % images.length);
+  const prevImg = () =>
+    setSelectedImg((i) => (i - 1 + images.length) % images.length);
   const nextImg = () => setSelectedImg((i) => (i + 1) % images.length);
+
+  const calculateShipping = async () => {
+    if (!zipcode || zipcode.length < 4) return;
+    setIsCalculatingShipping(true);
+    setShippingOptions(null);
+    // Simulate API request to shipping provider
+    await new Promise(r => setTimeout(r, 1200));
+    setShippingOptions([
+      { name: "Envío Estándar a Domicilio", price: 4500, time: "3 a 5 días hábiles" },
+      { name: "Envío Prioritario", price: 7800, time: "1 a 2 días hábiles" },
+      { name: "Retiro en Sucursal", price: "Gratis", time: "A partir del próximo día hábil" }
+    ]);
+    setIsCalculatingShipping(false);
+  };
 
   return (
     <main
@@ -144,6 +135,73 @@ export function ProductDetail({ product, related }: Props) {
           <span className="text-2xl font-semibold text-primary tracking-tight mt-2 block">
             {selectedVariant ? formatPrice(selectedVariant.price) : ""}
           </span>
+
+          {/* Mobile Thumbnails */}
+          {images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pt-4 pb-1">
+              {images.slice(0, 7).map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImg(i)}
+                  aria-label={`Ver foto ${i + 1}`}
+                  className={`shrink-0 border transition-all duration-200 overflow-hidden flex items-center justify-center ${
+                    i === selectedImg
+                      ? "border-primary"
+                      : "border-primary/15 hover:border-primary/40"
+                  }`}
+                  style={{
+                    width: 60,
+                    height: 60,
+                    backgroundColor: "rgba(10, 10, 14, 0.95)",
+                  }}
+                >
+                  <Image
+                    src={img}
+                    alt={`Miniatura ${i + 1}`}
+                    width={52}
+                    height={52}
+                    className="object-contain p-1.5"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Breadcrumb */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  href="/"
+                  className="text-[10px] uppercase tracking-[0.2em]"
+                >
+                  Inicio
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  href="/products"
+                  className="text-[10px] uppercase tracking-[0.2em]"
+                >
+                  Productos
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-[10px] uppercase tracking-[0.3em] font-semibold text-primary">
+                  {product.name.es}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 xl:gap-32">
@@ -155,18 +213,19 @@ export function ProductDetail({ product, related }: Props) {
             className="space-y-4"
           >
             <div
-              className="relative aspect-[3/4] border border-primary/15 overflow-hidden flex items-center justify-center"
+              className="relative aspect-3/4 border border-primary/15 overflow-hidden flex items-center justify-center"
               style={{
                 backgroundImage: 'url("/images/leather-texture.png")',
                 backgroundSize: "cover",
                 backgroundBlendMode: "multiply",
-                backgroundColor: "rgba(11,17,32,0.94)",
+                backgroundColor: "rgba(10, 10, 14, 0.96)",
               }}
             >
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  background: "radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.06) 0%, transparent 65%)",
+                  background:
+                    "radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.06) 0%, transparent 65%)",
                 }}
               />
 
@@ -181,7 +240,9 @@ export function ProductDetail({ product, related }: Props) {
                   priority
                 />
               ) : (
-                <div className="relative z-10 text-primary/10 text-8xl font-serif">F</div>
+                <div className="relative z-10 text-primary/10 text-8xl font-serif">
+                  F
+                </div>
               )}
 
               {images.length > 1 && (
@@ -204,29 +265,104 @@ export function ProductDetail({ product, related }: Props) {
               )}
             </div>
 
-            {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {images.slice(0, 7).map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImg(i)}
-                    aria-label={`Ver foto ${i + 1}`}
-                    className={`flex-shrink-0 border transition-all duration-200 overflow-hidden flex items-center justify-center ${
-                      i === selectedImg ? "border-primary" : "border-primary/15 hover:border-primary/40"
-                    }`}
-                    style={{ width: 72, height: 72, backgroundColor: "rgba(11,17,32,0.9)" }}
-                  >
-                    <Image
-                      src={img}
-                      alt={`Miniatura ${i + 1}`}
-                      width={64}
-                      height={64}
-                      className="object-contain p-2"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Product Info Accordions Moved Below Gallery */}
+            <div className="pt-8">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem
+                  value="shipping"
+                  className="border-b border-primary/10"
+                >
+                  <AccordionTrigger className="hover:no-underline py-6">
+                    <div className="flex items-center gap-3 font-serif text-lg font-light text-foreground uppercase tracking-wider">
+                      <Truck className="w-5 h-5 text-primary" />
+                      Calculador de Envíos
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-6 pt-1">
+                    <div className="flex flex-col gap-4">
+                      <p className="text-sm text-white/60 mb-1">
+                        Ingresá tu código postal para conocer las opciones y
+                        costos de envío.
+                      </p>
+                      <div className="flex gap-2 max-w-sm">
+                        <Input
+                          type="text"
+                          value={zipcode}
+                          onChange={(e) => setZipcode(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                          placeholder="Ej: 7600"
+                          onKeyDown={(e) => e.key === "Enter" && calculateShipping()}
+                          className="flex-1 h-12 bg-primary/5 border-primary/20 text-sm focus:border-primary transition-colors rounded-none"
+                        />
+                        <Button
+                          variant="outline"
+                          onClick={() => calculateShipping()}
+                          disabled={isCalculatingShipping || !zipcode}
+                          className="h-12 border-primary/20 hover:border-primary hover:bg-primary hover:text-black uppercase tracking-wider rounded-none px-8 disabled:opacity-50 min-w-[120px]"
+                        >
+                          {isCalculatingShipping ? (
+                            <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                          ) : (
+                            "Calcular"
+                          )}
+                        </Button>
+                      </div>
+                      
+                      {/* Shipping Options Results */}
+                      {shippingOptions && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-4 flex flex-col gap-3"
+                        >
+                          {shippingOptions.map((opt, i) => (
+                            <div key={i} className="flex justify-between items-center p-3 border border-primary/10 bg-primary/5">
+                              <div>
+                                <p className="font-semibold text-sm text-foreground/90">{opt.name}</p>
+                                <p className="text-xs text-white/50 mt-1">{opt.time}</p>
+                              </div>
+                              <div className="text-primary font-semibold">
+                                {typeof opt.price === "number" ? formatPrice(opt.price) : opt.price}
+                              </div>
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                      
+                      <p className="text-[10px] text-white/40 italic mt-2">
+                        * Costo ilustrativo. Las tarifas exactas se confirmarán
+                        en el checkout de Tienda Nube.
+                      </p>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="care"
+                  className="border-b border-primary/10"
+                >
+                  <AccordionTrigger className="hover:no-underline py-6">
+                    <div className="flex items-center gap-3 font-serif text-lg font-light text-foreground uppercase tracking-wider">
+                      <ShieldCheck className="w-5 h-5 text-primary" />
+                      Cuidados del producto
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-6 pt-1">
+                    <div className="text-sm text-white/60 leading-relaxed">
+                      Nuestros productos están fabricados con materiales
+                      premium. Para mantener su calidad:
+                      <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>Evitar el contacto prolongado con el agua.</li>
+                        <li>
+                          Guardar en su funda original cuando no esté en uso.
+                        </li>
+                        <li>Limpiar con un paño suave y seco.</li>
+                        <li>No exponer a fuentes de calor directo.</li>
+                      </ul>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
           </motion.div>
 
           {/* Details */}
@@ -247,6 +383,37 @@ export function ProductDetail({ product, related }: Props) {
               <span className="text-3xl font-semibold text-primary tracking-tight mt-2 block">
                 {selectedVariant ? formatPrice(selectedVariant.price) : ""}
               </span>
+
+              {/* Thumbnails below price */}
+              {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pt-6 pb-2">
+                  {images.slice(0, 7).map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImg(i)}
+                      aria-label={`Ver foto ${i + 1}`}
+                      className={`shrink-0 border transition-all duration-200 overflow-hidden flex items-center justify-center ${
+                        i === selectedImg
+                          ? "border-primary"
+                          : "border-primary/15 hover:border-primary/40"
+                      }`}
+                      style={{
+                        width: 64,
+                        height: 64,
+                        backgroundColor: "rgba(10, 10, 14, 0.95)",
+                      }}
+                    >
+                      <Image
+                        src={img}
+                        alt={`Miniatura ${i + 1}`}
+                        width={56}
+                        height={56}
+                        className="object-contain p-1.5"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="h-px bg-primary/10" />
@@ -254,7 +421,7 @@ export function ProductDetail({ product, related }: Props) {
             {/* Description */}
             {product.description?.es && (
               <div
-                className="text-sm font-light text-white/70 leading-relaxed prose prose-invert prose-sm max-w-none"
+                className="text-lg font-light text-white/70 leading-relaxed prose prose-invert prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: product.description.es }}
               />
             )}
@@ -291,7 +458,7 @@ export function ProductDetail({ product, related }: Props) {
               </div>
             )}
             {/* Add to cart */}
-            <div className="pt-3 space-y-3">
+            <div className="pt-3 space-y-8">
               <button
                 type="button"
                 disabled={atMax || outOfStock}
@@ -306,59 +473,45 @@ export function ProductDetail({ product, related }: Props) {
                 {outOfStock
                   ? "Sin Stock"
                   : atMax
-                  ? "Límite de stock alcanzado"
-                  : "Agregar al Carrito"}
+                    ? "Límite de stock alcanzado"
+                    : "Agregar al Carrito"}
               </button>
 
-              <Link
-                href="/products"
-                className="flex items-center justify-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors duration-200 py-1"
-              >
-                <ArrowLeft className="h-3 w-3" />
-                Volver al catálogo
-              </Link>
+              {/* Trust Icons Grid */}
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-primary/10">
+                <div className="flex flex-col items-center text-center gap-2">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/5 text-primary">
+                    <Truck className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider text-white/60 leading-tight">
+                    Envío a todo
+                    <br />
+                    el país
+                  </span>
+                </div>
+                <div className="flex flex-col items-center text-center gap-2">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/5 text-primary">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider text-white/60 leading-tight">
+                    Compra
+                    <br />
+                    segura
+                  </span>
+                </div>
+                <div className="flex flex-col items-center text-center gap-2">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/5 text-primary">
+                    <RotateCcw className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider text-white/60 leading-tight">
+                    Cambios y<br />
+                    devoluciones
+                  </span>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
-
-        {/* Product Info Accordions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-primary/10 pt-12"
-        >
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-primary">
-              <Truck className="h-5 w-5" />
-              <h3 className="font-serif text-lg font-light">Calculador de envíos</h3>
-            </div>
-            <p className="text-xs text-white/50 leading-relaxed">
-              Realizamos envíos a todo el país. El costo se calculará al finalizar tu compra según tu ubicación.
-            </p>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-primary">
-              <ShieldCheck className="h-5 w-5" />
-              <h3 className="font-serif text-lg font-light">Cuidados del producto</h3>
-            </div>
-            <p className="text-xs text-white/50 leading-relaxed">
-              Nuestros productos están fabricados con materiales premium. Evitar el contacto prolongado con el agua y guardar en su funda original.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-primary">
-              <Ruler className="h-5 w-5" />
-              <h3 className="font-serif text-lg font-light">Guía de talles</h3>
-            </div>
-            <p className="text-xs text-white/50 leading-relaxed">
-              ¿Dudas con tu talle? Consultá nuestra guía completa para asegurar el ajuste perfecto de tu nueva prenda Felton.
-            </p>
-          </div>
-        </motion.div>
       </div>
 
       {/* Related products */}
@@ -380,8 +533,8 @@ export function ProductDetail({ product, related }: Props) {
                   También te puede interesar
                 </h2>
               </div>
-              <Link 
-                href="/products" 
+              <Link
+                href="/products"
                 className="text-xs font-semibold uppercase tracking-[0.2em] text-primary hover:text-white transition-colors pb-1 border-b border-primary/30"
               >
                 Ver todo el catálogo

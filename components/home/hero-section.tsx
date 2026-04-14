@@ -25,8 +25,8 @@ export function HeroSection() {
         src="/brands/20260202_1643_01kgfxzrykej39g94ehkk73kw2.mp4"
       />
 
-      {/* Blue-tinted overlay for immersive feel */}
-      <div className="absolute inset-0 bg-[#0a1628]/60" />
+      {/* Neutral overlay for immersive feel */}
+      <div className="absolute inset-0 bg-[#0a0a0c]/70" />
       {/* Top gradient so header items stay readable */}
       <div className="absolute top-0 left-0 right-0 h-32 bg-linear-to-b from-black/50 to-transparent pointer-events-none" />
       {/* Bottom vignette — blends into the dark product section below */}
@@ -35,8 +35,8 @@ export function HeroSection() {
         style={{
           height: "75%",
           background:
-            "linear-gradient(to top, #0B1120 0%, #0B1120 12%, rgba(11,17,32,0.97) 22%, rgba(11,17,32,0.85) 35%, rgba(11,17,32,0.60) 50%, rgba(11,17,32,0.30) 65%, rgba(11,17,32,0.10) 80%, transparent 100%)",
-        }}
+            "linear-gradient(to top, #0D0D10 0%, #0D0D10 12%, rgba(13,13,16,0.97) 22%, rgba(13,13,16,0.85) 35%, rgba(13,13,16,0.60) 50%, rgba(13,13,16,0.30) 65%, rgba(13,13,16,0.10) 80%, transparent 100%)",
+        } as React.CSSProperties}
       />
 
       {/* ── Centred stack ────────────────────────────── */}

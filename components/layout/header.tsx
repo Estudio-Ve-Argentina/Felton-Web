@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, ShoppingCart } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
-import { LanguageSwitcher, FeltonLogo } from "@/components/shared";
+import { FeltonLogo } from "@/components/shared";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -36,12 +36,12 @@ export function Header() {
       name: t("nav.brands"),
       href: "/brands",
       dropdown: [
-        { name: "Louis Vuitton", href: "/brands/louis-vuitton" },
-        { name: "Diesel", href: "/brands/diesel" },
-        { name: "Gucci", href: "/brands/gucci" },
-        { name: "Prada", href: "/brands/prada" },
-        { name: "Cartier", href: "/brands/cartier" },
-        { name: "Supreme", href: "/brands/supreme" },
+        { name: "Louis Vuitton", href: "/products?q=Louis+Vuitton" },
+        { name: "Diesel", href: "/products?q=Diesel" },
+        { name: "Gucci", href: "/products?q=Gucci" },
+        { name: "Prada", href: "/products?q=Prada" },
+        { name: "Cartier", href: "/products?q=Cartier" },
+        { name: "Supreme", href: "/products?q=Supreme" },
       ],
     },
     { name: t("nav.blog"), href: "/blog" },
@@ -75,7 +75,7 @@ export function Header() {
         style={{ gridTemplateColumns: "auto 32px 280px 1fr auto" }}
       >
         {/* Logo — pushed left */}
-        <Link href="/" className="flex-shrink-0">
+        <Link href="/" className="shrink-0">
           <motion.div
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -103,7 +103,7 @@ export function Header() {
           />
           <button
             type="submit"
-            className="flex-shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-3 py-1.5 flex items-center justify-center transition-colors duration-200"
+            className="shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-3 py-1.5 flex items-center justify-center transition-colors duration-200"
             aria-label="Buscar"
           >
             <Search className="h-3.5 w-3.5 text-black" />
@@ -151,11 +151,6 @@ export function Header() {
             <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
           </Link>
 
-          <div className="h-4 w-px bg-border/50" />
-
-          <LanguageSwitcher variant="minimal" />
-
-          <div className="h-4 w-px bg-border/50" />
 
           <button
             onClick={openCart}
@@ -174,7 +169,7 @@ export function Header() {
 
       {/* Mobile nav — una sola fila: Logo | Search | Hamburger + Cart */}
       <nav className="lg:hidden mx-auto flex max-w-7xl items-center gap-2 px-3 py-2.5">
-        <Link href="/" className="flex-shrink-0">
+        <Link href="/" className="shrink-0">
           <FeltonLogo textClassName="text-xl" />
         </Link>
 
@@ -192,7 +187,7 @@ export function Header() {
           />
           <button
             type="submit"
-            className="flex-shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-2.5 py-1.5 flex items-center justify-center transition-colors duration-200"
+            className="shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-2.5 py-1.5 flex items-center justify-center transition-colors duration-200"
             aria-label="Buscar"
           >
             <Search className="h-3.5 w-3.5 text-black" />
@@ -200,7 +195,7 @@ export function Header() {
         </form>
 
         {/* Hamburger + Cart */}
-        <div className="flex items-center flex-shrink-0">
+        <div className="flex items-center shrink-0">
           <button
             type="button"
             className="inline-flex items-center justify-center p-2 text-muted-foreground hover:text-primary transition-colors"
