@@ -78,10 +78,10 @@ function CategoryCard({ name, slug, image, index }: { name: string; slug: string
             style={{ background: "radial-gradient(ellipse at 50% 100%, rgba(212,175,55,0.12) 0%, transparent 55%)" }}
           />
 
-          {/* Mobile: badge "Explorar" */}
-          <div className="sm:hidden absolute bottom-4 left-0 right-0 flex justify-center">
-            <span className="inline-flex items-center gap-2 border border-primary/70 bg-black/65 backdrop-blur-sm px-5 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-primary">
-              Explorar
+          {/* Botón centrado siempre visible */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="inline-flex items-center gap-2 border border-primary/70 bg-black/55 backdrop-blur-sm px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-primary group-hover:bg-black/75 group-hover:border-primary transition-all duration-300">
+              {name}
               <ArrowRight className="w-3.5 h-3.5" />
             </span>
           </div>

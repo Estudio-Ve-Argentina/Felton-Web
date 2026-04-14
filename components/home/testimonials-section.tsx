@@ -139,39 +139,16 @@ export function TestimonialsSection() {
                   </div>
                 </div>
 
-                {/* Separator */}
-                <div className="mt-8 mb-6 flex items-center gap-3 w-full max-w-[260px]">
-                  <div className="flex-1 h-px bg-primary/20" />
-                  <Star className="h-3 w-3 fill-primary text-primary flex-shrink-0" />
-                  <div className="flex-1 h-px bg-primary/20" />
-                </div>
-
                 {/* Quote */}
-                <p className="font-serif text-lg md:text-xl font-light italic text-white/80 leading-relaxed mb-5 max-w-xs">
+                <p className="mt-8 font-serif text-lg md:text-xl font-light italic text-white/80 leading-relaxed max-w-xs">
                   &ldquo;{locale === "es" ? item.quote : item.quoteEn}&rdquo;
-                </p>
-
-                {/* Stars */}
-                <div className="flex justify-center gap-1 mb-4">
-                  {Array.from({ length: item.rating }).map((_, i) => (
-                    <Star key={i} className="h-3 w-3 fill-primary text-primary" />
-                  ))}
-                </div>
-
-                {/* Author */}
-                <p className="text-xs font-semibold text-white/55 tracking-[0.2em] uppercase">
-                  {locale === "es" ? item.author : item.authorEn}
-                </p>
-                <p className="text-[10px] text-primary/45 tracking-[0.18em] uppercase mt-1">
-                  {item.product}
                 </p>
             </>
           </motion.div>
         </AnimatePresence>
 
-        {/* Timer + dots */}
-        <div className="mt-12 flex flex-col items-center gap-4">
-          {/* Progress line */}
+        {/* Timer */}
+        <div className="mt-12 flex flex-col items-center">
           <div className="relative w-48 h-px bg-white/10 overflow-hidden rounded-full">
             <motion.div
               key={timerKey}
@@ -185,21 +162,6 @@ export function TestimonialsSection() {
             />
           </div>
 
-          {/* Dots */}
-          <div className="flex items-center gap-2.5">
-            {testimonials.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                aria-label={`Testimonio ${i + 1}`}
-                className={`rounded-full transition-all duration-300 ${
-                  i === current
-                    ? "w-6 h-1.5 bg-primary"
-                    : "w-1.5 h-1.5 bg-primary/25 hover:bg-primary/50"
-                }`}
-              />
-            ))}
-          </div>
         </div>
 
       </div>
