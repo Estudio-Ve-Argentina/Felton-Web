@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
-import Image from "next/image";
 import { useTranslation } from "@/lib/i18n";
 
 const TIMER_MS = 3600;
@@ -47,41 +46,33 @@ function TestimonialCard({ testimonial, locale }: { testimonial: typeof testimon
       <div className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-primary/50" />
       <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-primary/50" />
 
-      <div className="relative px-10 py-12 lg:px-16 lg:py-14">
+      <div className="relative px-6 py-7 lg:px-10 lg:py-8">
         {/* Quote mark */}
-        <div className="text-8xl leading-none text-primary/20 font-serif mb-2">"</div>
+        <div className="text-5xl leading-none text-primary/20 font-serif mb-1">"</div>
 
         {/* Stars */}
-        <div className="flex justify-center gap-1 mb-8">
+        <div className="flex justify-center gap-1 mb-4">
           {Array.from({ length: testimonial.rating }).map((_, i) => (
-            <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+            <Star key={i} className="h-3 w-3 fill-primary text-primary" />
           ))}
         </div>
 
         {/* Quote */}
-        <p className="font-serif text-xl md:text-2xl font-light italic leading-relaxed text-white/80 mb-10">
+        <p className="font-serif text-base font-light italic leading-relaxed text-white/80 mb-6">
           {locale === "es" ? testimonial.quote : testimonial.quoteEn}
         </p>
 
         {/* Diamond divider */}
-        <div className="flex items-center gap-4 mb-8 justify-center">
-          <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
-          <div className="w-1.5 h-1.5 bg-primary/60 rotate-45" />
-          <div className="flex-1 h-px bg-primary/20 max-w-[80px]" />
+        <div className="flex items-center gap-3 mb-5 justify-center">
+          <div className="flex-1 h-px bg-primary/20 max-w-[60px]" />
+          <div className="w-1 h-1 bg-primary/60 rotate-45" />
+          <div className="flex-1 h-px bg-primary/20 max-w-[60px]" />
         </div>
 
         {/* Author */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-primary/25 blur-md" />
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary/40">
-              <Image src={testimonial.image} alt={testimonial.author} fill className="object-cover" />
-            </div>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-white/90 tracking-[0.2em] uppercase">{testimonial.author}</p>
-            <p className="text-xs text-primary/60 tracking-[0.25em] uppercase mt-1">{testimonial.role}</p>
-          </div>
+        <div>
+          <p className="text-xs font-semibold text-white/90 tracking-[0.2em] uppercase">{testimonial.author}</p>
+          <p className="text-[10px] text-primary/60 tracking-[0.25em] uppercase mt-1">{testimonial.role}</p>
         </div>
       </div>
 
@@ -114,13 +105,13 @@ export function TestimonialsSection() {
   const item = testimonials[current];
 
   return (
-    <section className="relative w-full overflow-hidden pt-32 lg:pt-40 pb-44 lg:pb-52">
+    <section className="relative w-full overflow-hidden pt-16 lg:pt-20 pb-24 lg:pb-28">
       <div
         className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none z-20"
         style={{ background: "linear-gradient(to bottom, transparent 0%, var(--background) 100%)" }}
       />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-6 lg:px-8">
+      <div className="relative z-10 max-w-md mx-auto px-6 lg:px-8">
 
         <motion.div
           initial={{ scale: 0.85, opacity: 0 }}
