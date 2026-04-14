@@ -85,7 +85,7 @@ function ProductCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.06 }}
-      className="group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-300 overflow-hidden"
+      className="product-leather-card group relative flex flex-col border border-primary/15 hover:border-primary/40 transition-all duration-300 overflow-hidden"
       style={{
         backgroundImage: 'url("/images/leather-texture.png")',
         backgroundSize: "cover",
