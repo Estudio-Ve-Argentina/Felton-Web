@@ -71,8 +71,8 @@ export function Header() {
       className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-primary/10"
     >
       {/* Desktop: 5-col grid — Logo | gap | Search | Nav (centered) | Right */}
-      <nav className="mx-auto hidden lg:grid max-w-7xl items-center py-3.5 pl-2 pr-2"
-        style={{ gridTemplateColumns: "auto 32px 280px 1fr auto" }}
+      <nav className="mx-auto hidden lg:grid max-w-7xl items-center py-3 pl-2 pr-2"
+        style={{ gridTemplateColumns: "auto 32px 240px 1fr auto" }}
       >
         {/* Logo — pushed left */}
         <Link href="/" className="shrink-0">
@@ -88,10 +88,10 @@ export function Header() {
         {/* Spacer */}
         <div />
 
-        {/* Search bar — fixed 280px */}
+        {/* Search bar — fixed 240px */}
         <form
           onSubmit={handleSearch}
-          className="flex items-center overflow-hidden rounded-full bg-white transition-all duration-200"
+          className="flex items-center overflow-hidden rounded-full bg-secondary/30 border border-primary/20 focus-within:border-primary/40 focus-within:bg-secondary/50 transition-all duration-300"
         >
           <input
             ref={searchInputRef}
@@ -99,14 +99,14 @@ export function Header() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar producto..."
-            className="flex-1 bg-transparent pl-4 pr-2 py-2 text-sm font-light text-black placeholder:text-black/40 focus:outline-none"
+            className="flex-1 bg-transparent pl-4 pr-2 py-1.5 text-xs font-light text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
           />
           <button
             type="submit"
-            className="shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-3 py-1.5 flex items-center justify-center transition-colors duration-200"
+            className="shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-2.5 py-1 flex items-center justify-center transition-colors duration-200"
             aria-label="Buscar"
           >
-            <Search className="h-3.5 w-3.5 text-black" />
+            <Search className="h-3 w-3 text-primary-foreground" />
           </button>
         </form>
 
@@ -176,21 +176,21 @@ export function Header() {
         {/* Search — ocupa el espacio disponible */}
         <form
           onSubmit={handleSearch}
-          className="flex flex-1 items-center overflow-hidden rounded-full bg-white min-w-0"
+          className="flex flex-1 items-center overflow-hidden rounded-full bg-secondary/30 border border-primary/20 focus-within:border-primary/40 transition-all duration-300 min-w-0"
         >
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar..."
-            className="flex-1 min-w-0 bg-transparent pl-3.5 pr-1 py-2 text-sm text-black placeholder:text-black/40 focus:outline-none"
+            className="flex-1 min-w-0 bg-transparent pl-3.5 pr-1 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
           />
           <button
             type="submit"
-            className="shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-2.5 py-1.5 flex items-center justify-center transition-colors duration-200"
+            className="shrink-0 bg-primary hover:bg-primary/85 rounded-full m-1 px-2.5 py-1 flex items-center justify-center transition-colors duration-200"
             aria-label="Buscar"
           >
-            <Search className="h-3.5 w-3.5 text-black" />
+            <Search className="h-3 w-3 text-primary-foreground" />
           </button>
         </form>
 

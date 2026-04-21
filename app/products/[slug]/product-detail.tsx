@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   RotateCcw,
 } from "lucide-react";
-import { useCart } from "@/lib/cart";
+import { useCart, type CartProduct } from "@/lib/cart";
 import type { TiendaNubeProduct } from "@/lib/tiendanube";
 import { formatPrice, getProductMainImage } from "@/lib/tiendanube";
 import {
@@ -32,12 +32,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-function toCartProduct(product: TiendaNubeProduct, variantId: number) {
+function toCartProduct(
+  product: TiendaNubeProduct,
+  variantId: number,
+): CartProduct {
   const variant =
     product.variants.find((v) => v.id === variantId) ?? product.variants[0];
   const stock = variant.stock_management ? (variant.stock ?? 0) : 999;
   return {
     id: String(variant.id),
+    productId: product.id,
     variantId: variant.id,
     name: product.name.es,
     price: variant.price,
@@ -66,7 +70,9 @@ export function ProductDetail({ product, related }: Props) {
     product.variants[0]?.id ?? 0,
   );
   const [zipcode, setZipcode] = useState("");
-  const [shippingOptions, setShippingOptions] = useState<{name: string, price: number | "Gratis", time: string}[] | null>(null);
+  const [shippingOptions, setShippingOptions] = useState<
+    { name: string; price: number | "Gratis"; time: string }[] | null
+  >(null);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
 
   const selectedVariant =
@@ -97,11 +103,19 @@ export function ProductDetail({ product, related }: Props) {
     setIsCalculatingShipping(true);
     setShippingOptions(null);
     // Simulate API request to shipping provider
-    await new Promise(r => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, 1200));
     setShippingOptions([
-      { name: "Envío Estándar a Domicilio", price: 4500, time: "3 a 5 días hábiles" },
+      {
+        name: "Envío Estándar a Domicilio",
+        price: 4500,
+        time: "3 a 5 días hábiles",
+      },
       { name: "Envío Prioritario", price: 7800, time: "1 a 2 días hábiles" },
-      { name: "Retiro en Sucursal", price: "Gratis", time: "A partir del próximo día hábil" }
+      {
+        name: "Retiro en Sucursal",
+        price: "Gratis",
+        time: "A partir del próximo día hábil",
+      },
     ]);
     setIsCalculatingShipping(false);
   };
@@ -288,9 +302,15 @@ export function ProductDetail({ product, related }: Props) {
                         <Input
                           type="text"
                           value={zipcode}
-                          onChange={(e) => setZipcode(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                          onChange={(e) =>
+                            setZipcode(
+                              e.target.value.replace(/\D/g, "").slice(0, 8),
+                            )
+                          }
                           placeholder="Ej: 7600"
-                          onKeyDown={(e) => e.key === "Enter" && calculateShipping()}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && calculateShipping()
+                          }
                           className="flex-1 h-12 bg-primary/5 border-primary/20 text-sm focus:border-primary transition-colors rounded-none"
                         />
                         <Button
@@ -306,7 +326,7 @@ export function ProductDetail({ product, related }: Props) {
                           )}
                         </Button>
                       </div>
-                      
+
                       {/* Shipping Options Results */}
                       {shippingOptions && (
                         <motion.div
@@ -315,19 +335,28 @@ export function ProductDetail({ product, related }: Props) {
                           className="mt-4 flex flex-col gap-3"
                         >
                           {shippingOptions.map((opt, i) => (
-                            <div key={i} className="flex justify-between items-center p-3 border border-primary/10 bg-primary/5">
+                            <div
+                              key={i}
+                              className="flex justify-between items-center p-3 border border-primary/10 bg-primary/5"
+                            >
                               <div>
-                                <p className="font-semibold text-sm text-foreground/90">{opt.name}</p>
-                                <p className="text-xs text-white/50 mt-1">{opt.time}</p>
+                                <p className="font-semibold text-sm text-foreground/90">
+                                  {opt.name}
+                                </p>
+                                <p className="text-xs text-white/50 mt-1">
+                                  {opt.time}
+                                </p>
                               </div>
                               <div className="text-primary font-semibold">
-                                {typeof opt.price === "number" ? formatPrice(opt.price) : opt.price}
+                                {typeof opt.price === "number"
+                                  ? formatPrice(opt.price)
+                                  : opt.price}
                               </div>
                             </div>
                           ))}
                         </motion.div>
                       )}
-                      
+
                       <p className="text-[10px] text-white/40 italic mt-2">
                         * Costo ilustrativo. Las tarifas exactas se confirmarán
                         en el checkout de Tienda Nube.

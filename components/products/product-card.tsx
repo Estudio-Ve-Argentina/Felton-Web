@@ -16,6 +16,7 @@ export interface ProductItem {
   category: string;
   price: string;
   image: string;
+  productId: number;
   variantId?: number;
   rawPrice?: string;
   stock?: number;
@@ -30,6 +31,7 @@ export function tnToProductItem(p: TiendaNubeProduct): ProductItem {
     category: p.categories?.[0]?.name?.es ?? "",
     price: variant ? formatPrice(variant.price) : "",
     image: getProductMainImage(p) ?? "",
+    productId: p.id,
     variantId: variant?.id,
     rawPrice: variant?.price ?? "",
     stock: variant?.stock_management ? (variant?.stock ?? 0) : 999,
@@ -58,6 +60,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
     if (!inStock || !product.variantId) return;
     addToCart({
       id: String(product.variantId),
+      productId: product.productId,
       variantId: product.variantId,
       name: product.name,
       price: product.rawPrice ?? "",
@@ -257,7 +260,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           transition: all 0.5s ease;
         }
         @media (max-width: 768px) {
-          .product-info { bottom: 15px; }
+          .product-info { bottom: 25px; }
         }
 
         .product-brand {
@@ -356,7 +359,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
       </Link>
 
       <div 
-        className={`purchase-button-container absolute bottom-0 left-0 right-0 z-30 transition-all duration-500 sm:opacity-0 sm:translate-y-4 sm:group-hover:opacity-100 sm:group-hover:translate-y-0`}
+        className={`purchase-button-container absolute bottom-0 left-0 right-0 z-30 transition-all duration-500 opacity-0 translate-y-4 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 hidden sm:block`}
       >
         <button
           onClick={handleAddToCart}

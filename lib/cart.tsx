@@ -10,7 +10,8 @@ import {
 } from "react";
 
 export interface CartProduct {
-  id: string;          // variant ID as string (unique key)
+  id: string;          // unique key (usually variant ID as string)
+  productId: number;   // numeric product ID
   variantId: number;   // numeric variant ID for TN checkout API
   name: string;
   price: string;       // raw price string from TN e.g. "15000.00"

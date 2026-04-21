@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 
 function formatARS(num: number): string {
@@ -40,15 +41,33 @@ export function CartDrawer() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
+          items: items.map((i) => ({
+            productId: i.productId,
+            variantId: i.variantId,
+            quantity: i.quantity,
+            name: i.name,
+            price: i.price,
+          })),
         }),
       });
+      
       const data = await res.json();
+      
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "No pudimos generar el link de pago seguro");
+      }
+
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error("No se pudo generar el link de pago");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Checkout error:", err);
+      toast.error("¡Ups! Hubo un problema", {
+        description: "No te preocupes, tus productos siguen guardados en el carrito. Por favor, intenta de nuevo en unos momentos o contáctanos si el problema persiste.",
+        duration: 6000,
+      });
     } finally {
       setIsCheckingOut(false);
     }

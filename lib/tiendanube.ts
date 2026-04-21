@@ -61,13 +61,12 @@ async function tiendaNubeFetch<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const STORE_ID = process.env.TIENDANUBE_STORE_ID;
-  const ACCESS_TOKEN = process.env.TIENDANUBE_ACCESS_TOKEN;
+  const STORE_ID = process.env.TIENDANUBE_STORE_ID?.trim();
+  const ACCESS_TOKEN = process.env.TIENDANUBE_ACCESS_TOKEN?.trim();
 
   if (!STORE_ID || !ACCESS_TOKEN) {
     throw new Error(
-      "Missing Tienda Nube credentials. Set TIENDANUBE_STORE_ID and TIENDANUBE_ACCESS_TOKEN in .env.local.\n" +
-      "See .agents/workflows/tiendanube-setup.md for setup instructions."
+      "Missing Tienda Nube credentials. Set TIENDANUBE_STORE_ID and TIENDANUBE_ACCESS_TOKEN in .env.local."
     );
   }
 
@@ -78,7 +77,7 @@ async function tiendaNubeFetch<T>(
     headers: {
       "Authentication": `bearer ${ACCESS_TOKEN}`,
       "Content-Type": "application/json",
-      "User-Agent": "VELMOR Web (contact@velmor.com)",
+      "User-Agent": "Felton Web (Felton26.01@gmail.com)",
       ...options.headers,
     },
   });
