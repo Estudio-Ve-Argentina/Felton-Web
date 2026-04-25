@@ -10,35 +10,53 @@ const values = {
   es: [
     {
       title: "Excelencia Discreta",
-      description:
-        "Cada pieza Felton es una importación seleccionada. Replicamos al detalle los estándares de las casas de lujo más reconocidas del mundo—Gucci, Louis Vuitton, Balenciaga—con acabados impecables y una presencia que no necesita presentación. La calidad se siente antes de que alguien pregunte la marca.",
+      paragraphs: [
+        "Cada pieza es seleccionada con criterio.",
+        "Trabajamos sobre modelos que marcaron la industria, respetando sus proporciones, materiales y terminaciones.",
+        "La calidad no necesita explicación. Se percibe.",
+      ],
     },
     {
       title: "Atemporal a la Moda",
-      description:
-        "El estilo que vendemos no caduca con la temporada. Nuestros accesorios van de la calle al evento sin perder un gramo de identidad, porque el buen gusto no necesita contexto. Hoy en el set, mañana en la reunión—Felton se adapta a quien lo lleva, no al revés.",
+      paragraphs: [
+        "El estilo no depende del momento.",
+        "Nuestras piezas funcionan en cualquier contexto, sin perder identidad. Porque lo que está bien hecho no pasa de moda.",
+        "Felton se adapta a quien lo lleva. No al revés.",
+      ],
     },
     {
-      title: "Materiales Premium",
-      description:
-        "No nos conformamos con menos. Todos nuestros productos son importados y pasan por un control de calidad riguroso antes de llegar a tus manos. Cuero genuino, herrajes sólidos, costuras que duran—porque la diferencia entre lo ordinario y lo extraordinario está en los detalles que la mayoría no ve, pero todos sienten.",
+      title: "Materiales",
+      paragraphs: [
+        "Los materiales definen todo.",
+        "Cuero, herrajes y terminaciones son elegidos por cómo se ven, pero sobre todo por cómo se sienten.",
+        "La diferencia está en los detalles que no todos notan, pero todos perciben.",
+      ],
     },
   ],
   en: [
     {
       title: "Discreet Excellence",
-      description:
-        "Every Felton piece is a curated import. We replicate the standards of the world's most recognized luxury houses—Gucci, Louis Vuitton, Balenciaga—with flawless finishes and a presence that needs no introduction. Quality is felt before anyone asks about the brand.",
+      paragraphs: [
+        "Each piece is selected with intention.",
+        "We work from models that defined the industry, honoring their proportions, materials, and finishes.",
+        "Quality needs no explanation. It's felt.",
+      ],
     },
     {
       title: "Timeless Style",
-      description:
-        "The style we sell doesn't expire with the season. Our accessories move from the streets to any setting without losing an ounce of identity, because good taste needs no context. Today on the block, tomorrow in the boardroom—Felton adapts to who's wearing it, not the other way around.",
+      paragraphs: [
+        "Style doesn't depend on the moment.",
+        "Our pieces work in any context without losing identity. Because what's made right doesn't go out of style.",
+        "Felton adapts to who wears it. Not the other way around.",
+      ],
     },
     {
-      title: "Premium Materials",
-      description:
-        "We don't settle for less. Every product we carry is imported and goes through a rigorous quality check before it reaches your hands. Genuine leather, solid hardware, stitching that holds—because the difference between ordinary and extraordinary is in the details most people don't see, but everyone feels.",
+      title: "Materials",
+      paragraphs: [
+        "Materials define everything.",
+        "Leather, hardware, and finishes are chosen for how they look — but above all, for how they feel.",
+        "The difference lies in details not everyone notices, but everyone perceives.",
+      ],
     },
   ],
 };
@@ -87,14 +105,13 @@ export default function AboutPage() {
 
         {/* ── Hero ── */}
         <div className="relative h-screen overflow-hidden flex items-center justify-center">
-          {/* Video background */}
           <video
             autoPlay
             muted
             loop
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
-            src="/FELTON SIN SONIDO 720P.mp4"
+            src="/Video cajas.mp4"
           />
           {/* Dark overlay */}
           <div className="absolute inset-0 bg-black/55" />
@@ -112,7 +129,7 @@ export default function AboutPage() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="font-serif text-4xl font-light tracking-tight sm:text-5xl lg:text-6xl"
             >
-              {locale === "es" ? "La Filosofía de" : "The Philosophy of"}
+              {locale === "es" ? "Nuestra Filosofía" : "Our Philosophy:"}
               <span className="block mt-2 bg-gradient-to-r from-primary via-yellow-300 to-primary bg-clip-text text-transparent">
                 {locale === "es" ? "No Es Para Cualquiera" : "Not For Everyone"}
               </span>
@@ -165,13 +182,18 @@ export default function AboutPage() {
               <div className="space-y-5 text-[1.05rem] font-light leading-[1.85] text-muted-foreground">
                 <p>
                   {locale === "es"
-                    ? "Felton nació de una verdad simple: el lujo no debería ser inalcanzable. El mercado ofrecía o productos mediocres o precios imposibles. Nosotros encontramos la diferencia."
-                    : "Felton was born from a simple truth: luxury shouldn't be out of reach. The market offered either mediocre products or impossible prices. We found the difference."}
+                    ? "Felton nace de una idea simple: elegir mejor. Durante mucho tiempo, el acceso a productos de calidad estuvo limitado por precios excesivos o propuestas que no estaban a la altura."
+                    : "Felton was born from a simple idea: choose better. For a long time, access to quality products was limited by excessive prices or offerings that simply didn't measure up."}
                 </p>
                 <p>
                   {locale === "es"
-                    ? "Nuestro cliente no es cualquiera—entiende la cultura, vive el estilo desde adentro. Para esa persona que no está dispuesta a conformarse, creamos Felton: accesorios importados premium con el sello de las marcas más reconocidas del mundo."
-                    : "Our customer isn't just anyone—they understand the culture, they live style from the inside. For the person who refuses to settle, we created Felton: premium imported accessories carrying the mark of the world's most recognized brands."}
+                    ? "Encontramos ese punto medio donde el diseño, los materiales y la presencia conviven en equilibrio."
+                    : "We found the middle ground where design, materials, and presence coexist in balance."}
+                </p>
+                <p>
+                  {locale === "es"
+                    ? "Felton no es para cualquiera. Es para quienes entienden el detalle, valoran la estética y saben que lo que llevan habla por ellos."
+                    : "Felton is not for everyone. It's for those who understand the detail, value aesthetics, and know that what they carry speaks for them."}
                 </p>
               </div>
             </motion.div>
@@ -261,8 +283,8 @@ export default function AboutPage() {
                 title={locale === "es" ? "Lo Que Creemos" : "What We Believe"}
                 description={
                   locale === "es"
-                    ? "Cuatro principios guían todo lo que creamos. Informan nuestras elecciones de materiales, influyen en nuestros diseños, y dan forma a la experiencia de poseer una pieza Felton."
-                    : "Four principles guide everything we create. They inform our material choices, influence our designs, and shape the experience of owning a Felton piece."
+                    ? "Tres principios definen todo lo que hacemos. No son tendencias. Son decisiones.\n\nDesde los materiales hasta la forma en la que cada pieza se siente en uso, todo responde a una misma idea: hacer las cosas bien."
+                    : "Three principles define everything we do. They're not trends. They're decisions.\n\nFrom the materials to the way each piece feels in use, everything answers to a single idea: doing things right."
                 }
                 align="left"
               />
@@ -284,9 +306,13 @@ export default function AboutPage() {
                     <h3 className="mt-5 font-serif text-xl font-light tracking-tight text-foreground lg:text-2xl">
                       {value.title}
                     </h3>
-                    <p className="mt-3 text-sm font-light leading-[1.85] text-muted-foreground">
-                      {value.description}
-                    </p>
+                    <div className="mt-4 space-y-3">
+                      {value.paragraphs.map((p, i) => (
+                        <p key={i} className="text-sm font-light leading-[1.85] text-muted-foreground">
+                          {p}
+                        </p>
+                      ))}
+                    </div>
                   </motion.div>
                 ))}
               </motion.div>

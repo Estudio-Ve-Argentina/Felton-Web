@@ -111,9 +111,6 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
         .product-container {
           position: relative; cursor: pointer; width: 100%; height: 500px;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
-          background-image: url("/images/leather-texture.png");
-          background-size: cover; background-position: center;
-          background-blend-mode: multiply; background-color: rgba(10, 10, 14, 0.95);
           border: 1px solid rgba(212, 175, 55, 0.12);
           transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
           overflow: hidden; padding: 20px;
@@ -211,7 +208,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
         @media (max-width: 768px) { .product { width: 180px; height: 180px; transform: translateY(0); } }
 
         .product-img {
-          filter: brightness(0.65) contrast(1.1) saturate(0.85);
+          filter: none;
           transition: filter 3s cubic-bezier(0.19,1,0.22,1);
           object-fit: contain;
         }
@@ -225,7 +222,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
         }
         
         @media (max-width: 768px) {
-           .product-img { filter: brightness(0.9) contrast(1.1); }
+           .product-img { filter: none; }
         }
 
         .product-shadow-main {
@@ -233,7 +230,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           width: 220px; height: 40px;
           background: radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 90%);
           opacity: 0.8; transition: all 1.5s cubic-bezier(0.25,0.46,0.45,0.94);
-          filter: blur(12px); z-index: 3;
+          z-index: 3;
         }
         @media (hover: hover) {
           .product-container:hover .product-shadow-main { opacity: 0.4; width: 180px; bottom: 150px; filter: blur(20px); }
@@ -319,6 +316,12 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
 
       <Link href={`/products/${product.slug}`} className="block">
         <div className="product-container group" onMouseEnter={createParticles}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/Fondo-cards.jpg"
+            alt=""
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
+          />
           <div className="lighting-container">
             <div className="ambient-glow" />
             <div className="main-light-cone" />

@@ -21,12 +21,12 @@ export function HeroSection() {
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105"
-        src="/brands/20260202_1643_01kgfxzrykej39g94ehkk73kw2.mp4"
+        className="absolute inset-0 w-full h-full object-cover"
+        src="/FELTON SIN SONIDO 2.mp4"
       />
 
       {/* Neutral overlay for immersive feel */}
-      <div className="absolute inset-0 bg-[#0a0a0c]/70" />
+      <div className="absolute inset-0 bg-[#0a0a0c]/40" />
       {/* Top gradient so header items stay readable */}
       <div className="absolute top-0 left-0 right-0 h-32 bg-linear-to-b from-black/50 to-transparent pointer-events-none" />
       {/* Bottom vignette — blends into the dark product section below */}
