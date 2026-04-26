@@ -191,8 +191,7 @@ export async function scrapeBlogPost(path: string): Promise<TiendaNubeBlogPostSc
     const id = slug.split("-").pop() ?? slug;
 
     const title = extractTitle(html);
-    if (!title || title.length < 5) {
-      // If we can't get a real title, this is probably not a blog post page
+    if (!title || title.length < 2) {
       return null;
     }
 

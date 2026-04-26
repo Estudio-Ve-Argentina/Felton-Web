@@ -8,7 +8,7 @@ import { toast } from "sonner"
 import type { TiendaNubeBlogPostScraped } from "@/lib/tiendanube-blog"
 
 const STORE_URL = process.env.NEXT_PUBLIC_TIENDANUBE_STORE_URL || "https://felton2.mitiendanube.com"
-const TN_ADMIN_BLOG_URL = "https://felton2.mitiendanube.com/admin/blog/"
+const TN_ADMIN_BLOG_URL = `${STORE_URL}/admin/blog/`
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<TiendaNubeBlogPostScraped[]>([])
