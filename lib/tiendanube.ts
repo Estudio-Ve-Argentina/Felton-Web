@@ -256,8 +256,8 @@ export function formatPrice(price: string | number, currency: string = "ARS"): s
 }
 
 export function getProductMainImage(product: TiendaNubeProduct): string | null {
-  const mainImage = product.images.find(img => img.position === 1) || product.images[0];
-  return mainImage?.src || null;
+  const sorted = [...product.images].sort((a, b) => a.position - b.position);
+  return sorted[0]?.src || null;
 }
 
 export function getProductStock(product: TiendaNubeProduct): number | null {

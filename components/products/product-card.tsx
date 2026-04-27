@@ -275,6 +275,21 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           .product-price { font-size: 18px; }
         }
 
+        .out-of-stock-badge {
+          position: absolute; top: 12px; left: 0;
+          background: #dc2626; color: white;
+          font-size: 8px; font-weight: 800; letter-spacing: 0.15em;
+          text-transform: uppercase; padding: 5px 12px; z-index: 20;
+        }
+        @media (max-width: 768px) {
+          .out-of-stock-badge { font-size: 7px; padding: 4px 10px; }
+        }
+
+        .product-price-out {
+          font-size: 11px; font-weight: 800; color: #ef4444;
+          letter-spacing: 0.12em; text-transform: uppercase;
+        }
+
         .shine-button {
           position: relative;
           overflow: hidden;
@@ -322,6 +337,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
             alt=""
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
           />
+          {!inStock && <div className="out-of-stock-badge">¡Producto sin stock!</div>}
           <div className="lighting-container">
             <div className="ambient-glow" />
             <div className="main-light-cone" />
@@ -354,6 +370,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
             <p className="product-brand">{product.category}</p>
             <h3 className="product-name">{product.name}</h3>
             <p className="product-price">{product.price}</p>
+            {!inStock && <p className="product-price-out">¡Producto sin stock!</p>}
           </div>
         </div>
       </Link>

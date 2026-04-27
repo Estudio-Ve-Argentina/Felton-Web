@@ -1,6 +1,6 @@
 import React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter, Cormorant_Garamond } from "next/font/google"
+import { Inter, Cormorant_Garamond, PT_Serif } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { I18nProvider } from "@/lib/i18n"
 import { CartProvider } from "@/lib/cart"
@@ -18,6 +18,13 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-cormorant",
+  display: "swap",
+})
+
+const ptSerif = PT_Serif({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-pt-serif",
   display: "swap",
 })
 
@@ -71,7 +78,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${cormorant.variable}`}>
+    <html lang="es" className={`${inter.variable} ${cormorant.variable} ${ptSerif.variable}`}>
       <body className="font-sans antialiased bg-background text-foreground overflow-x-hidden">
         <CartProvider>
           <I18nProvider>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Instagram, Mail } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
@@ -73,6 +73,7 @@ export function Footer() {
                 <Mail className="h-4 w-4" />
               </a>
             </div>
+
           </motion.div>
 
           {/* Discover */}
@@ -173,6 +174,30 @@ export function Footer() {
           </div>
         </motion.div>
       </motion.div>
+
+      {/* Estudio Ve */}
+      <div className="border-t border-primary/5 py-4 flex justify-center">
+        <a
+          href="https://estudiove.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-3 opacity-40 hover:opacity-75 transition-opacity duration-300"
+        >
+          <Image
+            src="/Logo%20estudio%20ve.png"
+            alt="Estudio Ve"
+            width={48}
+            height={18}
+            className="object-contain self-center"
+          />
+          <span
+            className="text-sm text-muted-foreground leading-none translate-y-[3px]"
+            style={{ fontFamily: "var(--font-pt-serif)", fontWeight: 700 }}
+          >
+            Estudio Ve, 2026
+          </span>
+        </a>
+      </div>
     </footer>
   );
 }
