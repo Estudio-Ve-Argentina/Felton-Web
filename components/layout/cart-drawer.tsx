@@ -16,13 +16,23 @@ function formatARS(num: number): string {
 }
 
 export function CartDrawer() {
-  const { items, totalItems, totalPrice, isOpen, closeCart, increment, decrement, remove } =
-    useCart();
+  const {
+    items,
+    totalItems,
+    totalPrice,
+    isOpen,
+    closeCart,
+    increment,
+    decrement,
+    remove,
+  } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -50,11 +60,13 @@ export function CartDrawer() {
           })),
         }),
       });
-      
+
       const data = await res.json();
-      
+
       if (!res.ok || data.error) {
-        throw new Error(data.error || "No pudimos generar el link de pago seguro");
+        throw new Error(
+          data.error || "No pudimos generar el link de pago seguro",
+        );
       }
 
       if (data.checkoutUrl) {
@@ -65,7 +77,8 @@ export function CartDrawer() {
     } catch (err: any) {
       console.error("Checkout error:", err);
       toast.error("¡Ups! Hubo un problema", {
-        description: "No te preocupes, tus productos siguen guardados en el carrito. Por favor, intenta de nuevo en unos momentos o contáctanos si el problema persiste.",
+        description:
+          "No te preocupes, tus productos siguen guardados en el carrito. Por favor, intenta de nuevo en unos momentos o contáctanos si el problema persiste.",
         duration: 6000,
       });
     } finally {
@@ -147,7 +160,9 @@ export function CartDrawer() {
                           className="object-contain"
                         />
                       ) : (
-                        <span className="text-primary/20 text-2xl font-serif">F</span>
+                        <span className="text-primary/20 text-2xl font-serif">
+                          F
+                        </span>
                       )}
                     </div>
 
@@ -184,7 +199,9 @@ export function CartDrawer() {
                           <Plus className="h-3 w-3" />
                         </button>
                         {item.quantity >= item.stock && item.stock < 999 && (
-                          <span className="text-[10px] text-primary/50 ml-1">Máx</span>
+                          <span className="text-[10px] text-primary/50 ml-1">
+                            Máx
+                          </span>
                         )}
                       </div>
                     </div>

@@ -19,6 +19,8 @@ export interface ProductItem {
   productId: number;
   variantId?: number;
   rawPrice?: string;
+  originalPrice?: string;
+  discountPercentage?: number;
   stock?: number;
 }
 
@@ -34,6 +36,12 @@ export function tnToProductItem(p: TiendaNubeProduct): ProductItem {
     productId: p.id,
     variantId: variant?.id,
     rawPrice: variant?.price ?? "",
+    originalPrice: variant?.compare_at_price && parseFloat(variant.compare_at_price) > parseFloat(variant.price)
+      ? formatPrice(variant.compare_at_price) 
+      : undefined,
+    discountPercentage: variant?.compare_at_price && parseFloat(variant.compare_at_price) > parseFloat(variant.price)
+      ? Math.round((1 - parseFloat(variant.price) / parseFloat(variant.compare_at_price)) * 100)
+      : undefined,
     stock: variant?.stock_management ? (variant?.stock ?? 0) : 999,
   };
 }
@@ -112,12 +120,13 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
         .product-card-wrapper { position: relative; width: 100%; }
 
         .product-container {
-          position: relative; cursor: pointer; width: 100%; height: 500px;
+          position: relative; cursor: pointer; width: calc(100% - 2px); height: 520px;
+          margin: 1px;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           background-image: url("/images/leather-texture.png");
           background-size: cover; background-position: center;
           background-blend-mode: multiply; background-color: rgba(10, 10, 14, 0.95);
-          border: 1px solid rgba(212, 175, 55, 0.12);
+          border: 1px solid rgba(212, 175, 55, 0.15);
           transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
           overflow: hidden; padding: 20px;
         }
@@ -231,6 +240,19 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
            .product-img { filter: brightness(0.9) contrast(1.1); }
         }
 
+        .out-of-stock-img {
+          filter: grayscale(1) brightness(0.4) !important;
+        }
+
+        .out-of-stock-badge {
+          position: absolute; top: 15px; left: 15px; z-index: 20;
+          padding: 4px 10px; background: rgba(255, 255, 255, 0.1); color: white;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          font-size: 9px; font-weight: 700; text-transform: uppercase;
+          letter-spacing: 0.2em; border-radius: 2px;
+          backdrop-filter: blur(4px);
+        }
+
         .product-shadow-main {
           position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%);
           width: 220px; height: 40px;
@@ -272,13 +294,29 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           color: white; margin-bottom: 4px; line-height: 1.2;
           overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
         }
+        .product-price-container {
+          display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
         .product-price {
           font-size: 20px; font-weight: 600; color: rgba(212, 175, 55, 1);
           letter-spacing: 0.02em;
         }
+        .product-original-price {
+          font-size: 14px; color: rgba(255, 255, 255, 0.4); text-decoration: line-through;
+          font-weight: 400;
+        }
+        .sale-badge {
+          position: absolute; top: 15px; left: 15px; z-index: 20;
+          padding: 4px 8px; background: #D4AF37; color: black;
+          font-size: 9px; font-weight: 800; text-transform: uppercase;
+          letter-spacing: 0.15em; border-radius: 2px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
         @media (max-width: 768px) {
           .product-name { font-size: 14px; }
           .product-price { font-size: 18px; }
+          .product-original-price { font-size: 12px; }
+          .sale-badge { top: 10px; left: 10px; padding: 3px 6px; font-size: 8px; }
         }
 
         .shine-button {
@@ -322,6 +360,13 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
 
       <Link href={`/products/${product.slug}`} className="block">
         <div className="product-container group" onMouseEnter={createParticles}>
+          {!inStock ? (
+            <div className="out-of-stock-badge">Agotado</div>
+          ) : product.originalPrice ? (
+            <div className="sale-badge">
+              {product.discountPercentage ? `${product.discountPercentage}% OFF` : "OFERTA"}
+            </div>
+          ) : null}
           <div className="lighting-container">
             <div className="ambient-glow" />
             <div className="main-light-cone" />
@@ -344,7 +389,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
                 alt={product.name}
                 width={240}
                 height={240}
-                className="product-img"
+                className={`product-img ${!inStock ? "out-of-stock-img" : ""}`}
               />
             ) : (
               <div style={{ width: 140, height: 140, display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.1, fontSize: 60, fontFamily: "serif" }}>F</div>
@@ -353,7 +398,12 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           <div className={`product-info transition-all duration-500 sm:group-hover:opacity-0 sm:group-hover:translate-y-2`}>
             <p className="product-brand">{product.category}</p>
             <h3 className="product-name">{product.name}</h3>
-            <p className="product-price">{product.price}</p>
+            <div className="product-price-container">
+              {product.originalPrice && (
+                <span className="product-original-price">{product.originalPrice}</span>
+              )}
+              <p className="product-price">{product.price}</p>
+            </div>
           </div>
         </div>
       </Link>

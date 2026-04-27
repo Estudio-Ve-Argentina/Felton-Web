@@ -21,7 +21,7 @@ async function createDraftOrder(items: CheckoutItem[]): Promise<string> {
   // Tienda Nube Draft Orders API
   // We include placeholder contact info as some stores require it to generate a checkout_url
   const payload = {
-    contact_email: "checkout@felton.com", // Placeholder
+    contact_email: "tucorreo@gmail.com", // Placeholder
     contact_name: "Cliente",             // Required by some stores
     contact_lastname: "Felton",           // Required by some stores
     products: items.map((item) => ({

@@ -11,6 +11,7 @@ interface TiendaNubeVariant {
   product_id: number;
   sku: string;
   price: string;
+  compare_at_price: string | null;
   stock: number | null;
   stock_management: boolean;
   values: { es: string }[];

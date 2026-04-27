@@ -48,7 +48,8 @@ export function FeaturedProducts() {
     const calc = () => {
       if (!containerRef.current) return;
       const w = containerRef.current.offsetWidth;
-      setSlotW(window.innerWidth < 768 ? w / 1.6 : w / 3);
+      // Show 3 products on desktop, but slightly narrower to leave space for borders and peek
+      setSlotW(window.innerWidth < 768 ? w / 1.4 : w / 3.01);
     };
     calc();
     window.addEventListener("resize", calc);

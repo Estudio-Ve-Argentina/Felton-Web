@@ -51,11 +51,11 @@ function toCartProduct(
   };
 }
 
-import { ProductCardMinimal } from "@/components/home/suggested-products";
+import { ProductCard } from "@/components/products/product-card";
 import { tnToProductItem } from "@/components/products/product-card";
 
-function RelatedCard({ product }: { product: TiendaNubeProduct }) {
-  return <ProductCardMinimal product={tnToProductItem(product)} />;
+function RelatedCard({ product, idx }: { product: TiendaNubeProduct, idx: number }) {
+  return <ProductCard product={tnToProductItem(product)} idx={idx} />;
 }
 
 interface Props {
@@ -146,7 +146,12 @@ export function ProductDetail({ product, related }: Props) {
           <h1 className="font-serif text-3xl sm:text-4xl font-light text-foreground leading-tight">
             {product.name.es}
           </h1>
-          <span className="text-2xl font-semibold text-primary tracking-tight mt-2 block">
+          <span className="text-2xl font-semibold text-primary tracking-tight mt-2 flex items-center gap-3">
+            {selectedVariant?.compare_at_price && parseFloat(selectedVariant.compare_at_price) > parseFloat(selectedVariant.price) && (
+              <span className="text-sm font-normal text-white/40 line-through">
+                {formatPrice(selectedVariant.compare_at_price)}
+              </span>
+            )}
             {selectedVariant ? formatPrice(selectedVariant.price) : ""}
           </span>
 
@@ -409,7 +414,12 @@ export function ProductDetail({ product, related }: Props) {
               <h1 className="font-serif text-4xl xl:text-5xl font-light text-foreground leading-tight">
                 {product.name.es}
               </h1>
-              <span className="text-3xl font-semibold text-primary tracking-tight mt-2 block">
+              <span className="text-3xl font-semibold text-primary tracking-tight mt-2 flex items-center gap-4">
+                {selectedVariant?.compare_at_price && parseFloat(selectedVariant.compare_at_price) > parseFloat(selectedVariant.price) && (
+                  <span className="text-lg font-normal text-white/40 line-through">
+                    {formatPrice(selectedVariant.compare_at_price)}
+                  </span>
+                )}
                 {selectedVariant ? formatPrice(selectedVariant.price) : ""}
               </span>
 
@@ -571,8 +581,8 @@ export function ProductDetail({ product, related }: Props) {
             </motion.div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {related.map((p) => (
-                <RelatedCard key={p.id} product={p} />
+              {related.map((p, i) => (
+                <RelatedCard key={p.id} product={p} idx={i} />
               ))}
             </div>
           </div>
