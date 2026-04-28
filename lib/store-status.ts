@@ -4,7 +4,7 @@
 
 import path from "path"
 import fs from "fs"
-import { kv } from "@vercel/kv"
+import { createClient } from "@vercel/kv"
 
 export interface StoreStatus {
   closed: boolean
@@ -33,12 +33,23 @@ export const DEFAULT_STATUS: StoreStatus = {
   badgeStyle: "outline",
 }
 
+// Function to get the KV client (supporting both legacy Vercel KV and new Upstash Redis)
+function getKVClient() {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN
+  
+  if (!url || !token) return null
+  
+  return createClient({ url, token })
+}
+
 export async function readStoreStatus(): Promise<StoreStatus> {
   try {
     // Si estamos en producción (Vercel)
     if (process.env.VERCEL === "1") {
-      if (!process.env.KV_REST_API_URL) {
-        console.warn("Vercel KV no está configurado (faltan variables de entorno). Usando default.")
+      const kv = getKVClient()
+      if (!kv) {
+        console.warn("Vercel KV / Upstash no está configurado (faltan variables de entorno). Usando default.")
         return DEFAULT_STATUS
       }
       const data = await kv.get<StoreStatus>(KV_KEY)
@@ -61,8 +72,9 @@ export async function writeStoreStatus(status: StoreStatus): Promise<void> {
   try {
     // Si estamos en producción (Vercel)
     if (process.env.VERCEL === "1") {
-      if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-        throw new Error("Vercel KV no está enlazado correctamente. Faltan KV_REST_API_URL. Por favor, andá a Vercel > Storage > Connect, y luego hacé un REDEPLOY manual.")
+      const kv = getKVClient()
+      if (!kv) {
+        throw new Error("Vercel KV / Upstash no está enlazado correctamente. Faltan variables de entorno (KV_REST_API_URL o UPSTASH_REDIS_REST_URL). Por favor, revisá tu panel de Vercel > Settings > Environment Variables, y hacé un REDEPLOY manual.")
       }
       await kv.set(KV_KEY, status)
       return

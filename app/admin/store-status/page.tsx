@@ -26,6 +26,8 @@ const DEFAULT: StoreStatus = {
   showNewsletter: true,
   newsletterCta: "Notificarme",
   bgStyle: "dark",
+  showBadge: true,
+  badgeStyle: "outline",
 }
 
 function toLocalDatetimeValue(isoString: string | null): string {
