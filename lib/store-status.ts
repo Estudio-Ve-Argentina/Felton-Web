@@ -49,12 +49,17 @@ export async function readStoreStatus(): Promise<StoreStatus> {
         console.warn("Redis no está configurado (falta storage_REDIS_URL). Usando default.")
         return DEFAULT_STATUS
       }
-      const rawData = await redis.get(KV_KEY)
-      if (rawData) {
-        const data = JSON.parse(rawData)
-        return { ...DEFAULT_STATUS, ...data }
+      
+      try {
+        const rawData = await redis.get(KV_KEY)
+        if (rawData) {
+          const data = JSON.parse(rawData)
+          return { ...DEFAULT_STATUS, ...data }
+        }
+        return DEFAULT_STATUS
+      } finally {
+        await redis.quit()
       }
-      return DEFAULT_STATUS
     }
 
     // Fallback local (desarrollo)
@@ -76,7 +81,12 @@ export async function writeStoreStatus(status: StoreStatus): Promise<void> {
       if (!redis) {
         throw new Error("Redis no está enlazado correctamente. Faltan variables de entorno (storage_REDIS_URL). Por favor, revisá tu panel de Vercel > Settings > Environment Variables, y hacé un REDEPLOY manual.")
       }
-      await redis.set(KV_KEY, JSON.stringify(status))
+      
+      try {
+        await redis.set(KV_KEY, JSON.stringify(status))
+      } finally {
+        await redis.quit()
+      }
       return
     }
 
