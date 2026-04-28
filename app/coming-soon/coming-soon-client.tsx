@@ -29,25 +29,27 @@ function pad(n: number) {
 }
 
 // ─── Props from SSR ──────────────────────────────────────────────────────────
-interface Props {
+interface ComingSoonClientProps {
   title: string
   subtitle: string
   countdownTo: string | null
   showNewsletter: boolean
   newsletterCta: string
   bgStyle: "dark" | "gradient"
+  showBadge?: boolean
+  badgeStyle?: "gold" | "outline" | "ghost" | "dark"
 }
 
-export default function ComingSoonClient(props: Props) {
-  const {
-    title,
-    subtitle,
-    countdownTo,
-    showNewsletter,
-    newsletterCta,
-    bgStyle,
-  } = props
-
+export default function ComingSoonClient({
+  title,
+  subtitle,
+  countdownTo,
+  showNewsletter,
+  newsletterCta,
+  bgStyle,
+  showBadge = true,
+  badgeStyle = "outline",
+}: ComingSoonClientProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(
     countdownTo ? calcTimeLeft(countdownTo) : null
   )
@@ -217,30 +219,34 @@ export default function ComingSoonClient(props: Props) {
         transition={{ duration: 0.9, delay: 0.5 }}
         className="relative z-10 max-w-2xl w-full mx-auto px-6 text-center mt-20"
       >
-        {/* Eyebrow */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 border rounded-full text-xs font-semibold tracking-widest uppercase"
-          style={{
-            borderColor: "oklch(0.72 0.12 85 / 0.4)",
-            color: "oklch(0.72 0.12 85)",
-            background: "oklch(0.72 0.12 85 / 0.06)",
-          }}
-        >
-          <span className="relative flex h-1.5 w-1.5">
-            <span
-              className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"
-              style={{ background: "oklch(0.72 0.12 85)" }}
-            />
-            <span
-              className="relative inline-flex rounded-full h-1.5 w-1.5"
-              style={{ background: "oklch(0.72 0.12 85)" }}
-            />
-          </span>
-          Próximamente
-        </motion.div>
+        {/* Eyebrow / Badge */}
+        {showBadge && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className={`inline-flex items-center gap-2 px-4 py-1.5 mb-8 border rounded-full text-xs font-semibold tracking-widest uppercase ${
+              badgeStyle === "gold" ? "bg-[#c5a059] border-[#c5a059] text-black" :
+              badgeStyle === "ghost" ? "bg-transparent border-white/20 text-white/80" :
+              badgeStyle === "dark" ? "bg-black border-[#c5a059] text-[#c5a059]" :
+              "bg-[#c5a059]/10 border-[#c5a059]/40 text-[#c5a059]" // outline default
+            }`}
+          >
+            {badgeStyle !== "ghost" && (
+              <span className="relative flex h-1.5 w-1.5">
+                <span
+                  className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"
+                  style={{ background: badgeStyle === "gold" ? "black" : "oklch(0.72 0.12 85)" }}
+                />
+                <span
+                  className="relative inline-flex rounded-full h-1.5 w-1.5"
+                  style={{ background: badgeStyle === "gold" ? "black" : "oklch(0.72 0.12 85)" }}
+                />
+              </span>
+            )}
+            Próximamente
+          </motion.div>
+        )}
 
         {/* Title */}
         <motion.h1

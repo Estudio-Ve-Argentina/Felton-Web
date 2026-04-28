@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       // Sanitize booleans
       closed: body.closed !== undefined ? Boolean(body.closed) : current.closed,
       showNewsletter: body.showNewsletter !== undefined ? Boolean(body.showNewsletter) : current.showNewsletter,
+      showBadge: body.showBadge !== undefined ? Boolean(body.showBadge) : current.showBadge,
     }
     await writeStoreStatus(updated)
     return NextResponse.json({ success: true, status: updated })

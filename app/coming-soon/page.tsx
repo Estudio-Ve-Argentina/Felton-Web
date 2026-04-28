@@ -21,6 +21,8 @@ export default async function ComingSoonPage() {
       showNewsletter={status.showNewsletter}
       newsletterCta={status.newsletterCta}
       bgStyle={status.bgStyle}
+      showBadge={status.showBadge}
+      badgeStyle={status.badgeStyle}
     />
   )
 }

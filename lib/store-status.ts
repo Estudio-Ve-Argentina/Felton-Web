@@ -14,6 +14,8 @@ export interface StoreStatus {
   showNewsletter: boolean
   newsletterCta: string
   bgStyle: "dark" | "gradient"
+  showBadge: boolean
+  badgeStyle: "gold" | "outline" | "ghost" | "dark"
 }
 
 const STATUS_FILE = path.join(process.cwd(), "data", "store-status.json")
@@ -27,12 +29,18 @@ export const DEFAULT_STATUS: StoreStatus = {
   showNewsletter: true,
   newsletterCta: "Notificarme",
   bgStyle: "dark",
+  showBadge: true,
+  badgeStyle: "outline",
 }
 
 export async function readStoreStatus(): Promise<StoreStatus> {
   try {
-    // Si estamos en Vercel y tenemos KV configurado
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    // Si estamos en producción (Vercel)
+    if (process.env.VERCEL === "1") {
+      if (!process.env.KV_REST_API_URL) {
+        console.warn("Vercel KV no está configurado (faltan variables de entorno). Usando default.")
+        return DEFAULT_STATUS
+      }
       const data = await kv.get<StoreStatus>(KV_KEY)
       if (data) return { ...DEFAULT_STATUS, ...data }
       return DEFAULT_STATUS
@@ -51,8 +59,11 @@ export async function readStoreStatus(): Promise<StoreStatus> {
 
 export async function writeStoreStatus(status: StoreStatus): Promise<void> {
   try {
-    // Si estamos en Vercel y tenemos KV configurado
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    // Si estamos en producción (Vercel)
+    if (process.env.VERCEL === "1") {
+      if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+        throw new Error("Vercel KV no está enlazado correctamente. Faltan KV_REST_API_URL. Por favor, andá a Vercel > Storage > Connect, y luego hacé un REDEPLOY manual.")
+      }
       await kv.set(KV_KEY, status)
       return
     }

@@ -315,6 +315,62 @@ export default function StoreStatusPage() {
         )}
       </section>
 
+      {/* Badge settings */}
+      <section className="bg-card border border-border rounded overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="h-4 w-4 text-muted-foreground flex items-center justify-center font-bold text-[10px] border border-muted-foreground rounded-sm">B</span>
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Etiqueta (Badge)
+            </h2>
+          </div>
+          <button
+            onClick={() => setForm((f) => ({ ...f, showBadge: !f.showBadge }))}
+            className={`relative inline-flex h-6 w-10 shrink-0 items-center rounded-full transition-colors ${
+              form.showBadge ? "bg-primary" : "bg-muted"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform ${
+                form.showBadge ? "translate-x-5" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
+        {form.showBadge && (
+          <div className="p-6">
+            <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
+              Estilo de Etiqueta
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {(["gold", "outline", "ghost", "dark"] as const).map((style) => (
+                <button
+                  key={style}
+                  onClick={() => setForm((f) => ({ ...f, badgeStyle: style }))}
+                  className={`relative p-3 rounded border transition-all text-center flex flex-col items-center justify-center gap-2 ${
+                    form.badgeStyle === style
+                      ? "border-primary/60 bg-primary/5"
+                      : "border-border hover:border-primary/30"
+                  }`}
+                >
+                  <div className={`px-2 py-1 text-[10px] uppercase tracking-widest rounded-full ${
+                    style === 'gold' ? 'bg-[#c5a059] text-black' :
+                    style === 'outline' ? 'border border-[#c5a059] text-[#c5a059]' :
+                    style === 'ghost' ? 'border border-white/20 text-white/80' :
+                    'bg-black text-[#c5a059]'
+                  }`}>
+                    Próximamente
+                  </div>
+                  <p className="text-[10px] font-medium text-foreground capitalize mt-1">
+                    {style}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* Background style */}
       <section className="bg-card border border-border rounded overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
