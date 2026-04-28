@@ -276,13 +276,13 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
         }
 
         .out-of-stock-badge {
-          position: absolute; top: 12px; left: 0;
+          position: absolute; top: 13px; left: 0;
           background: #dc2626; color: white;
-          font-size: 8px; font-weight: 800; letter-spacing: 0.15em;
-          text-transform: uppercase; padding: 5px 12px; z-index: 20;
+          font-size: 8.8px; font-weight: 800; letter-spacing: 0.15em;
+          text-transform: uppercase; padding: 5.5px 13px; z-index: 20;
         }
         @media (max-width: 768px) {
-          .out-of-stock-badge { font-size: 7px; padding: 4px 10px; }
+          .out-of-stock-badge { font-size: 7.7px; padding: 4.4px 11px; top: 13px; }
         }
 
         .product-price-out {
@@ -369,8 +369,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           <div className={`product-info transition-all duration-500 sm:group-hover:opacity-0 sm:group-hover:translate-y-2`}>
             <p className="product-brand">{product.category}</p>
             <h3 className="product-name">{product.name}</h3>
-            <p className="product-price">{product.price}</p>
-            {!inStock && <p className="product-price-out">¡Producto sin stock!</p>}
+            <p className="product-price" style={{ visibility: "hidden" }}>{product.price}</p>
           </div>
         </div>
       </Link>
