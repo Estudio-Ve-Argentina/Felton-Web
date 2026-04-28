@@ -12,6 +12,7 @@ import {
   LogOut,
   Menu,
   X,
+  ShieldOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeltonLogo } from "@/components/shared";
@@ -21,6 +22,7 @@ const navigation = [
   { name: "Blog", href: "/admin/blog", icon: FileText },
   { name: "Productos", href: "/admin/productos", icon: Package },
   { name: "Ventas", href: "/admin/ventas", icon: ShoppingBag },
+  { name: "Estado Tienda", href: "/admin/store-status", icon: ShieldOff },
 ];
 
 export default function AdminLayout({

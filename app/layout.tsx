@@ -6,6 +6,7 @@ import { I18nProvider } from "@/lib/i18n"
 import { CartProvider } from "@/lib/cart"
 import { CartDrawer } from "@/components/layout/cart-drawer"
 import { Toaster } from "@/components/ui/sonner"
+import { StoreGate } from "@/components/shared/store-gate"
 import "./globals.css"
 
 const inter = Inter({
@@ -82,7 +83,9 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground overflow-x-hidden">
         <CartProvider>
           <I18nProvider>
-            {children}
+            <StoreGate>
+              {children}
+            </StoreGate>
             <CartDrawer />
             <Toaster position="bottom-right" />
           </I18nProvider>

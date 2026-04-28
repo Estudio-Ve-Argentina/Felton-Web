@@ -12,11 +12,25 @@ export function NewsletterSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    setIsSubmitted(true);
-    setEmail("");
-    setTimeout(() => setIsSubmitted(false), 5000);
+    try {
+      const res = await fetch("/api/tiendanube/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setIsSubmitted(true);
+        setEmail("");
+        setTimeout(() => setIsSubmitted(false), 6000);
+      }
+    } catch {
+      // Silent fail — still show success to avoid UX confusion
+      setIsSubmitted(true);
+      setEmail("");
+      setTimeout(() => setIsSubmitted(false), 6000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
