@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   robots: "noindex, nofollow",
 }
 
-export default function ComingSoonPage() {
-  const status = readStoreStatus()
+export default async function ComingSoonPage() {
+  const status = await readStoreStatus()
 
   return (
     <ComingSoonClient
