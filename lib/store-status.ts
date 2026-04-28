@@ -13,7 +13,7 @@ export interface StoreStatus {
   countdownTo: string | null
   showNewsletter: boolean
   newsletterCta: string
-  bgStyle: "dark" | "gradient"
+  bgStyle: "dark" | "gradient" | "video"
   showBadge: boolean
   badgeStyle: "gold" | "outline" | "ghost" | "dark"
 }

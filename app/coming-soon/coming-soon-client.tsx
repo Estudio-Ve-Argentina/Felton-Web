@@ -35,7 +35,7 @@ interface ComingSoonClientProps {
   countdownTo: string | null
   showNewsletter: boolean
   newsletterCta: string
-  bgStyle: "dark" | "gradient"
+  bgStyle: "dark" | "gradient" | "video"
   showBadge?: boolean
   badgeStyle?: "gold" | "outline" | "ghost" | "dark"
 }
@@ -57,6 +57,51 @@ export default function ComingSoonClient({
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState("")
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  // Ping-Pong Video Logic
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || bgStyle !== "video") return
+
+    let isReversing = false
+    let reqId: number
+
+    const checkLoop = () => {
+      if (!video) return
+
+      if (!isReversing && video.currentTime >= video.duration - 0.1) {
+        isReversing = true
+        video.playbackRate = -1 // Backward
+        
+        // Safari / iOS fallback: if it refuses negative playbackRate, just scrub manually or loop
+        if (video.playbackRate !== -1) {
+          isReversing = false
+          video.currentTime = 0
+          video.play().catch(() => {})
+        }
+      } else if (isReversing && video.currentTime <= 0.1) {
+        isReversing = false
+        video.playbackRate = 1 // Forward
+        video.play().catch(() => {})
+      }
+
+      reqId = requestAnimationFrame(checkLoop)
+    }
+
+    const onLoaded = () => {
+      video.play().catch(e => console.log("Autoplay prevented:", e))
+      checkLoop()
+    }
+    
+    video.addEventListener("loadedmetadata", onLoaded)
+    if (video.readyState >= 1) onLoaded()
+
+    return () => {
+      video.removeEventListener("loadedmetadata", onLoaded)
+      cancelAnimationFrame(reqId)
+    }
+  }, [bgStyle])
 
   // Live countdown
   useEffect(() => {
@@ -95,6 +140,7 @@ export default function ComingSoonClient({
   }
 
   const isGradient = bgStyle === "gradient"
+  const isVideo = bgStyle === "video"
 
   return (
     <div
@@ -102,18 +148,36 @@ export default function ComingSoonClient({
       style={{
         background: isGradient
           ? "radial-gradient(ellipse at 30% 20%, oklch(0.22 0.04 260) 0%, oklch(0.10 0.02 260) 60%, oklch(0.08 0.01 260) 100%)"
-          : "oklch(0.10 0.015 260)",
+          : isVideo ? "#000" : "oklch(0.10 0.015 260)",
       }}
     >
-      {/* Leather Texture Overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-overlay"
-        style={{
-          backgroundImage: "url('/images/leather-texture.png')",
-          backgroundSize: "400px",
-          backgroundRepeat: "repeat",
-        }}
-      />
+      {/* Background Video */}
+      {isVideo && (
+        <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
+          <video
+            ref={videoRef}
+            src="/IMG_0607.MOV"
+            muted
+            playsInline
+            autoPlay
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+          />
+          {/* Dark overlay to ensure text remains readable */}
+          <div className="absolute inset-0 bg-[#0a0a0c]/40" />
+        </div>
+      )}
+
+      {/* Leather Texture Overlay (Disabled on video) */}
+      {!isVideo && (
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-overlay z-0"
+          style={{
+            backgroundImage: "url('/images/leather-texture.png')",
+            backgroundSize: "400px",
+            backgroundRepeat: "repeat",
+          }}
+        />
+      )}
 
       {/* Animated Soft Lights / Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -128,11 +192,12 @@ export default function ComingSoonClient({
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute w-[70vw] h-[70vw] rounded-full blur-[140px] opacity-[0.06] mix-blend-screen"
+          className="absolute w-[70vw] h-[70vw] rounded-full blur-[140px] mix-blend-screen"
           style={{
             background: "oklch(0.72 0.12 85)",
             left: "10%",
             top: "10%",
+            opacity: isVideo ? 0.02 : 0.06
           }}
         />
         
@@ -146,11 +211,12 @@ export default function ComingSoonClient({
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute w-[80vw] h-[80vw] rounded-full blur-[160px] opacity-[0.05] mix-blend-screen"
+          className="absolute w-[80vw] h-[80vw] rounded-full blur-[160px] mix-blend-screen"
           style={{
             background: "oklch(0.35 0.08 260)",
             right: "10%",
             bottom: "10%",
+            opacity: isVideo ? 0.02 : 0.05
           }}
         />
 
@@ -179,7 +245,9 @@ export default function ComingSoonClient({
               animate={{
                 x: ["0vw", `${15 + (i % 10)}vw`, `-${10 + (i % 5)}vw`, "0vw"],
                 y: ["0vh", `-${15 + (i % 8)}vh`, `${10 + (i % 12)}vh`, "0vh"],
-                opacity: [0, 0.8, 0.2, 0.6, 0],
+                opacity: isVideo 
+                  ? [0, 0.2, 0.05, 0.15, 0] 
+                  : [0, 0.8, 0.2, 0.6, 0],
                 scale: [0.5, 1.5, 0.8, 1.2, 0.5]
               }}
               transition={{

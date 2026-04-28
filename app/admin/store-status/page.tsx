@@ -380,8 +380,8 @@ export default function StoreStatusPage() {
           </h2>
         </div>
         <div className="p-6">
-          <div className="grid grid-cols-2 gap-3">
-            {(["dark", "gradient"] as const).map((style) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {(["dark", "gradient", "video"] as const).map((style) => (
               <button
                 key={style}
                 onClick={() => setForm((f) => ({ ...f, bgStyle: style }))}
@@ -392,16 +392,22 @@ export default function StoreStatusPage() {
                 }`}
               >
                 <div
-                  className="h-10 rounded mb-3"
+                  className="h-10 rounded mb-3 flex items-center justify-center overflow-hidden relative"
                   style={{
                     background:
                       style === "dark"
                         ? "oklch(0.10 0.015 260)"
-                        : "radial-gradient(ellipse at 30% 20%, oklch(0.22 0.04 260), oklch(0.10 0.02 260))",
+                        : style === "gradient"
+                        ? "radial-gradient(ellipse at 30% 20%, oklch(0.22 0.04 260), oklch(0.10 0.02 260))"
+                        : "#000",
                   }}
-                />
+                >
+                  {style === "video" && (
+                    <span className="text-[10px] text-white/50 tracking-widest font-semibold uppercase absolute">Video IMG_0607</span>
+                  )}
+                </div>
                 <p className="text-xs font-medium text-foreground capitalize">
-                  {style === "dark" ? "Oscuro sólido" : "Gradiente Navy"}
+                  {style === "dark" ? "Oscuro sólido" : style === "gradient" ? "Gradiente Navy" : "Video de Fondo"}
                 </p>
               </button>
             ))}
