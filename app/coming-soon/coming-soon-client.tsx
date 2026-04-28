@@ -115,69 +115,80 @@ export default function ComingSoonClient(props: Props) {
 
       {/* Animated Soft Lights / Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Large soft glows */}
-        {[...Array(4)].map((_, i) => (
-          <motion.div
-            key={`glow-${i}`}
-            initial={{ 
-              x: Math.random() * 100 - 50 + "%", 
-              y: Math.random() * 100 - 50 + "%",
-              opacity: 0 
-            }}
-            animate={{
-              x: [
-                Math.random() * 100 - 50 + "%",
-                Math.random() * 100 - 50 + "%",
-                Math.random() * 100 - 50 + "%"
-              ],
-              y: [
-                Math.random() * 100 - 50 + "%",
-                Math.random() * 100 - 50 + "%",
-                Math.random() * 100 - 50 + "%"
-              ],
-              opacity: [0.03, 0.08, 0.03],
-            }}
-            transition={{
-              duration: 25 + Math.random() * 15,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute w-[60vw] h-[60vw] rounded-full blur-[150px]"
-            style={{
-              background: i % 2 === 0 ? "oklch(0.72 0.12 85)" : "oklch(0.22 0.04 260)",
-              left: "20%",
-              top: "20%",
-            }}
-          />
-        ))}
+        {/* Main "Flashlight" Glows */}
+        <motion.div
+          animate={{
+            x: ["-20vw", "40vw", "10vw", "-20vw"],
+            y: ["-10vh", "30vh", "-20vh", "-10vh"],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute w-[70vw] h-[70vw] rounded-full blur-[140px] opacity-[0.06] mix-blend-screen"
+          style={{
+            background: "oklch(0.72 0.12 85)",
+            left: "10%",
+            top: "10%",
+          }}
+        />
+        
+        <motion.div
+          animate={{
+            x: ["30vw", "-10vw", "50vw", "30vw"],
+            y: ["40vh", "0vh", "20vh", "40vh"],
+          }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute w-[80vw] h-[80vw] rounded-full blur-[160px] opacity-[0.05] mix-blend-screen"
+          style={{
+            background: "oklch(0.35 0.08 260)",
+            right: "10%",
+            bottom: "10%",
+          }}
+        />
 
-        {/* Small drifting particles */}
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={`part-${i}`}
-            initial={{ 
-              x: Math.random() * 100 + "%", 
-              y: Math.random() * 100 + "%",
-              opacity: 0,
-              scale: Math.random() * 0.5 + 0.5
-            }}
-            animate={{
-              y: ["-10%", "110%"],
-              opacity: [0, 0.4, 0],
-            }}
-            transition={{
-              duration: 15 + Math.random() * 20,
-              repeat: Infinity,
-              ease: "linear",
-              delay: Math.random() * 20,
-            }}
-            className="absolute w-1 h-1 rounded-full"
-            style={{
-              background: "oklch(0.72 0.12 85 / 0.4)",
-              filter: "blur(1px)",
-            }}
-          />
-        ))}
+        {/* Floating Dust Particles */}
+        {[...Array(25)].map((_, i) => {
+          // Deterministic "randomness" for hydration safety
+          const startX = (i * 23) % 100
+          const startY = (i * 37) % 100
+          const durationX = 20 + (i % 15)
+          const durationY = 25 + (i % 10)
+          const delay = (i * 2) % 10
+          const size = (i % 3) === 0 ? 3 : 2
+
+          return (
+            <motion.div
+              key={`dust-${i}`}
+              className="absolute rounded-full mix-blend-screen"
+              style={{
+                width: size,
+                height: size,
+                left: `${startX}%`,
+                top: `${startY}%`,
+                background: "oklch(0.85 0.05 85 / 0.6)",
+                boxShadow: "0 0 10px 2px oklch(0.72 0.12 85 / 0.4)",
+              }}
+              animate={{
+                x: ["0vw", `${15 + (i % 10)}vw`, `-${10 + (i % 5)}vw`, "0vw"],
+                y: ["0vh", `-${15 + (i % 8)}vh`, `${10 + (i % 12)}vh`, "0vh"],
+                opacity: [0, 0.8, 0.2, 0.6, 0],
+                scale: [0.5, 1.5, 0.8, 1.2, 0.5]
+              }}
+              transition={{
+                x: { duration: durationX, repeat: Infinity, ease: "easeInOut", delay },
+                y: { duration: durationY, repeat: Infinity, ease: "easeInOut", delay },
+                opacity: { duration: durationX * 0.8, repeat: Infinity, ease: "easeInOut", delay },
+                scale: { duration: durationY * 0.9, repeat: Infinity, ease: "easeInOut", delay }
+              }}
+            />
+          )
+        })}
       </div>
 
       {/* Gold top accent line */}
