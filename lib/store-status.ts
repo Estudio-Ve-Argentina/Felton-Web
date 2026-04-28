@@ -4,7 +4,7 @@
 
 import path from "path"
 import fs from "fs"
-import { createClient } from "@vercel/kv"
+import Redis from "ioredis"
 
 export interface StoreStatus {
   closed: boolean
@@ -33,27 +33,27 @@ export const DEFAULT_STATUS: StoreStatus = {
   badgeStyle: "outline",
 }
 
-// Function to get the KV client (supporting both legacy Vercel KV and new Upstash Redis)
-function getKVClient() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN
-  
-  if (!url || !token) return null
-  
-  return createClient({ url, token })
+// Function to get the Redis client
+function getRedisClient() {
+  const url = process.env.storage_REDIS_URL || process.env.KV_REST_API_URL || process.env.REDIS_URL
+  if (!url) return null
+  return new Redis(url)
 }
 
 export async function readStoreStatus(): Promise<StoreStatus> {
   try {
     // Si estamos en producción (Vercel)
     if (process.env.VERCEL === "1") {
-      const kv = getKVClient()
-      if (!kv) {
-        console.warn("Vercel KV / Upstash no está configurado (faltan variables de entorno). Usando default.")
+      const redis = getRedisClient()
+      if (!redis) {
+        console.warn("Redis no está configurado (falta storage_REDIS_URL). Usando default.")
         return DEFAULT_STATUS
       }
-      const data = await kv.get<StoreStatus>(KV_KEY)
-      if (data) return { ...DEFAULT_STATUS, ...data }
+      const rawData = await redis.get(KV_KEY)
+      if (rawData) {
+        const data = JSON.parse(rawData)
+        return { ...DEFAULT_STATUS, ...data }
+      }
       return DEFAULT_STATUS
     }
 
@@ -72,11 +72,11 @@ export async function writeStoreStatus(status: StoreStatus): Promise<void> {
   try {
     // Si estamos en producción (Vercel)
     if (process.env.VERCEL === "1") {
-      const kv = getKVClient()
-      if (!kv) {
-        throw new Error("Vercel KV / Upstash no está enlazado correctamente. Faltan variables de entorno (KV_REST_API_URL o UPSTASH_REDIS_REST_URL). Por favor, revisá tu panel de Vercel > Settings > Environment Variables, y hacé un REDEPLOY manual.")
+      const redis = getRedisClient()
+      if (!redis) {
+        throw new Error("Redis no está enlazado correctamente. Faltan variables de entorno (storage_REDIS_URL). Por favor, revisá tu panel de Vercel > Settings > Environment Variables, y hacé un REDEPLOY manual.")
       }
-      await kv.set(KV_KEY, status)
+      await redis.set(KV_KEY, JSON.stringify(status))
       return
     }
 
