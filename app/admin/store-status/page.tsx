@@ -78,17 +78,20 @@ export default function StoreStatusPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-      if (res.ok) {
-        const { status } = await res.json()
-        setForm(status)
-        setLocalCountdown(toLocalDatetimeValue(status.countdownTo))
-        setSaveState("saved")
-        setTimeout(() => setSaveState("idle"), 3000)
-      } else {
-        throw new Error("Error al guardar")
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Error desconocido" }))
+        throw new Error(errorData.error || `Status: ${res.status}`)
       }
+
+      const { status } = await res.json()
+      setForm(status)
+      setLocalCountdown(toLocalDatetimeValue(status.countdownTo))
+      setSaveState("saved")
+      setTimeout(() => setSaveState("idle"), 3000)
     } catch (e: any) {
-      setErrorMsg(e.message || "Error desconocido")
+      console.error("Save error:", e)
+      setErrorMsg(e.message || "Error al guardar")
       setSaveState("error")
       setTimeout(() => setSaveState("idle"), 5000)
     }

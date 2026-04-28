@@ -4,11 +4,14 @@ import type { StoreStatus } from "@/lib/store-status"
 
 function isAuthenticated(request: NextRequest): boolean {
   const session = request.cookies.get("felton-admin-session")
+  console.log("Auth Check - Cookie present:", Boolean(session), "Value:", session?.value?.substring(0, 5) + "...")
   return Boolean(session?.value)
 }
 
 export async function GET(request: NextRequest) {
+  console.log("API: GET /api/admin/store-status called")
   if (!isAuthenticated(request)) {
+    console.log("API: GET /api/admin/store-status - Unauthorized")
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   const status = readStoreStatus()
@@ -16,8 +19,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  console.log("API: POST /api/admin/store-status called")
   if (!isAuthenticated(request)) {
-    console.log("Store-status POST: Unauthorized")
+    console.log("API: POST /api/admin/store-status - Unauthorized")
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {
