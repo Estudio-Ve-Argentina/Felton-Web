@@ -17,22 +17,24 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   if (!isAuthenticated(request)) {
+    console.log("Store-status POST: Unauthorized")
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {
-    const body: Partial<StoreStatus> = await request.json()
+    const body = await request.json()
+    console.log("Store-status POST body:", body)
     const current = readStoreStatus()
     const updated: StoreStatus = {
       ...current,
       ...body,
       // Sanitize booleans
-      closed: Boolean(body.closed ?? current.closed),
-      showNewsletter: Boolean(body.showNewsletter ?? current.showNewsletter),
+      closed: body.closed !== undefined ? Boolean(body.closed) : current.closed,
+      showNewsletter: body.showNewsletter !== undefined ? Boolean(body.showNewsletter) : current.showNewsletter,
     }
     writeStoreStatus(updated)
     return NextResponse.json({ success: true, status: updated })
-  } catch (err) {
+  } catch (err: any) {
     console.error("store-status POST error:", err)
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 })
   }
 }

@@ -103,6 +103,82 @@ export default function ComingSoonClient(props: Props) {
           : "oklch(0.10 0.015 260)",
       }}
     >
+      {/* Leather Texture Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-overlay"
+        style={{
+          backgroundImage: "url('/images/leather-texture.png')",
+          backgroundSize: "400px",
+          backgroundRepeat: "repeat",
+        }}
+      />
+
+      {/* Animated Soft Lights / Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Large soft glows */}
+        {[...Array(4)].map((_, i) => (
+          <motion.div
+            key={`glow-${i}`}
+            initial={{ 
+              x: Math.random() * 100 - 50 + "%", 
+              y: Math.random() * 100 - 50 + "%",
+              opacity: 0 
+            }}
+            animate={{
+              x: [
+                Math.random() * 100 - 50 + "%",
+                Math.random() * 100 - 50 + "%",
+                Math.random() * 100 - 50 + "%"
+              ],
+              y: [
+                Math.random() * 100 - 50 + "%",
+                Math.random() * 100 - 50 + "%",
+                Math.random() * 100 - 50 + "%"
+              ],
+              opacity: [0.03, 0.08, 0.03],
+            }}
+            transition={{
+              duration: 25 + Math.random() * 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute w-[60vw] h-[60vw] rounded-full blur-[150px]"
+            style={{
+              background: i % 2 === 0 ? "oklch(0.72 0.12 85)" : "oklch(0.22 0.04 260)",
+              left: "20%",
+              top: "20%",
+            }}
+          />
+        ))}
+
+        {/* Small drifting particles */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={`part-${i}`}
+            initial={{ 
+              x: Math.random() * 100 + "%", 
+              y: Math.random() * 100 + "%",
+              opacity: 0,
+              scale: Math.random() * 0.5 + 0.5
+            }}
+            animate={{
+              y: ["-10%", "110%"],
+              opacity: [0, 0.4, 0],
+            }}
+            transition={{
+              duration: 15 + Math.random() * 20,
+              repeat: Infinity,
+              ease: "linear",
+              delay: Math.random() * 20,
+            }}
+            className="absolute w-1 h-1 rounded-full"
+            style={{
+              background: "oklch(0.72 0.12 85 / 0.4)",
+              filter: "blur(1px)",
+            }}
+          />
+        ))}
+      </div>
 
       {/* Gold top accent line */}
       <motion.div

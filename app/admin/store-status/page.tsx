@@ -38,7 +38,13 @@ function toLocalDatetimeValue(isoString: string | null): string {
 
 function fromLocalDatetimeValue(val: string): string | null {
   if (!val) return null
-  return new Date(val).toISOString()
+  try {
+    const d = new Date(val)
+    if (isNaN(d.getTime())) return null
+    return d.toISOString()
+  } catch {
+    return null
+  }
 }
 
 export default function StoreStatusPage() {
