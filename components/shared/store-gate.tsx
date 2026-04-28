@@ -25,7 +25,8 @@ const ALWAYS_ALLOWED_PREFIXES = [
 export async function StoreGate({ children }: { children: React.ReactNode }) {
   let closed = false
   try {
-    closed = readStoreStatus().closed
+    const status = await readStoreStatus()
+    closed = status.closed
   } catch {
     // Fail open — if we can't read the status, let the request through
   }

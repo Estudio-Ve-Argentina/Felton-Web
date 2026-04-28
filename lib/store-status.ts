@@ -1,30 +1,23 @@
 /**
- * Store Status — persisted as a JSON file in /data/store-status.json
- * No database required: we read from disk on each middleware check and
- * write from the admin panel. The file is small and reads are fast.
+ * Store Status — persisted in Vercel KV for production, or local JSON for dev.
  */
 
 import path from "path"
 import fs from "fs"
+import { kv } from "@vercel/kv"
 
 export interface StoreStatus {
-  /** Whether the store is currently closed */
   closed: boolean
-  /** Heading shown on the coming-soon page */
   title: string
-  /** Subtitle / description shown below the title */
   subtitle: string
-  /** Optional: ISO datetime string for the countdown target */
   countdownTo: string | null
-  /** Whether to show the newsletter subscription form */
   showNewsletter: boolean
-  /** Label for the newsletter CTA button */
   newsletterCta: string
-  /** Background style: "dark" | "gradient" */
   bgStyle: "dark" | "gradient"
 }
 
 const STATUS_FILE = path.join(process.cwd(), "data", "store-status.json")
+const KV_KEY = "felton_store_status"
 
 export const DEFAULT_STATUS: StoreStatus = {
   closed: false,
@@ -36,20 +29,40 @@ export const DEFAULT_STATUS: StoreStatus = {
   bgStyle: "dark",
 }
 
-export function readStoreStatus(): StoreStatus {
+export async function readStoreStatus(): Promise<StoreStatus> {
   try {
+    // Si estamos en Vercel y tenemos KV configurado
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      const data = await kv.get<StoreStatus>(KV_KEY)
+      if (data) return { ...DEFAULT_STATUS, ...data }
+      return DEFAULT_STATUS
+    }
+
+    // Fallback local (desarrollo)
     if (fs.existsSync(STATUS_FILE)) {
       const raw = fs.readFileSync(STATUS_FILE, "utf-8")
       return { ...DEFAULT_STATUS, ...JSON.parse(raw) }
     }
-  } catch {
-    // fall through
+  } catch (err) {
+    console.error("Error reading store status:", err)
   }
   return { ...DEFAULT_STATUS }
 }
 
-export function writeStoreStatus(status: StoreStatus): void {
-  const dir = path.dirname(STATUS_FILE)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2), "utf-8")
+export async function writeStoreStatus(status: StoreStatus): Promise<void> {
+  try {
+    // Si estamos en Vercel y tenemos KV configurado
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      await kv.set(KV_KEY, status)
+      return
+    }
+
+    // Fallback local (desarrollo)
+    const dir = path.dirname(STATUS_FILE)
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2), "utf-8")
+  } catch (err) {
+    console.error("Error writing store status:", err)
+    throw err
+  }
 }

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     console.log("API: GET /api/admin/store-status - Unauthorized")
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const status = readStoreStatus()
+  const status = await readStoreStatus()
   return NextResponse.json(status)
 }
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     console.log("Store-status POST body:", body)
-    const current = readStoreStatus()
+    const current = await readStoreStatus()
     const updated: StoreStatus = {
       ...current,
       ...body,
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       closed: body.closed !== undefined ? Boolean(body.closed) : current.closed,
       showNewsletter: body.showNewsletter !== undefined ? Boolean(body.showNewsletter) : current.showNewsletter,
     }
-    writeStoreStatus(updated)
+    await writeStoreStatus(updated)
     return NextResponse.json({ success: true, status: updated })
   } catch (err: any) {
     console.error("store-status POST error:", err)
