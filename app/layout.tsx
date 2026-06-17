@@ -73,6 +73,11 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+// El StoreGate (abierto/cerrado) debe evaluarse en CADA request. Sin esto,
+// Vercel sirve las páginas desde su caché estática y el gate no corre, por lo
+// que el cambio de estado del panel no se aplica al sitio público.
+export const dynamic = "force-dynamic"
+
 export default function RootLayout({
   children,
 }: Readonly<{
