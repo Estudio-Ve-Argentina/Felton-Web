@@ -254,7 +254,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           transition: all 0.5s ease;
         }
         @media (max-width: 768px) {
-          .product-info { bottom: 15px; }
+          .product-info { bottom: 52px; }
         }
 
         .product-brand {
@@ -267,12 +267,12 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
         }
         .product-price {
-          font-size: 20px; font-weight: 600; color: rgba(212, 175, 55, 1);
-          letter-spacing: 0.02em;
+          font-size: 13px; font-weight: 600; color: rgba(212, 175, 55, 1);
+          letter-spacing: 0.03em; margin-top: 2px;
         }
         @media (max-width: 768px) {
           .product-name { font-size: 14px; }
-          .product-price { font-size: 18px; }
+          .product-price { font-size: 12px; }
         }
 
         .out-of-stock-badge {
@@ -369,7 +369,7 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
           <div className={`product-info transition-all duration-500 sm:group-hover:opacity-0 sm:group-hover:translate-y-2`}>
             <p className="product-brand">{product.category}</p>
             <h3 className="product-name">{product.name}</h3>
-            <p className="product-price" style={{ visibility: "hidden" }}>{product.price}</p>
+            {product.price && <p className="product-price">{product.price}</p>}
           </div>
         </div>
       </Link>
@@ -380,9 +380,9 @@ export function ProductCard({ product: rawProduct, idx = 0, isDragging, classNam
         <button
           onClick={handleAddToCart}
           disabled={!inStock || !product.variantId}
-          className="w-full flex items-center justify-center gap-2.5 py-4 sm:py-5 bg-primary text-black font-bold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] shadow-[0_-10px_40px_rgba(0,0,0,0.4)] transition-all duration-300 shine-button active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 sm:gap-2.5 py-2.5 sm:py-5 bg-primary text-black font-bold text-[9px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] shadow-[0_-10px_40px_rgba(0,0,0,0.4)] transition-all duration-300 shine-button active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
           {inStock ? "Comprar ahora" : "Sin stock"}
         </button>
       </div>
