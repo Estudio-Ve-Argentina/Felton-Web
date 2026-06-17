@@ -46,9 +46,12 @@ export function CartDrawer() {
       const data = await res.json();
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
+        return;
       }
+      throw new Error(data.error || "No se pudo iniciar el checkout");
     } catch (err) {
       console.error("Checkout error:", err);
+      alert("No pudimos iniciar la compra. Por favor, intentá de nuevo en unos minutos.");
     } finally {
       setIsCheckingOut(false);
     }

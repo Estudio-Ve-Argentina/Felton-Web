@@ -240,11 +240,10 @@ export async function deleteBlogPost(id: number): Promise<void> {
   });
 }
 
-// Checkout URL generator
-export function getCheckoutUrl(variantId: number, quantity: number = 1): string {
-  const storeUrl = process.env.NEXT_PUBLIC_TIENDANUBE_STORE_URL || "https://velmor.mitiendanube.com";
-  return `${storeUrl}/checkout/v3/start/${variantId}/${quantity}`;
-}
+// Nota: el checkout se genera vía Draft Orders en
+// app/api/tiendanube/checkout/route.ts, que devuelve la checkout_url oficial
+// (con token). No se construye la URL a mano porque el formato
+// /checkout/v3/start/{id}/{token} requiere un token emitido por Tienda Nube.
 
 // Helpers
 export function formatPrice(price: string | number, currency: string = "ARS"): string {
